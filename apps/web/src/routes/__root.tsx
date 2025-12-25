@@ -17,6 +17,7 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
+import { ThemeProvider } from '@/components/theme-provider'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -33,7 +34,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'CallMind - Your AI Agent',
       },
     ],
     links: [
@@ -54,6 +55,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+
         <ClerkProvider>
        
           {children}
@@ -72,6 +76,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           />
         </ClerkProvider>
         <Scripts />
+        </ThemeProvider >
       </body>
     </html>
   )
