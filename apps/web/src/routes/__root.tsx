@@ -1,49 +1,78 @@
-import { createRootRouteWithContext } from '@tanstack/react-router'
-import { QueryClient } from '@tanstack/react-query'
+import {
+  HeadContent,
+  Scripts,
+  createRootRouteWithContext,
+} from '@tanstack/react-router'
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
+
+
+
+import ClerkProvider from '../integrations/clerk/provider'
+
+import StoreDevtools from '../lib/demo-store-devtools'
+
+import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
 
-interface RouterContext {
+import type { QueryClient } from '@tanstack/react-query'
+
+interface MyRouterContext {
   queryClient: QueryClient
 }
 
-export const Route = createRootRouteWithContext<RouterContext>()({
+export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
     meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Callmind' },
+      {
+        charSet: 'utf-8',
+      },
+      {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1',
+      },
+      {
+        title: 'TanStack Start Starter',
+      },
     ],
-    links: [{ rel: 'stylesheet', href: appCss }],
+    links: [
+      {
+        rel: 'stylesheet',
+        href: appCss,
+      },
+    ],
   }),
-  component: RootDocument,
+
+  shellComponent: RootDocument,
 })
 
-function RootDocument() {
+function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head />
+      <head>
+        <HeadContent />
+      </head>
       <body>
-        <Outlet />
+        <ClerkProvider>
+       
+          {children}
+          <TanStackDevtools
+            config={{
+              position: 'bottom-right',
+            }}
+            plugins={[
+              {
+                name: 'Tanstack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+              StoreDevtools,
+              TanStackQueryDevtools,
+            ]}
+          />
+        </ClerkProvider>
         <Scripts />
       </body>
     </html>
   )
 }
-
-function Scripts() {
-  const router = useRouter()
-  return <>{/* Add devtools here when needed */}</>
-}
-
-function Outlet() {
-  const router = useRouter()
-  return router.state.matches.map((match) => {
-    const RouteComponent = match.route.options.component
-    if (!RouteComponent) return null
-    return <RouteComponent key={match.routeId} />
-  })
-}
-
-// Import at bottom to avoid circular dependency
-import { Scripts as TSRSscripts, Outlet as TSRSOutlet, useRouter } from '@tanstack/react-router'
