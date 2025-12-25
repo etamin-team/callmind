@@ -1,0 +1,24 @@
+{
+  "initialized": true,
+  "mode": "file-router",
+  "projectName": "web",
+  "typescript": true,
+  "tailwind": true,
+  "git": true,
+  "addOnOptions": {},
+  "packageManager": "pnpm",
+  "version": 1,
+  "framework": "react-cra",
+  "chosenAddOns": [
+    "clerk",
+    "form",
+    "shadcn",
+    "t3env",
+    "table",
+    "start",
+    "store",
+    "tanstack-query",
+    "eslint",
+    "nitro"
+  ]
+}

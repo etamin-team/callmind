@@ -1,135 +1,244 @@
-# Turborepo starter
+# Callmind - Fullstack Monorepo
 
-This Turborepo starter is maintained by the Turborepo core team.
+A modern full-stack monorepo built with Turborepo, TanStack Start (frontend), Fastify (backend), MongoDB, and TypeScript.
 
-## Using this example
+## 🚀 Tech Stack
 
-Run the following command:
+- **Monorepo**: Turborepo + pnpm workspaces
+- **Frontend**: TanStack Start (React Router + Vite + SSR)
+- **Backend**: Fastify with TypeScript
+- **Database**: MongoDB with Mongoose
+- **Type Safety**: TypeScript with shared types
+- **Styling**: Tailwind CSS v4
+- **UI Components**: shadcn/ui components
+- **Package Manager**: pnpm
 
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## 📁 Project Structure
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+├── apps/
+│   ├── web/              # TanStack Start frontend app
+│   └── api/              # Fastify backend API
+├── packages/
+│   ├── db/               # Shared database models & connection
+│   ├── types/            # Shared TypeScript types & Zod schemas
+│   ├── ui/               # Shared React components
+│   ├── eslint-config/    # ESLint configurations
+│   └── typescript-config/ # TypeScript configurations
+├── docker-compose.yml    # MongoDB & Mongo Express
+└── turbo.json            # Turborepo pipeline configuration
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## 🛠️ Getting Started
 
+### Prerequisites
+
+- Node.js 20+
+- pnpm 9+
+- Docker & Docker Compose (for MongoDB)
+
+### Installation
+
+1. **Clone and install dependencies:**
+   ```bash
+   pnpm install
+   ```
+
+2. **Start MongoDB:**
+   ```bash
+   pnpm docker:up
+   # MongoDB runs on localhost:27017
+   # Mongo Express UI at http://localhost:8081
+   ```
+
+3. **Set up environment variables:**
+   ```bash
+   # Root .env
+   cp .env.example .env
+   
+   # API .env (optional)
+   cp apps/api/.env.example apps/api/.env
+   
+   # Frontend .env (for API URL)
+   cp apps/web/.env.example apps/web/.env
+   ```
+
+4. **Run development servers:**
+   ```bash
+   # All apps
+   pnpm dev
+   
+   # Frontend only
+   pnpm dev:web
+   
+   # Backend only  
+   pnpm dev:api
+   ```
+
+   The apps will be available at:
+   - **Frontend**: http://localhost:3000
+   - **API**: http://localhost:3001
+   - **API Docs**: http://localhost:3001/docs
+
+## 📦 Available Scripts
+
+From the root directory:
+
+- `pnpm dev` - Start all apps in development mode
+- `pnpm dev:web` - Start only frontend
+- `pnpm dev:api` - Start only backend
+- `pnpm build` - Build all apps and packages
+- `pnpm lint` - Lint all apps and packages
+- `pnpm lint:fix` - Lint and fix all issues
+- `pnpm format` - Format code with Prettier
+- `pnpm check-types` - Type-check all projects
+- `pnpm clean` - Remove all build artifacts and node_modules
+- `pnpm docker:up` - Start MongoDB and Mongo Express
+- `pnpm docker:down` - Stop MongoDB and Mongo Express
+
+## 🔧 Configuration
+
+### TypeScript
+
+Shared TypeScript configs are in `packages/typescript-config/`:
+- `base.json` - Base configuration
+- `react.json` - React/TanStack Start apps
+- `node.json` - Node.js/Fastify apps
+
+### ESLint
+
+Shared ESLint configs in `packages/eslint-config/`:
+- `base.js` - Base rules
+- `react.js` - React/TanStack Start apps
+- `node.js` - Node.js/Fastify apps
+
+## 🗄️ Database
+
+MongoDB runs in Docker. The database package (`@repo/db`) provides:
+- Shared Mongoose models
+- Database connection utilities
+- Type-safe models with TypeScript
+
+### Adding New Models
+
+1. Add Zod schema to `packages/types/src/`
+2. Create Mongoose model in `packages/db/src/models/`
+3. Export from respective index files
+4. Use in both frontend and backend
+
+## 🌍 API Development
+
+The API app (`apps/api`) includes:
+- **Fastify** with TypeScript
+- **Auto-loading routes** from `src/routes/`
+- **Swagger/OpenAPI** documentation at `/docs`
+- **Rate limiting** and **Helmet** security
+- **CORS** configured for frontend
+
+### Adding New Routes
+
+Create a new file in `apps/api/src/routes/`:
+
+```typescript
+import { FastifyPluginAsync } from 'fastify'
+
+const myRoutes: FastifyPluginAsync = async (fastify) => {
+  fastify.get('/myroute', async () => {
+    return { message: 'Hello' }
+  })
+}
+
+export default myRoutes
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+Routes are automatically loaded with `/api` prefix.
+
+## 🎨 Frontend Development
+
+The frontend app (`apps/web`) includes:
+- **TanStack Start** (React Router + full-stack)
+- **TanStack Query** for data fetching
+- **TanStack Router** with file-based routing
+- **Tailwind CSS v4** for styling
+- **shadcn/ui** components
+
+### File-Based Routing
+
+Routes are automatically generated from `src/routes/`:
+- `src/routes/index.tsx` → `/`
+- `src/routes/about.tsx` → `/about`
+- `src/routes/posts/$postId.tsx` → `/posts/:postId`
+- `src/routes/posts_.$postId.tsx` → `/posts/:postId` (nested layout)
+
+## 🤝 Shared Packages
+
+### @repo/types
+
+Shared TypeScript types and Zod schemas used by both frontend and backend.
+
+### @repo/db
+
+Shared database models and connection utilities.
+
+### @repo/ui
+
+Shared React components used across apps.
+
+## 🚀 Deployment
+
+### Build for Production
+
+```bash
+pnpm build
 ```
 
-### Develop
+### API Start
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+cd apps/api
+pnpm start
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### Frontend Start
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+cd apps/web
+pnpm start
 ```
 
-### Remote Caching
+## 🐳 Docker Deployment
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+You can build Docker images for each app:
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+### API Dockerfile
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+```dockerfile
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY apps/api/package.json ./apps/api/
+COPY packages/ ./packages/
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile
+RUN pnpm build --filter=api
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+FROM node:20-alpine AS runner
+WORKDIR /app
+COPY --from=builder /app/apps/api/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/apps/api/package.json ./
+EXPOSE 3001
+CMD ["node", "dist/server.js"]
 ```
 
-## Useful Links
+### Frontend Dockerfile
 
-Learn more about the power of Turborepo:
+TanStack Start apps can be deployed to any platform supporting Vite/Nitro (Vercel, Netlify, etc.)
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+## 📚 Useful Links
+
+- [Turborepo](https://turbo.build/repo)
+- [TanStack Start](https://tanstack.com/start/latest)
+- [Fastify](https://fastify.dev/)
+- [MongoDB](https://mongodb.com/)
+- [Turborepo Documentation](https://turbo.build/repo/docs)
