@@ -107,8 +107,10 @@ export default function HeroSection() {
                                     preset="fade-in-blur"
                                     speedSegment={0.3}
                                     as="h1"
-                                    className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]">
-                                      Meet your AI Agent 
+                                    className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]"
+                                    style={{ fontFamily: 'Geist, sans-serif' }}>
+                                      Modern Solutions for Customer Engagement
+ 
 
                                 </TextEffect>
                                 <TextEffect
@@ -117,7 +119,8 @@ export default function HeroSection() {
                                     speedSegment={0.3}
                                     delay={0.5}
                                     as="p"
-                                    className="mx-auto mt-8 max-w-2xl text-balance text-lg">
+                                    className="mx-auto mt-8 max-w-2xl text-balance text-lg"
+                                    style={{ fontFamily: 'Geist, sans-serif' }}>
                                       AI assistant designed to streamline your digital workflows and handle mundane tasks, so you can focus on what truly matters
                                       
 
