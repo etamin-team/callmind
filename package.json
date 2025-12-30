@@ -27,6 +27,7 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@tanstack/zod-form-adapter": "^0.42.1",
     "axios": "^1.13.2",
     "lucide-react": "^0.561.0"
   }

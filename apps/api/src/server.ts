@@ -9,6 +9,8 @@ import swaggerUI from '@fastify/swagger-ui'
 import rateLimit from '@fastify/rate-limit'
 import { config } from './config/environment.js'
 import { connectDB } from '@repo/db'
+import { clerkPlugin, getAuth } from '@clerk/fastify'
+import authPlugin from './middleware/auth.middleware.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -62,6 +64,15 @@ await fastify.register(swaggerUI, {
   },
 })
 
+// Register Clerk plugin
+await fastify.register(clerkPlugin, {
+  secretKey: config.CLERK_SECRET_KEY,
+  publishableKey: config.CLERK_PUBLISHABLE_KEY,
+})
+
+// Register auth middleware
+await fastify.register(authPlugin)
+
 // Auto-load all routes
 await fastify.register(autoLoad, {
   dir: join(__dirname, 'routes'),
@@ -69,7 +80,21 @@ await fastify.register(autoLoad, {
   routeParams: true,
 })
 
-// Health check
+// Current user endpoint - requires authentication
+fastify.get('/api/me', async (request, reply) => {
+  const { userId } = getAuth(request)
+  if (!userId) {
+    return reply.code(401).send({ error: 'Unauthorized', message: 'User not authenticated' })
+  }
+  
+  return { 
+    userId,
+    isAuthenticated: true,
+    // You can fetch additional user data from your database here
+  }
+})
+
+// Public health check endpoint
 fastify.get('/health', async () => {
   return { status: 'ok', timestamp: new Date().toISOString() }
 })

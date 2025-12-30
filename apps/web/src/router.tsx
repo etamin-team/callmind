@@ -1,9 +1,11 @@
 import { createRouter } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
 import * as TanstackQuery from './integrations/tanstack-query/root-provider'
+import { useAuth } from './router-context-providers'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
+import { MyRouterContext } from './routes/__root'
 
 // Create a new router instance
 export const getRouter = () => {
@@ -12,13 +14,24 @@ export const getRouter = () => {
   const router = createRouter({
     routeTree,
     context: {
-      ...rqContext,
-    },
-
+      queryClient: rqContext.queryClient,
+      auth: {
+        isAuthenticated: false,
+        userId: null,
+        user: null,
+        isLoaded: false,
+      },
+    } as MyRouterContext,
     defaultPreload: 'intent',
   })
 
   setupRouterSsrQueryIntegration({ router, queryClient: rqContext.queryClient })
 
   return router
+}
+
+// Helper to get auth context for SSR
+export function useRouterAuth() {
+  const auth = useAuth()
+  return auth
 }

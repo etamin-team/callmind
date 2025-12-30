@@ -30,37 +30,39 @@ export function ThemeProvider({
 		if (typeof window === "undefined") {
 			return defaultTheme;
 		}
-
-		return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
+		const storedTheme = localStorage.getItem(storageKey) as Theme;
+		return storedTheme || defaultTheme;
 	});
+
+	const [isInitialized, setIsInitialized] = useState(false);
 
 	useEffect(() => {
 		if (typeof window === "undefined") return;
-
-		const storedTheme = localStorage.getItem(storageKey) as Theme;
-
-		if (storedTheme) {
-			setTheme(storedTheme);
-		}
-	}, [storageKey]);
-
-	useEffect(() => {
+		
 		const root = window.document.documentElement;
-
-		root.classList.remove("light", "dark");
-
+		
+		let targetTheme: "light" | "dark";
 		if (theme === "system") {
-			const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-				.matches
-				? "dark"
-				: "light";
-
-			root.classList.add(systemTheme);
-			return;
+			targetTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+		} else {
+			targetTheme = theme;
 		}
-
-		root.classList.add(theme);
-	}, [theme]);
+		
+		// Only update classes after initial mount to avoid flickering
+		if (!isInitialized) {
+			// On first mount, check if inline script already set the correct class
+			const hasCorrectClass = root.classList.contains(targetTheme);
+			if (!hasCorrectClass) {
+				root.classList.remove("light", "dark");
+				root.classList.add(targetTheme);
+			}
+			setIsInitialized(true);
+		} else {
+			// After initialization, always update
+			root.classList.remove("light", "dark");
+			root.classList.add(targetTheme);
+		}
+	}, [theme, isInitialized]);
 
 	const value = {
 		theme,
@@ -81,9 +83,7 @@ export function ThemeProvider({
 
 export const useTheme = () => {
 	const context = useContext(ThemeProviderContext);
-
 	if (context === undefined)
 		throw new Error("useTheme must be used within a ThemeProvider");
-
 	return context;
 };
