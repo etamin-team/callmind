@@ -15,6 +15,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppTasksRouteImport } from './routes/_app.tasks'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
+import { Route as AppAgentsRouteImport } from './routes/_app.agents'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -45,11 +46,17 @@ const AppDashboardRoute = AppDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAgentsRoute = AppAgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/agents': typeof AppAgentsRoute
   '/dashboard': typeof AppDashboardRoute
   '/tasks': typeof AppTasksRoute
 }
@@ -57,6 +64,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/agents': typeof AppAgentsRoute
   '/dashboard': typeof AppDashboardRoute
   '/tasks': typeof AppTasksRoute
 }
@@ -66,20 +74,22 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/_app/agents': typeof AppAgentsRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/tasks': typeof AppTasksRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register' | '/dashboard' | '/tasks'
+  fullPaths: '/' | '/login' | '/register' | '/agents' | '/dashboard' | '/tasks'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/dashboard' | '/tasks'
+  to: '/' | '/login' | '/register' | '/agents' | '/dashboard' | '/tasks'
   id:
     | '__root__'
     | '/'
     | '/_app'
     | '/login'
     | '/register'
+    | '/_app/agents'
     | '/_app/dashboard'
     | '/_app/tasks'
   fileRoutesById: FileRoutesById
@@ -135,15 +145,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDashboardRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/agents': {
+      id: '/_app/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AppAgentsRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppAgentsRoute: typeof AppAgentsRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppTasksRoute: typeof AppTasksRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAgentsRoute: AppAgentsRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppTasksRoute: AppTasksRoute,
 }

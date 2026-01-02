@@ -7,28 +7,28 @@ export default function FAQsFour() {
     const faqItems = [
         {
             id: 'item-1',
-            question: 'How long does shipping take?',
-            answer: 'Standard shipping takes 3-5 business days, depending on your location. Express shipping options are available at checkout for 1-2 business day delivery.',
+            question: 'How does the AI provide real-time guidance?',
+            answer: 'Our AI analyzes live audio streams using advanced natural language processing. It detects key phrases, sentiment, and conversation patterns, then provides contextual suggestions to agents through a discreet interface within 200 milliseconds.',
         },
         {
             id: 'item-2',
-            question: 'What payment methods do you accept?',
-            answer: 'We accept all major credit cards (Visa, Mastercard, American Express), PayPal, Apple Pay, and Google Pay. For enterprise customers, we also offer invoicing options.',
+            question: 'What phone systems do you integrate with?',
+            answer: 'We integrate with major VoIP providers including RingCentral, Five9, Genesys, Aircall, and Twilio. We also offer a flexible API for custom integrations with legacy or proprietary systems.',
         },
         {
             id: 'item-3',
-            question: 'Can I change or cancel my order?',
-            answer: 'You can modify or cancel your order within 1 hour of placing it. After this window, please contact our customer support team who will assist you with any changes.',
+            question: 'How long does it take to implement?',
+            answer: 'Most teams are up and running within 1-2 days. Cloud-based integrations can be completed in hours, while on-premise deployments typically take 1-3 business days depending on your infrastructure.',
         },
         {
             id: 'item-4',
-            question: 'Do you ship internationally?',
-            answer: "Yes, we ship to over 50 countries worldwide. International shipping typically takes 7-14 business days. Additional customs fees may apply depending on your country's import regulations.",
+            question: 'Is the AI coaching noticeable to customers?',
+            answer: 'No, the AI guidance is completely invisible to customers. Agents receive suggestions through a subtle interface that doesn\'t interrupt the natural flow of conversation. The AI enhances human interaction without replacing it.',
         },
         {
             id: 'item-5',
-            question: 'What is your return policy?',
-            answer: 'We offer a 30-day return policy for most items. Products must be in original condition with tags attached. Some specialty items may have different return terms, which will be noted on the product page.',
+            question: 'How do you ensure data security and compliance?',
+            answer: 'We use enterprise-grade encryption, maintain SOC 2 Type II certification, and are GDPR compliant. All call data can be stored in your region, and we offer dedicated instances for enterprises with strict security requirements.',
         },
     ]
 

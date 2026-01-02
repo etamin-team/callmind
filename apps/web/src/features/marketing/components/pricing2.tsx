@@ -41,20 +41,20 @@ interface Pricing2Props {
 }
 
 const Pricing2 = ({
-  heading = "Pricing",
-  description = "Check out our affordable pricing plans",
+  heading = "Simple, Transparent Pricing",
+  description = "Get started with AI-powered conversation intelligence. Scale as your team grows.",
   plans = [
     {
-      id: "plus",
-      name: "Plus",
-      description: "For personal use",
+      id: "starter",
+      name: "Starter",
+      description: "Perfect for small teams",
       monthlyPrice: "$19",
       yearlyPrice: "$179",
       features: [
-        { text: "Up to 5 team members" },
-        { text: "Basic components library" },
-        { text: "Community support" },
-        { text: "1GB storage space" },
+        { text: "Up to 3 agents" },
+        { text: "Real-time conversation guidance" },
+        { text: "Basic analytics dashboard" },
+        { text: "Email support" },
       ],
       button: {
         text: "Purchase",
@@ -63,18 +63,39 @@ const Pricing2 = ({
     },
     {
       id: "pro",
-      name: "Pro",
-      description: "For professionals",
+      name: "Professional",
+      description: "For growing call centers",
       monthlyPrice: "$49",
       yearlyPrice: "$359",
       features: [
-        { text: "Unlimited team members" },
-        { text: "Advanced components" },
-        { text: "Priority support" },
-        { text: "Unlimited storage" },
+        { text: "Up to 25 agents" },
+        { text: "Advanced AI coaching engine" },
+        { text: "Sentiment analysis & analytics" },
+        { text: "CRM integration (Salesforce, HubSpot)" },
+        { text: "Priority chat & email support" },
       ],
       button: {
         text: "Purchase",
+        url: "https://shadcnblocks.com",
+      },
+    },
+    {
+      id: "enterprise",
+      name: "Enterprise",
+      description: "For enterprise teams",
+      monthlyPrice: "$99",
+      yearlyPrice: "$999",
+      features: [
+        { text: "Unlimited agents" },
+        { text: "Custom AI model training" },
+        { text: "Advanced conversation analytics" },
+        { text: "Custom integrations & API access" },
+        { text: "Dedicated success manager" },
+        { text: "SSO & advanced security" },
+        { text: "On-premise deployment option" },
+      ],
+      button: {
+        text: "Contact Sales",
         url: "https://shadcnblocks.com",
       },
     },
@@ -84,7 +105,7 @@ const Pricing2 = ({
   const [isYearly, setIsYearly] = useState(false);
   return (
     <section className={cn("py-32", className)}>
-      <div className="container">
+      <div className="container mx-auto">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 text-center">
           <h2 className="text-4xl font-semibold text-pretty lg:text-6xl">
             {heading}
@@ -98,7 +119,7 @@ const Pricing2 = ({
             />
             Yearly
           </div>
-          <div className="flex flex-col items-stretch gap-6 md:flex-row">
+          <div className="flex flex-col items-center gap-6 md:flex-row md:justify-center md:items-start lg:items-stretch lg:gap-8">
             {plans.map((plan) => (
               <Card
                 key={plan.id}
@@ -125,6 +146,11 @@ const Pricing2 = ({
                   {plan.id === "pro" && (
                     <p className="mb-3 font-semibold">
                       Everything in Plus, and:
+                    </p>
+                  )}
+                  {plan.id === "enterprise" && (
+                    <p className="mb-3 font-semibold">
+                      Everything in Pro, and:
                     </p>
                   )}
                   <ul className="space-y-4">

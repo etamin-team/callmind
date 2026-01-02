@@ -10,9 +10,9 @@ import { AnimatedThemeToggler } from './animated-theme-toggler'
 
 const menuItems = [
     { name: 'Features', href: '#link' },
-    { name: 'Solution', href: '#link' },
+    { name: 'Solutions', href: '#link' },
     { name: 'Pricing', href: '#link' },
-    { name: 'About', href: '#link' },
+    { name: 'Testimonials', href: '#link' },
 ]
 
 export const HeroHeader = () => {

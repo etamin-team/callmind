@@ -1,9 +1,10 @@
 import * as React from "react"
 import {
-  ListTodo,
-  LayoutDashboard,
-  MessageSquare,
   BarChart3,
+  Brain,
+  FileText,
+  LayoutDashboard,
+  PhoneCall,
   Settings,
 } from "lucide-react"
 
@@ -26,14 +27,19 @@ const data = {
       icon: LayoutDashboard,
     },
     {
-      title: "Tasks",
-      url: "/tasks",
-      icon: ListTodo,
+        title: "Live Calls",
+      url: "/live-calls",
+      icon: PhoneCall,
     },
     {
-      title: "Conversations",
-      url: "/conversations",
-      icon: MessageSquare,
+      title: "AI Agents",
+      url: "/agents",
+      icon: Brain,
+    },
+    {
+      title: "Call History",
+      url: "/call-history",
+      icon: FileText,
     },
     {
       title: "Analytics",

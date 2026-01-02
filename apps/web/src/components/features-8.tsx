@@ -22,7 +22,7 @@ export default function FeaturesSection() {
                                     </svg>
                                     <span className="mx-auto block w-fit text-5xl font-semibold">100%</span>
                                 </div>
-                                <h2 className="mt-6 text-center text-3xl font-semibold">Real-Time Guidance</h2>
+                                <h2 className="mt-6 text-center text-3xl font-semibold">Customizable</h2>
                             </CardContent>
                         </Card>
                         <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2">
@@ -81,8 +81,8 @@ export default function FeaturesSection() {
                                     </svg>
                                 </div>
                                 <div className="relative z-10 mt-6 space-y-2 text-center">
-                                    <h2 className="group-hover:text-secondary-950 text-lg font-medium transition dark:text-white">Live Call Coaching</h2>
-                                    <p className="text-foreground">Get instant suggestions during calls. Our AI analyzes conversations and recommends the perfect response to overcome objections and guide deals forward.</p>
+                                    <h2 className="group-hover:text-secondary-950 text-lg font-medium transition dark:text-white">Secure by default</h2>
+                                    <p className="text-foreground">Provident fugit and vero voluptate. magnam magni doloribus dolores voluptates a sapiente nisi.</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -173,8 +173,8 @@ export default function FeaturesSection() {
                                     </svg>
                                 </div>
                                 <div className="relative z-10 mt-14 space-y-2 text-center">
-                                    <h2 className="text-lg font-medium transition">Conversation Analytics</h2>
-                                    <p className="text-foreground">Track talk-to-listen ratios, sentiment analysis, and keyword performance. Turn every call into actionable data that improves your team's effectiveness.</p>
+                                    <h2 className="text-lg font-medium transition">Faster than light</h2>
+                                    <p className="text-foreground">Provident fugit vero voluptate. magnam magni doloribus dolores voluptates inventore nisi.</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -188,8 +188,8 @@ export default function FeaturesSection() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <h2 className="group-hover:text-secondary-950 text-lg font-medium text-zinc-800 transition dark:text-white">Sentiment Detection</h2>
-                                        <p className="text-foreground">Detect customer emotions instantly. Know when they're excited, skeptical, or frustrated so you can adjust your approach and improve outcomes.</p>
+                                        <h2 className="group-hover:text-secondary-950 text-lg font-medium text-zinc-800 transition dark:text-white">Faster than light</h2>
+                                        <p className="text-foreground">Provident fugit vero voluptate. Voluptates a sapiente inventore nisi.</p>
                                     </div>
                                 </div>
                                 <div className="rounded-tl-(--radius) relative -mb-6 -mr-6 mt-6 h-fit border-l border-t p-6 py-6 sm:ml-6">
@@ -249,8 +249,8 @@ export default function FeaturesSection() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <h2 className="text-lg font-medium transition">Team Performance Insights</h2>
-                                        <p className="text-foreground">Monitor conversion rates, identify top performers, and see exactly what works. Scale winning strategies across your entire team instantly.</p>
+                                        <h2 className="text-lg font-medium transition">Keep your loved ones safe</h2>
+                                        <p className="text-foreground">Voluptate. magnam magni doloribus dolores voluptates a sapiente inventore nisi.</p>
                                     </div>
                                 </div>
                                 <div className="before:bg-(--color-border) relative mt-6 before:absolute before:inset-0 before:mx-auto before:w-px sm:-my-6 sm:-mr-6">

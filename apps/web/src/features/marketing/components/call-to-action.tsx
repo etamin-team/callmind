@@ -7,9 +7,9 @@ export default function CallToAction() {
               <div className="mx-auto max-w-5xl px-6">
                   <div className="rounded-3xl bg-[#387DCD] dark:bg-[#262626] px-8 py-20 text-center shadow-xl">
                       <h2 className="text-balance text-5xl font-bold text-white lg:text-6xl">
-                          Try Nia now
+                          Transform Your Calls Today
                           <br />
-                          <span className="text-4xl lg:text-5xl">(psssst: it's free!).</span>
+                          <span className="text-4xl lg:text-5xl">Start with 100 free conversations.</span>
                       </h2>
                       <div className="mt-12">
                           <Button
@@ -17,7 +17,7 @@ export default function CallToAction() {
                               size="lg"
                               className="bg-white text-black hover:bg-gray-100 text-base px-8 py-6 rounded-full">
                               <Link href="/">
-                                  <span>Start now for free</span>
+                                  <span>Start Free Trial</span>
                               </Link>
                           </Button>
                       </div>
