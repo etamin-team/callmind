@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { MoreVertical, Plus, Bot } from 'lucide-react'
 
-import CreateAgentOnboarding from '../onboarding/onboarding-wizard'
+
 import { resetOnboarding } from '../store/onboarding-store'
 import { mockAgents } from '../utils/mock-data'
 import type { AIAgent } from '../types'
@@ -59,14 +59,6 @@ export default function AgentsPage() {
     setAgents(agents.filter(agent => agent.id !== agentId))
   }
 
-  if (showCreateOnboarding) {
-    return (
-      <CreateAgentOnboarding 
-        onComplete={handleCreateAgent}
-        onCancel={() => setShowCreateOnboarding(false)}
-      />
-    )
-  }
 
   return (
     <div className="space-y-8">
