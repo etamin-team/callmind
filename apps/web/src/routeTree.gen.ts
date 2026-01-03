@@ -13,6 +13,7 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppUsageRouteImport } from './routes/_app.usage'
 import { Route as AppTasksRouteImport } from './routes/_app.tasks'
 import { Route as AppDashboardRouteImport } from './routes/_app.dashboard'
 import { Route as AppAgentsRouteImport } from './routes/_app.agents'
@@ -35,6 +36,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppUsageRoute = AppUsageRouteImport.update({
+  id: '/usage',
+  path: '/usage',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppTasksRoute = AppTasksRouteImport.update({
   id: '/tasks',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/agents': typeof AppAgentsRoute
   '/dashboard': typeof AppDashboardRoute
   '/tasks': typeof AppTasksRoute
+  '/usage': typeof AppUsageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/agents': typeof AppAgentsRoute
   '/dashboard': typeof AppDashboardRoute
   '/tasks': typeof AppTasksRoute
+  '/usage': typeof AppUsageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,12 +85,27 @@ export interface FileRoutesById {
   '/_app/agents': typeof AppAgentsRoute
   '/_app/dashboard': typeof AppDashboardRoute
   '/_app/tasks': typeof AppTasksRoute
+  '/_app/usage': typeof AppUsageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register' | '/agents' | '/dashboard' | '/tasks'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/agents'
+    | '/dashboard'
+    | '/tasks'
+    | '/usage'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/agents' | '/dashboard' | '/tasks'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/agents'
+    | '/dashboard'
+    | '/tasks'
+    | '/usage'
   id:
     | '__root__'
     | '/'
@@ -92,6 +115,7 @@ export interface FileRouteTypes {
     | '/_app/agents'
     | '/_app/dashboard'
     | '/_app/tasks'
+    | '/_app/usage'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -131,6 +155,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/usage': {
+      id: '/_app/usage'
+      path: '/usage'
+      fullPath: '/usage'
+      preLoaderRoute: typeof AppUsageRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/tasks': {
       id: '/_app/tasks'
       path: '/tasks'
@@ -159,12 +190,14 @@ interface AppRouteChildren {
   AppAgentsRoute: typeof AppAgentsRoute
   AppDashboardRoute: typeof AppDashboardRoute
   AppTasksRoute: typeof AppTasksRoute
+  AppUsageRoute: typeof AppUsageRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppAgentsRoute: AppAgentsRoute,
   AppDashboardRoute: AppDashboardRoute,
   AppTasksRoute: AppTasksRoute,
+  AppUsageRoute: AppUsageRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

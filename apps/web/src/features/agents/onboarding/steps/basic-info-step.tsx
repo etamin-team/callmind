@@ -4,36 +4,19 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Brain, MessageSquare, Sparkles, X, Target, Info } from 'lucide-react'
+import { Sparkles, X, Target, Info } from 'lucide-react'
 import { useState } from 'react'
+import { onboardingStore, updateOnboardingData } from '../../store/onboarding-store'
+import { useStore } from '@tanstack/react-store'
 
-interface CreateAgentData {
-  name: string
-  description: string
-  model: string
-  temperature: number
-  maxTokens: number
-  language: string
-  voice: string
-  personality: string
-  capabilities: Array<string>
-  knowledgeBase: string[]
-  escalationThreshold: number
-  initialGreeting?: string
-}
-
-interface BasicInfoStepProps {
-  data: CreateAgentData
-  onChange: (data: CreateAgentData) => void
-}
-
-export default function BasicInfoStep({ data, onChange }: BasicInfoStepProps) {
+export default function BasicInfoStep() {
   const [newCapability, setNewCapability] = useState('')
+  const state = useStore(onboardingStore)
+  const { data } = state
 
   const addCapability = () => {
     if (newCapability.trim() && !data.capabilities.includes(newCapability.trim())) {
-      onChange({
-        ...data,
+      updateOnboardingData({
         capabilities: [...data.capabilities, newCapability.trim()]
       })
       setNewCapability('')
@@ -41,8 +24,7 @@ export default function BasicInfoStep({ data, onChange }: BasicInfoStepProps) {
   }
 
   const removeCapability = (capability: string) => {
-    onChange({
-      ...data,
+    updateOnboardingData({
       capabilities: data.capabilities.filter(c => c !== capability)
     })
   }
@@ -73,7 +55,7 @@ export default function BasicInfoStep({ data, onChange }: BasicInfoStepProps) {
               <Input
                 placeholder="e.g. Enterprise Sales Specialist"
                 value={data.name}
-                onChange={(e) => onChange({ ...data, name: e.target.value })}
+                onChange={(e) => updateOnboardingData({ name: e.target.value })}
                 className="h-16 bg-zinc-950 border-zinc-800 focus:border-white transition-all text-lg font-medium rounded-2xl px-6"
               />
               <p className="text-[10px] text-zinc-600 flex items-center gap-2 px-2">
@@ -84,7 +66,7 @@ export default function BasicInfoStep({ data, onChange }: BasicInfoStepProps) {
 
             <div className="space-y-4">
               <Label className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-bold">Intelligence Model</Label>
-              <Select value={data.model} onValueChange={(value) => onChange({ ...data, model: value })}>
+              <Select value={data.model} onValueChange={(value) => updateOnboardingData({ model: value })}>
                 <SelectTrigger className="h-16 bg-zinc-950 border-zinc-800 focus:border-white transition-all text-lg font-medium rounded-2xl px-6 text-zinc-400">
                   <SelectValue placeholder="Select Model" />
                 </SelectTrigger>
@@ -102,7 +84,7 @@ export default function BasicInfoStep({ data, onChange }: BasicInfoStepProps) {
             <Textarea
               placeholder="Describe the specific objectives for this assistant... (e.g. Focus on identifying budget constraints and competitor mentions during discovery calls)"
               value={data.description}
-              onChange={(e) => onChange({ ...data, description: e.target.value })}
+              onChange={(e) => updateOnboardingData({ description: e.target.value })}
               rows={4}
               className="bg-zinc-950 border-zinc-800 focus:border-white transition-all text-lg leading-relaxed rounded-2xl p-6 min-h-[160px]"
             />

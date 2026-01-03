@@ -33,7 +33,12 @@ export interface AgentTemplate {
   category: string
   icon: string
   capabilities: string[]
-  recommendedSettings: Partial<AIAgent>
+  recommendedSettings: {
+    model?: string
+    temperature?: number
+    maxTokens?: number
+    configuration?: Partial<AIAgent['configuration']>
+  }
 }
 
 export interface CreateAgentStep {

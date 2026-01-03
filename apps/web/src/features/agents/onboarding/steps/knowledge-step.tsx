@@ -5,28 +5,13 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { BookOpen, FileText, Trash2, CheckCircle2, ShieldAlert, FileSearch, Library, Zap, Info } from 'lucide-react'
 import { useState } from 'react'
+import { onboardingStore, updateOnboardingData } from '../../store/onboarding-store'
+import { useStore } from '@tanstack/react-store'
 
-interface CreateAgentData {
-  name: string
-  description: string
-  model: string
-  temperature: number
-  maxTokens: number
-  language: string
-  voice: string
-  personality: string
-  capabilities: Array<string>
-  knowledgeBase: Array<string>
-  escalationThreshold: number
-}
-
-interface KnowledgeStepProps {
-  data: CreateAgentData
-  onChange: (data: CreateAgentData) => void
-}
-
-export default function KnowledgeStep({ data, onChange }: KnowledgeStepProps) {
+export default function KnowledgeStep() {
   const [newKnowledgeItem, setNewKnowledgeItem] = useState('')
+  const state = useStore(onboardingStore)
+  const { data } = state
 
   const knowledgeSources = [
     { id: 'battlecards', name: 'Battlecards', icon: <Zap className="w-5 h-5" />, description: 'Quick-response objection handling' },
@@ -37,8 +22,7 @@ export default function KnowledgeStep({ data, onChange }: KnowledgeStepProps) {
 
   const addKnowledgeItem = () => {
     if (newKnowledgeItem.trim() && !data.knowledgeBase.includes(newKnowledgeItem.trim())) {
-      onChange({
-        ...data,
+      updateOnboardingData({
         knowledgeBase: [...data.knowledgeBase, newKnowledgeItem.trim()]
       })
       setNewKnowledgeItem('')
@@ -46,8 +30,7 @@ export default function KnowledgeStep({ data, onChange }: KnowledgeStepProps) {
   }
 
   const removeKnowledgeItem = (item: string) => {
-    onChange({
-      ...data,
+    updateOnboardingData({
       knowledgeBase: data.knowledgeBase.filter(k => k !== item)
     })
   }
@@ -57,8 +40,7 @@ export default function KnowledgeStep({ data, onChange }: KnowledgeStepProps) {
     if (isAlreadyIncluded) {
       removeKnowledgeItem(sourceName)
     } else {
-      onChange({
-        ...data,
+      updateOnboardingData({
         knowledgeBase: [...data.knowledgeBase, sourceName]
       })
     }

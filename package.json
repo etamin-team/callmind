@@ -29,6 +29,7 @@
   "dependencies": {
     "@tanstack/zod-form-adapter": "^0.42.1",
     "axios": "^1.13.2",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.561.0"
   }
 }

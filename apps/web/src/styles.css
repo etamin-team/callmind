@@ -1,13 +1,12 @@
 @import 'tailwindcss';
-
 @import 'tw-animate-css';
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
 body {
   @apply m-0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -138,8 +137,7 @@ code {
     pointer;
   }
   .heading-xl {
-    font-family:
-    var(--font-sans);
+    font-family: 'Geist', sans-serif;
     font-size:
     3rem;
     line-height:
@@ -150,8 +148,7 @@ code {
     -0.01em;
   }
   .heading-lg {
-    font-family:
-    var(--font-sans);
+    font-family: 'Geist', sans-serif;
     font-size:
     2.25rem;
     line-height:
@@ -162,8 +159,7 @@ code {
     -0.01em;
   }
   .heading-md {
-    font-family:
-    var(--font-sans);
+    font-family: 'Geist', sans-serif;
     font-size:
     1.875rem;
     line-height:
@@ -174,8 +170,7 @@ code {
     -0.01em;
   }
   .heading-sm {
-    font-family:
-    var(--font-sans);
+    font-family: 'Geist', sans-serif;
     font-size:
     1.5rem;
     line-height:

@@ -2,27 +2,13 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { Mic, Sparkles, Volume2, Search, Zap, Heart, Target, Info } from 'lucide-react'
+import { onboardingStore, updateOnboardingData } from '../../store/onboarding-store'
+import { useStore } from '@tanstack/react-store'
 
-interface CreateAgentData {
-  name: string
-  description: string
-  model: string
-  temperature: number
-  maxTokens: number
-  language: string
-  voice: string
-  personality: string
-  capabilities: Array<string>
-  knowledgeBase: Array<string>
-  escalationThreshold: number
-}
+export default function PersonalityStep() {
+  const state = useStore(onboardingStore)
+  const { data } = state
 
-interface PersonalityStepProps {
-  data: CreateAgentData
-  onChange: (data: CreateAgentData) => void
-}
-
-export default function PersonalityStep({ data, onChange }: PersonalityStepProps) {
   const analysisStyles = [
     { value: 'analytical', label: 'Deep Analytical', description: 'Logical, data-driven, and systematic feedback', icon: <Search className="w-5 h-5" /> },
     { value: 'empathetic', label: 'Empathetic', description: 'Focus on sentiment and emotional intelligence', icon: <Heart className="w-5 h-5" /> },
@@ -67,7 +53,7 @@ export default function PersonalityStep({ data, onChange }: PersonalityStepProps
                     ? 'border-white ring-1 ring-white' 
                     : 'border-zinc-800 hover:border-zinc-700'
                 }`}
-                onClick={() => onChange({ ...data, personality: style.value })}
+                onClick={() => updateOnboardingData({ personality: style.value })}
               >
                 <CardContent className="p-6">
                   <div className="flex flex-col space-y-4">
@@ -101,7 +87,7 @@ export default function PersonalityStep({ data, onChange }: PersonalityStepProps
                     ? 'border-white ring-1 ring-white' 
                     : 'border-zinc-800 hover:border-zinc-700'
                 }`}
-                onClick={() => onChange({ ...data, voice: voice.value })}
+                onClick={() => updateOnboardingData({ voice: voice.value })}
               >
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between">
@@ -138,7 +124,7 @@ export default function PersonalityStep({ data, onChange }: PersonalityStepProps
               </div>
               <Slider
                 value={[data.temperature]}
-                onValueChange={([value]) => onChange({ ...data, temperature: value })}
+                onValueChange={([value]) => updateOnboardingData({ temperature: value })}
                 max={1}
                 min={0}
                 step={0.1}
@@ -159,7 +145,7 @@ export default function PersonalityStep({ data, onChange }: PersonalityStepProps
               </div>
               <Slider
                 value={[data.escalationThreshold]}
-                onValueChange={([value]) => onChange({ ...data, escalationThreshold: value })}
+                onValueChange={([value]) => updateOnboardingData({ escalationThreshold: value })}
                 max={1}
                 min={0}
                 step={0.1}

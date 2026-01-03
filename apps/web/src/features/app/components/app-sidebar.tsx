@@ -1,11 +1,8 @@
 import * as React from "react"
 import {
-  BarChart3,
   Brain,
-  FileText,
-  LayoutDashboard,
-  PhoneCall,
   Settings,
+  TrendingUp,
 } from "lucide-react"
 
 import { NavMain } from "./NavMain"
@@ -22,35 +19,42 @@ import {
 const data = {
   navMain: [
     {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-        title: "Live Calls",
-      url: "/live-calls",
-      icon: PhoneCall,
-    },
-    {
-      title: "AI Agents",
+      title: "Agents",
       url: "/agents",
       icon: Brain,
     },
     {
-      title: "Call History",
-      url: "/call-history",
-      icon: FileText,
+      title: "Usage",
+      url: "/usage",
+      icon: TrendingUp,
     },
     {
-      title: "Analytics",
-      url: "/analytics",
-      icon: BarChart3,
-    },
-    {
-      title: "Settings",
+      title: "Workspace settings",
       url: "/settings",
       icon: Settings,
-    },
+      items: [
+        {
+          title: "General",
+          url: "/settings/general",
+        },
+        {
+          title: "Members",
+          url: "/settings/members",
+        },
+        {
+          title: "Billing",
+          url: "/settings/billing",
+        },
+        {
+          title: "Notifications",
+          url: "/settings/notifications",
+        },
+        {
+          title: "Security",
+          url: "/settings/security",
+        },
+      ],
+    }
   ],
 }
 

@@ -81,77 +81,77 @@ export const mockAgents: Array<AIAgent> = [
 
 export const agentTemplates = [
   {
-    id: 'template-customer-service',
-    name: 'Customer Service',
-    description: 'Perfect for handling customer inquiries and support requests',
-    category: 'Support',
-    icon: '🎧',
-    capabilities: ['Customer Support', 'Order Tracking', 'Returns', 'Product Info'],
-    recommendedSettings: {
-      model: 'gpt-4',
-      temperature: 0.7,
-      maxTokens: 2000,
-      configuration: {
-        language: 'English',
-        voice: 'professional',
-        personality: 'helpful',
-        escalationThreshold: 0.3
-      }
-    }
-  },
-  {
-    id: 'template-sales',
-    name: 'Sales Assistant',
-    description: 'Optimized for sales conversations and product recommendations',
+    id: 'scenario-high-ticket-sales',
+    name: 'High-Ticket Sales',
+    description: 'Expert guidance for closing enterprise deals and handling complex objections.',
     category: 'Sales',
     icon: '💰',
-    capabilities: ['Product Recommendations', 'Upselling', 'Cross-selling', 'Lead Qualification'],
+    capabilities: ['Objection Handling', 'Value Proposition', 'Price Negotiation', 'Competitor Comparison'],
     recommendedSettings: {
       model: 'gpt-4',
-      temperature: 0.8,
-      maxTokens: 1500,
+      temperature: 0.4,
+      maxTokens: 500,
       configuration: {
         language: 'English',
-        voice: 'friendly',
-        personality: 'enthusiastic',
-        escalationThreshold: 0.4
-      }
-    }
-  },
-  {
-    id: 'template-technical',
-    name: 'Technical Support',
-    description: 'Advanced technical troubleshooting and problem resolution',
-    category: 'Technical',
-    icon: '🔧',
-    capabilities: ['Technical Troubleshooting', 'API Support', 'Integration Help'],
-    recommendedSettings: {
-      model: 'gpt-4-turbo',
-      temperature: 0.3,
-      maxTokens: 3000,
-      configuration: {
-        language: 'English',
-        voice: 'technical',
-        personality: 'analytical',
+        voice: 'confident',
+        personality: 'persuasive',
         escalationThreshold: 0.2
       }
     }
   },
   {
-    id: 'template-receptionist',
-    name: 'Virtual Receptionist',
-    description: 'Handles appointment scheduling and general inquiries',
-    category: 'Administrative',
-    icon: '📅',
-    capabilities: ['Appointment Scheduling', 'Information Routing', 'Basic Support'],
+    id: 'scenario-customer-success',
+    name: 'Customer Retention',
+    description: 'Analyze sentiment and provide empathy-first talking points for churn prevention.',
+    category: 'Support',
+    icon: '🤝',
+    capabilities: ['Sentiment Analysis', 'Empathy Mapping', 'Crisis De-escalation', 'Retention Offers'],
     recommendedSettings: {
-      model: 'gpt-3.5-turbo',
-      temperature: 0.5,
-      maxTokens: 1000,
+      model: 'gpt-4',
+      temperature: 0.6,
+      maxTokens: 500,
+      configuration: {
+        language: 'English',
+        voice: 'elegant',
+        personality: 'empathetic',
+        escalationThreshold: 0.4
+      }
+    }
+  },
+  {
+    id: 'scenario-tech-troubleshooting',
+    name: 'Technical Crisis',
+    description: 'Rapid diagnostic guidance for high-pressure technical support calls.',
+    category: 'Technical',
+    icon: '🔧',
+    capabilities: ['Root Cause Analysis', 'Technical Explainer', 'SLA Awareness', 'Knowledge Indexing'],
+    recommendedSettings: {
+      model: 'gpt-4-turbo',
+      temperature: 0.2,
+      maxTokens: 700,
       configuration: {
         language: 'English',
         voice: 'professional',
-        personality: 'courteous',
+        personality: 'analytical',
+        escalationThreshold: 0.1
+      }
+    }
+  },
+  {
+    id: 'scenario-scheduling-concierge',
+    name: 'Consultation Booking',
+    description: 'Optimized for high-volume outbound scheduling and lead qualification.',
+    category: 'Admin',
+    icon: '📅',
+    capabilities: ['Calendar Sync', 'Lead Qualification', 'Follow-up Logic', 'CRM Integration'],
+    recommendedSettings: {
+      model: 'gpt-3.5-turbo',
+      temperature: 0.3,
+      maxTokens: 300,
+      configuration: {
+        language: 'English',
+        voice: 'friendly',
+        personality: 'professional',
         escalationThreshold: 0.5
       }
     }
