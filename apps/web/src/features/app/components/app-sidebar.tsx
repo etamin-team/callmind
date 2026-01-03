@@ -3,7 +3,10 @@ import {
   Brain,
   Settings,
   TrendingUp,
+  Sparkles,
+  ChartPie
 } from "lucide-react"
+import { useParams } from '@tanstack/react-router'
 
 import { NavMain } from "./NavMain"
 import { NavUser } from "./NavUser"
@@ -16,51 +19,53 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-const data = {
-  navMain: [
-    {
-      title: "Agents",
-      url: "/agents",
-      icon: Brain,
-    },
-    {
-      title: "Usage",
-      url: "/usage",
-      icon: TrendingUp,
-    },
-    {
-      title: "Workspace settings",
-      url: "/settings",
-      icon: Settings,
-      items: [
-        {
-          title: "General",
-          url: "/settings/general",
-        },
-        {
-          title: "Members",
-          url: "/settings/members",
-        },
-        {
-          title: "Billing",
-          url: "/settings/billing",
-        },
-        {
-          title: "Notifications",
-          url: "/settings/notifications",
-        },
-        {
-          title: "Security",
-          url: "/settings/security",
-        },
-      ],
-    }
-  ],
-}
-
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {}
 
 export function AppSidebar({ ...props }: AppSidebarProps) {
+  const { workspaceId } = useParams({ from: '/_app/$workspaceId' })
+  
+  const data = {
+    navMain: [
+      {
+        title: "Agents",
+        url: `/${workspaceId}/agents`,
+        icon: Sparkles,
+      },
+      {
+        title: "Usage",
+        url: `/${workspaceId}/usage`,
+        icon: ChartPie,
+      },
+      {
+        title: "Workspace settings",
+        url: `/${workspaceId}/settings`,
+        icon: Settings,
+        items: [
+          {
+            title: "General",
+            url: `/${workspaceId}/settings/general`,
+          },
+          {
+            title: "Members",
+            url: `/${workspaceId}/settings/members`,
+          },
+          {
+            title: "Billing",
+            url: `/${workspaceId}/settings/billing`,
+          },
+          {
+            title: "Notifications",
+            url: `/${workspaceId}/settings/notifications`,
+          },
+          {
+            title: "Security",
+            url: `/${workspaceId}/settings/security`,
+          },
+        ],
+      }
+    ],
+  }
+  
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

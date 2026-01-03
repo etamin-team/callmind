@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { BorderBeam } from '@stianlarsen/border-beam'
+import { BorderBeam } from '@/components/ui/border-beam'
 import { ChartBarIncreasingIcon, Database, Fingerprint, IdCard } from 'lucide-react'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'

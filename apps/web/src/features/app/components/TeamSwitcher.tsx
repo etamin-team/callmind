@@ -1,5 +1,6 @@
 import { useOrganization, useOrganizationList, useUser, useClerk } from "@clerk/clerk-react"
 import { ChevronsUpDown, Plus, User, Check } from "lucide-react"
+import { useNavigate } from '@tanstack/react-router'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,7 @@ export function TeamSwitcher() {
   const { openCreateOrganization } = useClerk()
   const { user } = useUser()
   const { organization } = useOrganization()
+  const navigate = useNavigate()
   
   // Correctly access the list of memberships
   const { isLoaded, userMemberships, setActive } = useOrganizationList({
@@ -76,7 +78,10 @@ export function TeamSwitcher() {
             
             {/* Personal Account Option */}
             <DropdownMenuItem
-              onClick={() => setActive({ organization: null })}
+              onClick={async () => {
+                await setActive({ organization: null })
+                navigate({ to: `/${user.id}/agents` })
+              }}
               className="gap-2 p-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-zinc-900"
             >
               <div className="flex size-7 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
@@ -104,7 +109,10 @@ export function TeamSwitcher() {
                 userMemberships.data?.map((membership) => (
                   <DropdownMenuItem
                     key={membership.organization.id}
-                    onClick={() => setActive({ organization: membership.organization.id })}
+                    onClick={async () => {
+                      await setActive({ organization: membership.organization.id })
+                      navigate({ to: `/${membership.organization.id}/agents` })
+                    }}
                     className="gap-2 p-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-zinc-900"
                   >
                     <Avatar className="size-7 rounded-md border border-zinc-200 dark:border-zinc-800">

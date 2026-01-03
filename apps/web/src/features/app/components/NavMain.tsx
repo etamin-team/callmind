@@ -51,7 +51,12 @@ export function NavMain({
                   isActive={isParentActive}
                 >
                   <Link to={item.url as any}>
-                    {item.icon && <item.icon />}
+                    {item.icon && (
+                      <item.icon 
+                        strokeWidth={isParentActive ? 2.5 : 2} 
+                        {...(isParentActive ? { fill: "currentColor" } : {})} 
+                      />
+                    )}
                     <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
@@ -72,7 +77,12 @@ export function NavMain({
                     tooltip={item.title}
                     isActive={isParentActive}
                   >
-                    {item.icon && <item.icon />}
+                    {item.icon && (
+                      <item.icon 
+                        strokeWidth={isParentActive ? 2.5 : 2} 
+                        {...(isParentActive ? { fill: "currentColor" } : {})} 
+                      />
+                    )}
                     <span>{item.title}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>

@@ -104,8 +104,8 @@ export const HeroHeader = () => {
                                         size="sm"
                                         className="bg-slate-900 dark:bg-slate-50 text-white dark:text-slate-900"
                                     >
-                                        <Link to="/dashboard">
-                                            <span>Dashboard</span>
+                                        <Link to="/agents">
+                                            <span>Agents</span>
                                         </Link>
                                     </Button>
                                 ) : (

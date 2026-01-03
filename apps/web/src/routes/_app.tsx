@@ -1,39 +1,61 @@
-import { createFileRoute, Outlet, redirect, useLocation } from '@tanstack/react-router'
-import { AppSidebar } from '@/features/app/components/app-sidebar'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { useUser } from '@clerk/clerk-react'
+import { createFileRoute, redirect, useLocation, useNavigate, Outlet } from '@tanstack/react-router'
+import { useOrganization, useUser } from '@clerk/clerk-react'
+import { useEffect } from 'react'
 
 export const Route = createFileRoute('/_app')({
-  component: AppLayout,
   beforeLoad: ({ context }) => {
     if (context.auth?.isLoaded && !context.auth?.isAuthenticated) {
       throw redirect({ to: '/login' })
     }
   },
+  component: AppLayout,
 })
 
 function AppLayout() {
-  const { isLoaded } = useUser()
+  const navigate = useNavigate()
   const location = useLocation()
-  
-  // Extract the page title from the path for the breadcrumb
-  const pathParts = location.pathname.split('/').filter(Boolean)
-  const currentPage = pathParts[pathParts.length - 1] || 'Dashboard'
+  const { isLoaded: userLoaded, user } = useUser()
+  const { isLoaded: orgLoaded, organization } = useOrganization()
 
-  if (!isLoaded) {
+  useEffect(() => {
+    if (!userLoaded || !orgLoaded) return
+    
+    // Get current workspace ID from URL
+    const pathParts = location.pathname.split('/').filter(Boolean)
+    const currentWorkspaceId = pathParts[0]
+    
+    // Determine target workspace ID
+    const targetWorkspaceId = organization?.id || user?.id
+    
+    if (targetWorkspaceId) {
+      const knownAppPaths = ['dashboard', 'agents', 'tasks', 'usage', 'settings', 'login', 'register']
+      
+      // Case 1: URL has no workspace ID (e.g., /agents or /)
+      if (knownAppPaths.includes(currentWorkspaceId)) {
+        navigate({ to: `/${targetWorkspaceId}/${currentWorkspaceId}` })
+      } else if (location.pathname === '/') {
+        navigate({ to: `/${targetWorkspaceId}/agents` })
+      }
+      
+      // Case 2: URL has a workspace ID but it doesn't match the active Clerk state
+      // (e.g., user switched orgs via TeamSwitcher or manually changed URL)
+      else if (currentWorkspaceId && 
+               (currentWorkspaceId.startsWith('org_') || currentWorkspaceId.startsWith('user_')) && 
+               currentWorkspaceId !== targetWorkspaceId) {
+        
+        // If the mismatch is because of a manual URL change, we might want to sync Clerk
+        // but for now, let's ensure the URL reflects Clerk's active state
+        const remainingPath = location.pathname.split('/').slice(2).join('/')
+        const newPath = `/${targetWorkspaceId}/${remainingPath || 'agents'}`
+        
+        if (location.pathname !== newPath) {
+          navigate({ to: newPath })
+        }
+      }
+    }
+  }, [location.pathname, navigate, userLoaded, orgLoaded, organization?.id, user?.id])
+
+  if (!userLoaded || !orgLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
         <div className="flex flex-col items-center space-y-4">
@@ -44,38 +66,5 @@ function AppLayout() {
     )
   }
 
-  return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b bg-white dark:bg-black sticky top-0 z-30">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator
-              orientation="vertical"
-              className="mr-2 data-[orientation=vertical]:h-4"
-            />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/dashboard">
-                    Callmind AI
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="capitalize">{currentPage.replace('-', ' ')}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:p-6 overflow-auto bg-white dark:bg-black">
-          <div className="max-w-7xl mx-auto w-full h-full">
-            <Outlet />
-          </div>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
-  )
+  return <Outlet />
 }

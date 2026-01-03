@@ -6,7 +6,7 @@ export function LoginForm() {
       routing="path"
       path="/login"
       signUpUrl="/register"
-      afterSignInUrl="/dashboard"
+      afterSignInUrl="/agents"
       appearance={{
         elements: {
           rootBox: 'w-full',
