@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from '@tanstack/react-router'
 
 import { MoreVertical, Plus, Bot } from 'lucide-react'
 
 
-import { resetOnboarding } from '../store/onboarding-store'
 import { mockAgents } from '../utils/mock-data'
 import type { AIAgent } from '../types'
 
@@ -17,43 +17,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 export default function AgentsPage() {
+  const navigate = useNavigate()
+  const { workspaceId } = useParams({ from: '/_app/$workspaceId/agents/' })
   const [agents, setAgents] = useState<Array<AIAgent>>(mockAgents)
-  const [showCreateOnboarding, setShowCreateOnboarding] = useState(false)
 
   useEffect(() => {
     document.title = 'AI Agents - Callmind'
   }, [])
 
-  const handleCreateAgent = (agentData: any) => {
-    const newAgent: AIAgent = {
-      id: `agent-${Date.now()}`,
-      name: agentData.name,
-      description: agentData.description,
-      status: 'active',
-      capabilities: agentData.capabilities,
-      model: agentData.model,
-      temperature: agentData.temperature,
-      maxTokens: agentData.maxTokens,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      performance: {
-        totalCalls: 0,
-        successRate: 0,
-        avgResponseTime: 0,
-        customerSatisfaction: 0
-      },
-      configuration: {
-        language: agentData.language,
-        voice: agentData.voice,
-        personality: agentData.personality,
-        knowledgeBase: agentData.knowledgeBase,
-        escalationThreshold: agentData.escalationThreshold
-      }
-    }
-    setAgents([newAgent, ...agents])
-    setShowCreateOnboarding(false)
-    resetOnboarding()
-  }
 
   const handleDeleteAgent = (agentId: string) => {
     setAgents(agents.filter(agent => agent.id !== agentId))
@@ -71,7 +42,7 @@ export default function AgentsPage() {
           </div>
           <Button 
             size="lg" 
-            onClick={() => setShowCreateOnboarding(true)}
+            onClick={() => navigate({ to: '/_app/$workspaceId/agents/create', params: { workspaceId } })}
             className="gap-2"
           >
             <Plus className="h-4 w-4" />
@@ -129,7 +100,7 @@ export default function AgentsPage() {
             <p className="text-muted-foreground mb-4">
               Create your first AI agent to get started
             </p>
-            <Button onClick={() => setShowCreateOnboarding(true)} className="gap-2">
+            <Button onClick={() => navigate({ to: '/_app/$workspaceId/agents/create', params: { workspaceId } })} className="gap-2">
               <Plus className="h-4 w-4" />
               Create Your First Agent
             </Button>

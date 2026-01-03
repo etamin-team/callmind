@@ -32,7 +32,8 @@ function AppLayout() {
       
       // Case 1: URL has no workspace ID (e.g., /agents or /)
       if (knownAppPaths.includes(currentWorkspaceId)) {
-        navigate({ to: `/${targetWorkspaceId}/${currentWorkspaceId}` })
+        const remainingPath = location.pathname.split('/').slice(1).join('/')
+        navigate({ to: `/${targetWorkspaceId}/${remainingPath}` })
       } else if (location.pathname === '/') {
         navigate({ to: `/${targetWorkspaceId}/agents` })
       }

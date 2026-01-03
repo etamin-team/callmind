@@ -9,53 +9,53 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UsageRouteImport } from './routes/usage'
-import { Route as RegisterRouteImport } from './routes/register'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as AgentsRouteImport } from './routes/agents'
-import { Route as AppRouteImport } from './routes/_app'
+import { Route as UsageRouteRouteImport } from './routes/usage/route'
+import { Route as RegisterRouteRouteImport } from './routes/register/route'
+import { Route as LoginRouteRouteImport } from './routes/login/route'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
+import { Route as AgentsRouteRouteImport } from './routes/agents/route'
+import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppWorkspaceIdRouteImport } from './routes/_app.$workspaceId'
-import { Route as AppWorkspaceIdUsageRouteImport } from './routes/_app.$workspaceId.usage'
-import { Route as AppWorkspaceIdTasksRouteImport } from './routes/_app.$workspaceId.tasks'
-import { Route as AppWorkspaceIdSettingsRouteImport } from './routes/_app.$workspaceId.settings'
-import { Route as AppWorkspaceIdDashboardRouteImport } from './routes/_app.$workspaceId.dashboard'
-import { Route as AppWorkspaceIdAgentsRouteImport } from './routes/_app.$workspaceId.agents'
-import { Route as AppWorkspaceIdSettingsIndexRouteImport } from './routes/_app.$workspaceId.settings.index'
-import { Route as AppWorkspaceIdSettingsSecurityRouteImport } from './routes/_app.$workspaceId.settings.security'
-import { Route as AppWorkspaceIdSettingsNotificationsRouteImport } from './routes/_app.$workspaceId.settings.notifications'
-import { Route as AppWorkspaceIdSettingsMembersRouteImport } from './routes/_app.$workspaceId.settings.members'
-import { Route as AppWorkspaceIdSettingsGeneralRouteImport } from './routes/_app.$workspaceId.settings.general'
-import { Route as AppWorkspaceIdSettingsBillingRouteImport } from './routes/_app.$workspaceId.settings.billing'
-import { Route as AppWorkspaceIdAgentsCreateRouteImport } from './routes/_app.$workspaceId.agents.create'
+import { Route as AppWorkspaceIdRouteRouteImport } from './routes/_app/$workspaceId/route'
+import { Route as AppWorkspaceIdUsageRouteImport } from './routes/_app/$workspaceId/usage'
+import { Route as AppWorkspaceIdTasksRouteImport } from './routes/_app/$workspaceId/tasks'
+import { Route as AppWorkspaceIdDashboardRouteImport } from './routes/_app/$workspaceId/dashboard'
+import { Route as AppWorkspaceIdSettingsRouteRouteImport } from './routes/_app/$workspaceId/settings/route'
+import { Route as AppWorkspaceIdSettingsIndexRouteImport } from './routes/_app/$workspaceId/settings/index'
+import { Route as AppWorkspaceIdAgentsIndexRouteImport } from './routes/_app/$workspaceId/agents/index'
+import { Route as AppWorkspaceIdSettingsSecurityRouteImport } from './routes/_app/$workspaceId/settings/security'
+import { Route as AppWorkspaceIdSettingsNotificationsRouteImport } from './routes/_app/$workspaceId/settings/notifications'
+import { Route as AppWorkspaceIdSettingsMembersRouteImport } from './routes/_app/$workspaceId/settings/members'
+import { Route as AppWorkspaceIdSettingsGeneralRouteImport } from './routes/_app/$workspaceId/settings/general'
+import { Route as AppWorkspaceIdSettingsBillingRouteImport } from './routes/_app/$workspaceId/settings/billing'
+import { Route as AppWorkspaceIdAgentsCreateRouteImport } from './routes/_app/$workspaceId.agents.create'
 
-const UsageRoute = UsageRouteImport.update({
+const UsageRouteRoute = UsageRouteRouteImport.update({
   id: '/usage',
   path: '/usage',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RegisterRoute = RegisterRouteImport.update({
+const RegisterRouteRoute = RegisterRouteRouteImport.update({
   id: '/register',
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
+const LoginRouteRoute = LoginRouteRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardRoute = DashboardRouteImport.update({
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AgentsRoute = AgentsRouteImport.update({
+const AgentsRouteRoute = AgentsRouteRouteImport.update({
   id: '/agents',
   path: '/agents',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoute = AppRouteImport.update({
+const AppRouteRoute = AppRouteRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
@@ -64,90 +64,91 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppWorkspaceIdRoute = AppWorkspaceIdRouteImport.update({
+const AppWorkspaceIdRouteRoute = AppWorkspaceIdRouteRouteImport.update({
   id: '/$workspaceId',
   path: '/$workspaceId',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AppRouteRoute,
 } as any)
 const AppWorkspaceIdUsageRoute = AppWorkspaceIdUsageRouteImport.update({
   id: '/usage',
   path: '/usage',
-  getParentRoute: () => AppWorkspaceIdRoute,
+  getParentRoute: () => AppWorkspaceIdRouteRoute,
 } as any)
 const AppWorkspaceIdTasksRoute = AppWorkspaceIdTasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
-  getParentRoute: () => AppWorkspaceIdRoute,
-} as any)
-const AppWorkspaceIdSettingsRoute = AppWorkspaceIdSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppWorkspaceIdRoute,
+  getParentRoute: () => AppWorkspaceIdRouteRoute,
 } as any)
 const AppWorkspaceIdDashboardRoute = AppWorkspaceIdDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => AppWorkspaceIdRoute,
+  getParentRoute: () => AppWorkspaceIdRouteRoute,
 } as any)
-const AppWorkspaceIdAgentsRoute = AppWorkspaceIdAgentsRouteImport.update({
-  id: '/agents',
-  path: '/agents',
-  getParentRoute: () => AppWorkspaceIdRoute,
-} as any)
+const AppWorkspaceIdSettingsRouteRoute =
+  AppWorkspaceIdSettingsRouteRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AppWorkspaceIdRouteRoute,
+  } as any)
 const AppWorkspaceIdSettingsIndexRoute =
   AppWorkspaceIdSettingsIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AppWorkspaceIdSettingsRoute,
+    getParentRoute: () => AppWorkspaceIdSettingsRouteRoute,
+  } as any)
+const AppWorkspaceIdAgentsIndexRoute =
+  AppWorkspaceIdAgentsIndexRouteImport.update({
+    id: '/agents/',
+    path: '/agents/',
+    getParentRoute: () => AppWorkspaceIdRouteRoute,
   } as any)
 const AppWorkspaceIdSettingsSecurityRoute =
   AppWorkspaceIdSettingsSecurityRouteImport.update({
     id: '/security',
     path: '/security',
-    getParentRoute: () => AppWorkspaceIdSettingsRoute,
+    getParentRoute: () => AppWorkspaceIdSettingsRouteRoute,
   } as any)
 const AppWorkspaceIdSettingsNotificationsRoute =
   AppWorkspaceIdSettingsNotificationsRouteImport.update({
     id: '/notifications',
     path: '/notifications',
-    getParentRoute: () => AppWorkspaceIdSettingsRoute,
+    getParentRoute: () => AppWorkspaceIdSettingsRouteRoute,
   } as any)
 const AppWorkspaceIdSettingsMembersRoute =
   AppWorkspaceIdSettingsMembersRouteImport.update({
     id: '/members',
     path: '/members',
-    getParentRoute: () => AppWorkspaceIdSettingsRoute,
+    getParentRoute: () => AppWorkspaceIdSettingsRouteRoute,
   } as any)
 const AppWorkspaceIdSettingsGeneralRoute =
   AppWorkspaceIdSettingsGeneralRouteImport.update({
     id: '/general',
     path: '/general',
-    getParentRoute: () => AppWorkspaceIdSettingsRoute,
+    getParentRoute: () => AppWorkspaceIdSettingsRouteRoute,
   } as any)
 const AppWorkspaceIdSettingsBillingRoute =
   AppWorkspaceIdSettingsBillingRouteImport.update({
     id: '/billing',
     path: '/billing',
-    getParentRoute: () => AppWorkspaceIdSettingsRoute,
+    getParentRoute: () => AppWorkspaceIdSettingsRouteRoute,
   } as any)
 const AppWorkspaceIdAgentsCreateRoute =
   AppWorkspaceIdAgentsCreateRouteImport.update({
-    id: '/create',
-    path: '/create',
-    getParentRoute: () => AppWorkspaceIdAgentsRoute,
+    id: '/agents/create',
+    path: '/agents/create',
+    getParentRoute: () => AppWorkspaceIdRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/agents': typeof AgentsRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
-  '/usage': typeof UsageRoute
-  '/$workspaceId': typeof AppWorkspaceIdRouteWithChildren
-  '/$workspaceId/agents': typeof AppWorkspaceIdAgentsRouteWithChildren
+  '/agents': typeof AgentsRouteRoute
+  '/dashboard': typeof DashboardRouteRoute
+  '/login': typeof LoginRouteRoute
+  '/register': typeof RegisterRouteRoute
+  '/usage': typeof UsageRouteRoute
+  '/$workspaceId': typeof AppWorkspaceIdRouteRouteWithChildren
+  '/$workspaceId/settings': typeof AppWorkspaceIdSettingsRouteRouteWithChildren
   '/$workspaceId/dashboard': typeof AppWorkspaceIdDashboardRoute
-  '/$workspaceId/settings': typeof AppWorkspaceIdSettingsRouteWithChildren
   '/$workspaceId/tasks': typeof AppWorkspaceIdTasksRoute
   '/$workspaceId/usage': typeof AppWorkspaceIdUsageRoute
   '/$workspaceId/agents/create': typeof AppWorkspaceIdAgentsCreateRoute
@@ -156,17 +157,17 @@ export interface FileRoutesByFullPath {
   '/$workspaceId/settings/members': typeof AppWorkspaceIdSettingsMembersRoute
   '/$workspaceId/settings/notifications': typeof AppWorkspaceIdSettingsNotificationsRoute
   '/$workspaceId/settings/security': typeof AppWorkspaceIdSettingsSecurityRoute
+  '/$workspaceId/agents': typeof AppWorkspaceIdAgentsIndexRoute
   '/$workspaceId/settings/': typeof AppWorkspaceIdSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/agents': typeof AgentsRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
-  '/usage': typeof UsageRoute
-  '/$workspaceId': typeof AppWorkspaceIdRouteWithChildren
-  '/$workspaceId/agents': typeof AppWorkspaceIdAgentsRouteWithChildren
+  '/agents': typeof AgentsRouteRoute
+  '/dashboard': typeof DashboardRouteRoute
+  '/login': typeof LoginRouteRoute
+  '/register': typeof RegisterRouteRoute
+  '/usage': typeof UsageRouteRoute
+  '/$workspaceId': typeof AppWorkspaceIdRouteRouteWithChildren
   '/$workspaceId/dashboard': typeof AppWorkspaceIdDashboardRoute
   '/$workspaceId/tasks': typeof AppWorkspaceIdTasksRoute
   '/$workspaceId/usage': typeof AppWorkspaceIdUsageRoute
@@ -176,21 +177,21 @@ export interface FileRoutesByTo {
   '/$workspaceId/settings/members': typeof AppWorkspaceIdSettingsMembersRoute
   '/$workspaceId/settings/notifications': typeof AppWorkspaceIdSettingsNotificationsRoute
   '/$workspaceId/settings/security': typeof AppWorkspaceIdSettingsSecurityRoute
+  '/$workspaceId/agents': typeof AppWorkspaceIdAgentsIndexRoute
   '/$workspaceId/settings': typeof AppWorkspaceIdSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_app': typeof AppRouteWithChildren
-  '/agents': typeof AgentsRoute
-  '/dashboard': typeof DashboardRoute
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
-  '/usage': typeof UsageRoute
-  '/_app/$workspaceId': typeof AppWorkspaceIdRouteWithChildren
-  '/_app/$workspaceId/agents': typeof AppWorkspaceIdAgentsRouteWithChildren
+  '/_app': typeof AppRouteRouteWithChildren
+  '/agents': typeof AgentsRouteRoute
+  '/dashboard': typeof DashboardRouteRoute
+  '/login': typeof LoginRouteRoute
+  '/register': typeof RegisterRouteRoute
+  '/usage': typeof UsageRouteRoute
+  '/_app/$workspaceId': typeof AppWorkspaceIdRouteRouteWithChildren
+  '/_app/$workspaceId/settings': typeof AppWorkspaceIdSettingsRouteRouteWithChildren
   '/_app/$workspaceId/dashboard': typeof AppWorkspaceIdDashboardRoute
-  '/_app/$workspaceId/settings': typeof AppWorkspaceIdSettingsRouteWithChildren
   '/_app/$workspaceId/tasks': typeof AppWorkspaceIdTasksRoute
   '/_app/$workspaceId/usage': typeof AppWorkspaceIdUsageRoute
   '/_app/$workspaceId/agents/create': typeof AppWorkspaceIdAgentsCreateRoute
@@ -199,6 +200,7 @@ export interface FileRoutesById {
   '/_app/$workspaceId/settings/members': typeof AppWorkspaceIdSettingsMembersRoute
   '/_app/$workspaceId/settings/notifications': typeof AppWorkspaceIdSettingsNotificationsRoute
   '/_app/$workspaceId/settings/security': typeof AppWorkspaceIdSettingsSecurityRoute
+  '/_app/$workspaceId/agents/': typeof AppWorkspaceIdAgentsIndexRoute
   '/_app/$workspaceId/settings/': typeof AppWorkspaceIdSettingsIndexRoute
 }
 export interface FileRouteTypes {
@@ -211,9 +213,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/usage'
     | '/$workspaceId'
-    | '/$workspaceId/agents'
-    | '/$workspaceId/dashboard'
     | '/$workspaceId/settings'
+    | '/$workspaceId/dashboard'
     | '/$workspaceId/tasks'
     | '/$workspaceId/usage'
     | '/$workspaceId/agents/create'
@@ -222,6 +223,7 @@ export interface FileRouteTypes {
     | '/$workspaceId/settings/members'
     | '/$workspaceId/settings/notifications'
     | '/$workspaceId/settings/security'
+    | '/$workspaceId/agents'
     | '/$workspaceId/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -232,7 +234,6 @@ export interface FileRouteTypes {
     | '/register'
     | '/usage'
     | '/$workspaceId'
-    | '/$workspaceId/agents'
     | '/$workspaceId/dashboard'
     | '/$workspaceId/tasks'
     | '/$workspaceId/usage'
@@ -242,6 +243,7 @@ export interface FileRouteTypes {
     | '/$workspaceId/settings/members'
     | '/$workspaceId/settings/notifications'
     | '/$workspaceId/settings/security'
+    | '/$workspaceId/agents'
     | '/$workspaceId/settings'
   id:
     | '__root__'
@@ -253,9 +255,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/usage'
     | '/_app/$workspaceId'
-    | '/_app/$workspaceId/agents'
-    | '/_app/$workspaceId/dashboard'
     | '/_app/$workspaceId/settings'
+    | '/_app/$workspaceId/dashboard'
     | '/_app/$workspaceId/tasks'
     | '/_app/$workspaceId/usage'
     | '/_app/$workspaceId/agents/create'
@@ -264,17 +265,18 @@ export interface FileRouteTypes {
     | '/_app/$workspaceId/settings/members'
     | '/_app/$workspaceId/settings/notifications'
     | '/_app/$workspaceId/settings/security'
+    | '/_app/$workspaceId/agents/'
     | '/_app/$workspaceId/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRouteWithChildren
-  AgentsRoute: typeof AgentsRoute
-  DashboardRoute: typeof DashboardRoute
-  LoginRoute: typeof LoginRoute
-  RegisterRoute: typeof RegisterRoute
-  UsageRoute: typeof UsageRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
+  AgentsRouteRoute: typeof AgentsRouteRoute
+  DashboardRouteRoute: typeof DashboardRouteRoute
+  LoginRouteRoute: typeof LoginRouteRoute
+  RegisterRouteRoute: typeof RegisterRouteRoute
+  UsageRouteRoute: typeof UsageRouteRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -283,42 +285,42 @@ declare module '@tanstack/react-router' {
       id: '/usage'
       path: '/usage'
       fullPath: '/usage'
-      preLoaderRoute: typeof UsageRouteImport
+      preLoaderRoute: typeof UsageRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
       id: '/register'
       path: '/register'
       fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
+      preLoaderRoute: typeof RegisterRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+      preLoaderRoute: typeof LoginRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+      preLoaderRoute: typeof DashboardRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents': {
       id: '/agents'
       path: '/agents'
       fullPath: '/agents'
-      preLoaderRoute: typeof AgentsRouteImport
+      preLoaderRoute: typeof AgentsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app': {
       id: '/_app'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof AppRouteImport
+      preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -332,108 +334,97 @@ declare module '@tanstack/react-router' {
       id: '/_app/$workspaceId'
       path: '/$workspaceId'
       fullPath: '/$workspaceId'
-      preLoaderRoute: typeof AppWorkspaceIdRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AppWorkspaceIdRouteRouteImport
+      parentRoute: typeof AppRouteRoute
     }
     '/_app/$workspaceId/usage': {
       id: '/_app/$workspaceId/usage'
       path: '/usage'
       fullPath: '/$workspaceId/usage'
       preLoaderRoute: typeof AppWorkspaceIdUsageRouteImport
-      parentRoute: typeof AppWorkspaceIdRoute
+      parentRoute: typeof AppWorkspaceIdRouteRoute
     }
     '/_app/$workspaceId/tasks': {
       id: '/_app/$workspaceId/tasks'
       path: '/tasks'
       fullPath: '/$workspaceId/tasks'
       preLoaderRoute: typeof AppWorkspaceIdTasksRouteImport
-      parentRoute: typeof AppWorkspaceIdRoute
-    }
-    '/_app/$workspaceId/settings': {
-      id: '/_app/$workspaceId/settings'
-      path: '/settings'
-      fullPath: '/$workspaceId/settings'
-      preLoaderRoute: typeof AppWorkspaceIdSettingsRouteImport
-      parentRoute: typeof AppWorkspaceIdRoute
+      parentRoute: typeof AppWorkspaceIdRouteRoute
     }
     '/_app/$workspaceId/dashboard': {
       id: '/_app/$workspaceId/dashboard'
       path: '/dashboard'
       fullPath: '/$workspaceId/dashboard'
       preLoaderRoute: typeof AppWorkspaceIdDashboardRouteImport
-      parentRoute: typeof AppWorkspaceIdRoute
+      parentRoute: typeof AppWorkspaceIdRouteRoute
     }
-    '/_app/$workspaceId/agents': {
-      id: '/_app/$workspaceId/agents'
-      path: '/agents'
-      fullPath: '/$workspaceId/agents'
-      preLoaderRoute: typeof AppWorkspaceIdAgentsRouteImport
-      parentRoute: typeof AppWorkspaceIdRoute
+    '/_app/$workspaceId/settings': {
+      id: '/_app/$workspaceId/settings'
+      path: '/settings'
+      fullPath: '/$workspaceId/settings'
+      preLoaderRoute: typeof AppWorkspaceIdSettingsRouteRouteImport
+      parentRoute: typeof AppWorkspaceIdRouteRoute
     }
     '/_app/$workspaceId/settings/': {
       id: '/_app/$workspaceId/settings/'
       path: '/'
       fullPath: '/$workspaceId/settings/'
       preLoaderRoute: typeof AppWorkspaceIdSettingsIndexRouteImport
-      parentRoute: typeof AppWorkspaceIdSettingsRoute
+      parentRoute: typeof AppWorkspaceIdSettingsRouteRoute
+    }
+    '/_app/$workspaceId/agents/': {
+      id: '/_app/$workspaceId/agents/'
+      path: '/agents'
+      fullPath: '/$workspaceId/agents'
+      preLoaderRoute: typeof AppWorkspaceIdAgentsIndexRouteImport
+      parentRoute: typeof AppWorkspaceIdRouteRoute
     }
     '/_app/$workspaceId/settings/security': {
       id: '/_app/$workspaceId/settings/security'
       path: '/security'
       fullPath: '/$workspaceId/settings/security'
       preLoaderRoute: typeof AppWorkspaceIdSettingsSecurityRouteImport
-      parentRoute: typeof AppWorkspaceIdSettingsRoute
+      parentRoute: typeof AppWorkspaceIdSettingsRouteRoute
     }
     '/_app/$workspaceId/settings/notifications': {
       id: '/_app/$workspaceId/settings/notifications'
       path: '/notifications'
       fullPath: '/$workspaceId/settings/notifications'
       preLoaderRoute: typeof AppWorkspaceIdSettingsNotificationsRouteImport
-      parentRoute: typeof AppWorkspaceIdSettingsRoute
+      parentRoute: typeof AppWorkspaceIdSettingsRouteRoute
     }
     '/_app/$workspaceId/settings/members': {
       id: '/_app/$workspaceId/settings/members'
       path: '/members'
       fullPath: '/$workspaceId/settings/members'
       preLoaderRoute: typeof AppWorkspaceIdSettingsMembersRouteImport
-      parentRoute: typeof AppWorkspaceIdSettingsRoute
+      parentRoute: typeof AppWorkspaceIdSettingsRouteRoute
     }
     '/_app/$workspaceId/settings/general': {
       id: '/_app/$workspaceId/settings/general'
       path: '/general'
       fullPath: '/$workspaceId/settings/general'
       preLoaderRoute: typeof AppWorkspaceIdSettingsGeneralRouteImport
-      parentRoute: typeof AppWorkspaceIdSettingsRoute
+      parentRoute: typeof AppWorkspaceIdSettingsRouteRoute
     }
     '/_app/$workspaceId/settings/billing': {
       id: '/_app/$workspaceId/settings/billing'
       path: '/billing'
       fullPath: '/$workspaceId/settings/billing'
       preLoaderRoute: typeof AppWorkspaceIdSettingsBillingRouteImport
-      parentRoute: typeof AppWorkspaceIdSettingsRoute
+      parentRoute: typeof AppWorkspaceIdSettingsRouteRoute
     }
     '/_app/$workspaceId/agents/create': {
       id: '/_app/$workspaceId/agents/create'
-      path: '/create'
+      path: '/agents/create'
       fullPath: '/$workspaceId/agents/create'
       preLoaderRoute: typeof AppWorkspaceIdAgentsCreateRouteImport
-      parentRoute: typeof AppWorkspaceIdAgentsRoute
+      parentRoute: typeof AppWorkspaceIdRouteRoute
     }
   }
 }
 
-interface AppWorkspaceIdAgentsRouteChildren {
-  AppWorkspaceIdAgentsCreateRoute: typeof AppWorkspaceIdAgentsCreateRoute
-}
-
-const AppWorkspaceIdAgentsRouteChildren: AppWorkspaceIdAgentsRouteChildren = {
-  AppWorkspaceIdAgentsCreateRoute: AppWorkspaceIdAgentsCreateRoute,
-}
-
-const AppWorkspaceIdAgentsRouteWithChildren =
-  AppWorkspaceIdAgentsRoute._addFileChildren(AppWorkspaceIdAgentsRouteChildren)
-
-interface AppWorkspaceIdSettingsRouteChildren {
+interface AppWorkspaceIdSettingsRouteRouteChildren {
   AppWorkspaceIdSettingsBillingRoute: typeof AppWorkspaceIdSettingsBillingRoute
   AppWorkspaceIdSettingsGeneralRoute: typeof AppWorkspaceIdSettingsGeneralRoute
   AppWorkspaceIdSettingsMembersRoute: typeof AppWorkspaceIdSettingsMembersRoute
@@ -442,7 +433,7 @@ interface AppWorkspaceIdSettingsRouteChildren {
   AppWorkspaceIdSettingsIndexRoute: typeof AppWorkspaceIdSettingsIndexRoute
 }
 
-const AppWorkspaceIdSettingsRouteChildren: AppWorkspaceIdSettingsRouteChildren =
+const AppWorkspaceIdSettingsRouteRouteChildren: AppWorkspaceIdSettingsRouteRouteChildren =
   {
     AppWorkspaceIdSettingsBillingRoute: AppWorkspaceIdSettingsBillingRoute,
     AppWorkspaceIdSettingsGeneralRoute: AppWorkspaceIdSettingsGeneralRoute,
@@ -453,49 +444,53 @@ const AppWorkspaceIdSettingsRouteChildren: AppWorkspaceIdSettingsRouteChildren =
     AppWorkspaceIdSettingsIndexRoute: AppWorkspaceIdSettingsIndexRoute,
   }
 
-const AppWorkspaceIdSettingsRouteWithChildren =
-  AppWorkspaceIdSettingsRoute._addFileChildren(
-    AppWorkspaceIdSettingsRouteChildren,
+const AppWorkspaceIdSettingsRouteRouteWithChildren =
+  AppWorkspaceIdSettingsRouteRoute._addFileChildren(
+    AppWorkspaceIdSettingsRouteRouteChildren,
   )
 
-interface AppWorkspaceIdRouteChildren {
-  AppWorkspaceIdAgentsRoute: typeof AppWorkspaceIdAgentsRouteWithChildren
+interface AppWorkspaceIdRouteRouteChildren {
+  AppWorkspaceIdSettingsRouteRoute: typeof AppWorkspaceIdSettingsRouteRouteWithChildren
   AppWorkspaceIdDashboardRoute: typeof AppWorkspaceIdDashboardRoute
-  AppWorkspaceIdSettingsRoute: typeof AppWorkspaceIdSettingsRouteWithChildren
   AppWorkspaceIdTasksRoute: typeof AppWorkspaceIdTasksRoute
   AppWorkspaceIdUsageRoute: typeof AppWorkspaceIdUsageRoute
+  AppWorkspaceIdAgentsCreateRoute: typeof AppWorkspaceIdAgentsCreateRoute
+  AppWorkspaceIdAgentsIndexRoute: typeof AppWorkspaceIdAgentsIndexRoute
 }
 
-const AppWorkspaceIdRouteChildren: AppWorkspaceIdRouteChildren = {
-  AppWorkspaceIdAgentsRoute: AppWorkspaceIdAgentsRouteWithChildren,
+const AppWorkspaceIdRouteRouteChildren: AppWorkspaceIdRouteRouteChildren = {
+  AppWorkspaceIdSettingsRouteRoute:
+    AppWorkspaceIdSettingsRouteRouteWithChildren,
   AppWorkspaceIdDashboardRoute: AppWorkspaceIdDashboardRoute,
-  AppWorkspaceIdSettingsRoute: AppWorkspaceIdSettingsRouteWithChildren,
   AppWorkspaceIdTasksRoute: AppWorkspaceIdTasksRoute,
   AppWorkspaceIdUsageRoute: AppWorkspaceIdUsageRoute,
+  AppWorkspaceIdAgentsCreateRoute: AppWorkspaceIdAgentsCreateRoute,
+  AppWorkspaceIdAgentsIndexRoute: AppWorkspaceIdAgentsIndexRoute,
 }
 
-const AppWorkspaceIdRouteWithChildren = AppWorkspaceIdRoute._addFileChildren(
-  AppWorkspaceIdRouteChildren,
+const AppWorkspaceIdRouteRouteWithChildren =
+  AppWorkspaceIdRouteRoute._addFileChildren(AppWorkspaceIdRouteRouteChildren)
+
+interface AppRouteRouteChildren {
+  AppWorkspaceIdRouteRoute: typeof AppWorkspaceIdRouteRouteWithChildren
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppWorkspaceIdRouteRoute: AppWorkspaceIdRouteRouteWithChildren,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
 )
-
-interface AppRouteChildren {
-  AppWorkspaceIdRoute: typeof AppWorkspaceIdRouteWithChildren
-}
-
-const AppRouteChildren: AppRouteChildren = {
-  AppWorkspaceIdRoute: AppWorkspaceIdRouteWithChildren,
-}
-
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRouteWithChildren,
-  AgentsRoute: AgentsRoute,
-  DashboardRoute: DashboardRoute,
-  LoginRoute: LoginRoute,
-  RegisterRoute: RegisterRoute,
-  UsageRoute: UsageRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
+  AgentsRouteRoute: AgentsRouteRoute,
+  DashboardRouteRoute: DashboardRouteRoute,
+  LoginRouteRoute: LoginRouteRoute,
+  RegisterRouteRoute: RegisterRouteRoute,
+  UsageRouteRoute: UsageRouteRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
