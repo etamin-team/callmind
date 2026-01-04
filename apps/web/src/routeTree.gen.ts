@@ -28,7 +28,7 @@ import { Route as AppWorkspaceIdSettingsNotificationsRouteImport } from './route
 import { Route as AppWorkspaceIdSettingsMembersRouteImport } from './routes/_app/$workspaceId/settings/members'
 import { Route as AppWorkspaceIdSettingsGeneralRouteImport } from './routes/_app/$workspaceId/settings/general'
 import { Route as AppWorkspaceIdSettingsBillingRouteImport } from './routes/_app/$workspaceId/settings/billing'
-import { Route as AppWorkspaceIdAgentsCreateRouteImport } from './routes/_app/$workspaceId.agents.create'
+import { Route as AppWorkspaceIdAgentsCreateRouteImport } from './routes/_app/$workspaceId/agents/create'
 
 const UsageRouteRoute = UsageRouteRouteImport.update({
   id: '/usage',

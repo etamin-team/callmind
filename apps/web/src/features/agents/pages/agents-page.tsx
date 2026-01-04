@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from '@tanstack/react-router'
+import { useNavigate, useParams, Link } from '@tanstack/react-router'
 
 import { MoreVertical, Plus, Bot } from 'lucide-react'
 
@@ -40,16 +40,14 @@ export default function AgentsPage() {
             <h1 className="text-3xl font-bold tracking-tight">AI Agents</h1>
             <p className="text-muted-foreground">Manage your intelligent workforce</p>
           </div>
-          <Button 
-            size="lg" 
-            onClick={() => navigate({ to: '/_app/$workspaceId/agents/create', params: { workspaceId } })}
-            className="gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            New AI Agent
+          <Button asChild size="lg" className="gap-2">
+            <Link to="/agents/create" params={{ workspaceId }}>
+              <Plus className="h-4 w-4" />
+              New AI Agent
+            </Link>
           </Button>
         </div>
-      </div>
+      </div>  
 
       {/* Agents Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -100,9 +98,11 @@ export default function AgentsPage() {
             <p className="text-muted-foreground mb-4">
               Create your first AI agent to get started
             </p>
-            <Button onClick={() => navigate({ to: '/_app/$workspaceId/agents/create', params: { workspaceId } })} className="gap-2">
+            <Button asChild className="gap-2">
+              <Link to="/agents/create" params={{ workspaceId }}>
               <Plus className="h-4 w-4" />
               Create Your First Agent
+              </Link>
             </Button>
           </CardContent>
         </Card>

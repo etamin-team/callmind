@@ -33,6 +33,10 @@ function AppLayout() {
       // Case 1: URL has no workspace ID (e.g., /agents or /)
       if (knownAppPaths.includes(currentWorkspaceId)) {
         const remainingPath = location.pathname.split('/').slice(1).join('/')
+        // Skip redirect for agent creation page - let it be standalone
+        if (currentWorkspaceId === 'agents' && remainingPath.startsWith('create')) {
+          return
+        }
         navigate({ to: `/${targetWorkspaceId}/${remainingPath}` })
       } else if (location.pathname === '/') {
         navigate({ to: `/${targetWorkspaceId}/agents` })
