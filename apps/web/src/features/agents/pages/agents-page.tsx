@@ -41,7 +41,7 @@ export default function AgentsPage() {
             <p className="text-muted-foreground">Manage your intelligent workforce</p>
           </div>
           <Button asChild size="lg" className="gap-2">
-            <Link to="/agents/create" params={{ workspaceId }}>
+            <Link to="/$workspaceId/agents/create" params={{ workspaceId }}>
               <Plus className="h-4 w-4" />
               New AI Agent
             </Link>
@@ -99,7 +99,7 @@ export default function AgentsPage() {
               Create your first AI agent to get started
             </p>
             <Button asChild className="gap-2">
-              <Link to="/agents/create" params={{ workspaceId }}>
+              <Link to="/$workspaceId/agents/create" params={{ workspaceId }}>
               <Plus className="h-4 w-4" />
               Create Your First Agent
               </Link>
