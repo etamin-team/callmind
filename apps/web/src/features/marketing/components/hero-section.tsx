@@ -109,8 +109,8 @@ export default function HeroSection() {
                                     as="h1"
                                     className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]"
                                     style={{ fontFamily: 'Geist, sans-serif' }}>
-                                    AI That Listens,
-Guides & Converts
+                                   AI Voice Agents for Customer Support & Sales Teams 
+
 
  
 

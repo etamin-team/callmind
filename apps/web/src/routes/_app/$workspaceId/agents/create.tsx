@@ -216,8 +216,13 @@ function RouteComponent() {
     try {
       const token = await getToken()
       if (token) {
-        await createAgent(config as CreateAgentRequest, token)
-        navigate({ to: `/${workspaceId}/agents` })
+        const createdAgent = await createAgent(config as CreateAgentRequest, token)
+        if (createdAgent) {
+           navigate({ to: `/${workspaceId}/agents/${createdAgent.id}` })
+        } else {
+           // Fallback if no agent returned
+           navigate({ to: `/${workspaceId}/agents` })
+        }
       } else {
         console.error('No auth token available')
       }

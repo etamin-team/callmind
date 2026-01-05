@@ -29,6 +29,8 @@ import { Route as AppWorkspaceIdSettingsMembersRouteImport } from './routes/_app
 import { Route as AppWorkspaceIdSettingsGeneralRouteImport } from './routes/_app/$workspaceId/settings/general'
 import { Route as AppWorkspaceIdSettingsBillingRouteImport } from './routes/_app/$workspaceId/settings/billing'
 import { Route as AppWorkspaceIdAgentsCreateRouteImport } from './routes/_app/$workspaceId/agents/create'
+import { Route as AppWorkspaceIdAgentsAgentIdRouteRouteImport } from './routes/_app/$workspaceId/agents/$agentId/route'
+import { Route as AppWorkspaceIdAgentsAgentIdIndexRouteImport } from './routes/_app/$workspaceId/agents/$agentId/index'
 
 const UsageRouteRoute = UsageRouteRouteImport.update({
   id: '/usage',
@@ -138,6 +140,18 @@ const AppWorkspaceIdAgentsCreateRoute =
     path: '/agents/create',
     getParentRoute: () => AppWorkspaceIdRouteRoute,
   } as any)
+const AppWorkspaceIdAgentsAgentIdRouteRoute =
+  AppWorkspaceIdAgentsAgentIdRouteRouteImport.update({
+    id: '/agents/$agentId',
+    path: '/agents/$agentId',
+    getParentRoute: () => AppWorkspaceIdRouteRoute,
+  } as any)
+const AppWorkspaceIdAgentsAgentIdIndexRoute =
+  AppWorkspaceIdAgentsAgentIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppWorkspaceIdAgentsAgentIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -151,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/$workspaceId/dashboard': typeof AppWorkspaceIdDashboardRoute
   '/$workspaceId/tasks': typeof AppWorkspaceIdTasksRoute
   '/$workspaceId/usage': typeof AppWorkspaceIdUsageRoute
+  '/$workspaceId/agents/$agentId': typeof AppWorkspaceIdAgentsAgentIdRouteRouteWithChildren
   '/$workspaceId/agents/create': typeof AppWorkspaceIdAgentsCreateRoute
   '/$workspaceId/settings/billing': typeof AppWorkspaceIdSettingsBillingRoute
   '/$workspaceId/settings/general': typeof AppWorkspaceIdSettingsGeneralRoute
@@ -159,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/$workspaceId/settings/security': typeof AppWorkspaceIdSettingsSecurityRoute
   '/$workspaceId/agents': typeof AppWorkspaceIdAgentsIndexRoute
   '/$workspaceId/settings/': typeof AppWorkspaceIdSettingsIndexRoute
+  '/$workspaceId/agents/$agentId/': typeof AppWorkspaceIdAgentsAgentIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -179,6 +195,7 @@ export interface FileRoutesByTo {
   '/$workspaceId/settings/security': typeof AppWorkspaceIdSettingsSecurityRoute
   '/$workspaceId/agents': typeof AppWorkspaceIdAgentsIndexRoute
   '/$workspaceId/settings': typeof AppWorkspaceIdSettingsIndexRoute
+  '/$workspaceId/agents/$agentId': typeof AppWorkspaceIdAgentsAgentIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -194,6 +211,7 @@ export interface FileRoutesById {
   '/_app/$workspaceId/dashboard': typeof AppWorkspaceIdDashboardRoute
   '/_app/$workspaceId/tasks': typeof AppWorkspaceIdTasksRoute
   '/_app/$workspaceId/usage': typeof AppWorkspaceIdUsageRoute
+  '/_app/$workspaceId/agents/$agentId': typeof AppWorkspaceIdAgentsAgentIdRouteRouteWithChildren
   '/_app/$workspaceId/agents/create': typeof AppWorkspaceIdAgentsCreateRoute
   '/_app/$workspaceId/settings/billing': typeof AppWorkspaceIdSettingsBillingRoute
   '/_app/$workspaceId/settings/general': typeof AppWorkspaceIdSettingsGeneralRoute
@@ -202,6 +220,7 @@ export interface FileRoutesById {
   '/_app/$workspaceId/settings/security': typeof AppWorkspaceIdSettingsSecurityRoute
   '/_app/$workspaceId/agents/': typeof AppWorkspaceIdAgentsIndexRoute
   '/_app/$workspaceId/settings/': typeof AppWorkspaceIdSettingsIndexRoute
+  '/_app/$workspaceId/agents/$agentId/': typeof AppWorkspaceIdAgentsAgentIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -217,6 +236,7 @@ export interface FileRouteTypes {
     | '/$workspaceId/dashboard'
     | '/$workspaceId/tasks'
     | '/$workspaceId/usage'
+    | '/$workspaceId/agents/$agentId'
     | '/$workspaceId/agents/create'
     | '/$workspaceId/settings/billing'
     | '/$workspaceId/settings/general'
@@ -225,6 +245,7 @@ export interface FileRouteTypes {
     | '/$workspaceId/settings/security'
     | '/$workspaceId/agents'
     | '/$workspaceId/settings/'
+    | '/$workspaceId/agents/$agentId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -245,6 +266,7 @@ export interface FileRouteTypes {
     | '/$workspaceId/settings/security'
     | '/$workspaceId/agents'
     | '/$workspaceId/settings'
+    | '/$workspaceId/agents/$agentId'
   id:
     | '__root__'
     | '/'
@@ -259,6 +281,7 @@ export interface FileRouteTypes {
     | '/_app/$workspaceId/dashboard'
     | '/_app/$workspaceId/tasks'
     | '/_app/$workspaceId/usage'
+    | '/_app/$workspaceId/agents/$agentId'
     | '/_app/$workspaceId/agents/create'
     | '/_app/$workspaceId/settings/billing'
     | '/_app/$workspaceId/settings/general'
@@ -267,6 +290,7 @@ export interface FileRouteTypes {
     | '/_app/$workspaceId/settings/security'
     | '/_app/$workspaceId/agents/'
     | '/_app/$workspaceId/settings/'
+    | '/_app/$workspaceId/agents/$agentId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -421,6 +445,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkspaceIdAgentsCreateRouteImport
       parentRoute: typeof AppWorkspaceIdRouteRoute
     }
+    '/_app/$workspaceId/agents/$agentId': {
+      id: '/_app/$workspaceId/agents/$agentId'
+      path: '/agents/$agentId'
+      fullPath: '/$workspaceId/agents/$agentId'
+      preLoaderRoute: typeof AppWorkspaceIdAgentsAgentIdRouteRouteImport
+      parentRoute: typeof AppWorkspaceIdRouteRoute
+    }
+    '/_app/$workspaceId/agents/$agentId/': {
+      id: '/_app/$workspaceId/agents/$agentId/'
+      path: '/'
+      fullPath: '/$workspaceId/agents/$agentId/'
+      preLoaderRoute: typeof AppWorkspaceIdAgentsAgentIdIndexRouteImport
+      parentRoute: typeof AppWorkspaceIdAgentsAgentIdRouteRoute
+    }
   }
 }
 
@@ -449,11 +487,27 @@ const AppWorkspaceIdSettingsRouteRouteWithChildren =
     AppWorkspaceIdSettingsRouteRouteChildren,
   )
 
+interface AppWorkspaceIdAgentsAgentIdRouteRouteChildren {
+  AppWorkspaceIdAgentsAgentIdIndexRoute: typeof AppWorkspaceIdAgentsAgentIdIndexRoute
+}
+
+const AppWorkspaceIdAgentsAgentIdRouteRouteChildren: AppWorkspaceIdAgentsAgentIdRouteRouteChildren =
+  {
+    AppWorkspaceIdAgentsAgentIdIndexRoute:
+      AppWorkspaceIdAgentsAgentIdIndexRoute,
+  }
+
+const AppWorkspaceIdAgentsAgentIdRouteRouteWithChildren =
+  AppWorkspaceIdAgentsAgentIdRouteRoute._addFileChildren(
+    AppWorkspaceIdAgentsAgentIdRouteRouteChildren,
+  )
+
 interface AppWorkspaceIdRouteRouteChildren {
   AppWorkspaceIdSettingsRouteRoute: typeof AppWorkspaceIdSettingsRouteRouteWithChildren
   AppWorkspaceIdDashboardRoute: typeof AppWorkspaceIdDashboardRoute
   AppWorkspaceIdTasksRoute: typeof AppWorkspaceIdTasksRoute
   AppWorkspaceIdUsageRoute: typeof AppWorkspaceIdUsageRoute
+  AppWorkspaceIdAgentsAgentIdRouteRoute: typeof AppWorkspaceIdAgentsAgentIdRouteRouteWithChildren
   AppWorkspaceIdAgentsCreateRoute: typeof AppWorkspaceIdAgentsCreateRoute
   AppWorkspaceIdAgentsIndexRoute: typeof AppWorkspaceIdAgentsIndexRoute
 }
@@ -464,6 +518,8 @@ const AppWorkspaceIdRouteRouteChildren: AppWorkspaceIdRouteRouteChildren = {
   AppWorkspaceIdDashboardRoute: AppWorkspaceIdDashboardRoute,
   AppWorkspaceIdTasksRoute: AppWorkspaceIdTasksRoute,
   AppWorkspaceIdUsageRoute: AppWorkspaceIdUsageRoute,
+  AppWorkspaceIdAgentsAgentIdRouteRoute:
+    AppWorkspaceIdAgentsAgentIdRouteRouteWithChildren,
   AppWorkspaceIdAgentsCreateRoute: AppWorkspaceIdAgentsCreateRoute,
   AppWorkspaceIdAgentsIndexRoute: AppWorkspaceIdAgentsIndexRoute,
 }

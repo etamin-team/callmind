@@ -39,8 +39,10 @@ function WorkspaceLayout() {
   const pathParts = location.pathname.split('/').filter(Boolean)
   const currentPage = pathParts[pathParts.length - 1] || 'Dashboard'
   
-  // Check if this is the agent creation page for full-screen layout
-  const isAgentCreatePage = location.pathname.includes('/agents/create')
+  // Check if this is a full-screen agent page (create or dashboard)
+  // Logic: if path has 'agents' and there is a segment after it (ID or 'create')
+  const agentsIndex = pathParts.indexOf('agents')
+  const isFullScreen = agentsIndex !== -1 && pathParts.length > agentsIndex + 1
 
   useEffect(() => {
     // Validate workspaceId matches current organization
@@ -62,9 +64,9 @@ function WorkspaceLayout() {
 
   return (
     <SidebarProvider>
-      {!isAgentCreatePage && <AppSidebar />}
+      {!isFullScreen && <AppSidebar />}
       <SidebarInset>
-        {!isAgentCreatePage && (
+        {!isFullScreen && (
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b bg-white dark:bg-black sticky top-0 z-30">
             <div className="flex items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
@@ -88,8 +90,8 @@ function WorkspaceLayout() {
             </div>
           </header>
         )}
-        <main className={`flex flex-1 flex-col gap-4 overflow-auto bg-white dark:bg-black ${!isAgentCreatePage ? 'p-4 lg:p-6' : ''}`}>
-          <div className={`${!isAgentCreatePage ? 'max-w-7xl mx-auto w-full h-full' : 'w-full h-full'}`}>
+        <main className={`flex flex-1 flex-col gap-4 overflow-auto bg-white dark:bg-black ${!isFullScreen ? 'p-4 lg:p-6' : ''}`}>
+          <div className={`${!isFullScreen ? 'max-w-7xl mx-auto w-full h-full' : 'w-full h-full'}`}>
             <Outlet />
           </div>
         </main>

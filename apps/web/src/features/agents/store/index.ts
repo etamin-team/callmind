@@ -8,7 +8,7 @@ interface AgentStore {
   isLoading: boolean
   error: string | null
   
-  createAgent: (agentData: CreateAgentRequest, token: string) => Promise<void>
+  createAgent: (agentData: CreateAgentRequest, token: string) => Promise<Agent>
   updateAgent: (id: string, updates: UpdateAgentRequest, token: string) => Promise<void>
   fetchAgents: (token: string) => Promise<void>
   
@@ -33,6 +33,7 @@ export const useAgentStore = create<AgentStore>((set) => ({
         currentAgent: createdAgent,
         isLoading: false,
       }))
+      return createdAgent
     } catch (error: any) {
       set((state) => ({ ...state, isLoading: false, error: error.message || 'Failed to create agent' }))
       throw error

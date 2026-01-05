@@ -1,16 +1,10 @@
 import { useEffect } from 'react'
 import { useNavigate, useParams, Link } from '@tanstack/react-router'
-import { MoreVertical, Plus, Bot, Loader2 } from 'lucide-react'
+import { Plus, Bot, Loader2 } from 'lucide-react'
 import { useAuth } from '@clerk/clerk-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 
 import { useAgentStore } from '../store'
 
@@ -28,7 +22,7 @@ export default function AgentsPage() {
       }
     }
     loadAgents()
-  }, [getToken, fetchAgents])
+  }, [getToken, fetchAgents, workspaceId])
 
   useEffect(() => {
     document.title = 'AI Agents - Callmind'
@@ -69,7 +63,11 @@ export default function AgentsPage() {
       {/* Agents Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {agents.map((agent) => (
-          <Card key={agent.id} className="relative overflow-hidden group hover:shadow-md transition-shadow">
+          <Card 
+            key={agent.id} 
+            className="relative overflow-hidden group hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => navigate({ to: `/${workspaceId}/agents/${agent.id}` })}
+          >
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -113,23 +111,34 @@ export default function AgentsPage() {
 
       {/* Empty State */}
       {!isLoading && agents.length === 0 && (
-        <Card className="text-center py-16">
-          <CardContent>
-            <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Bot className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">No agents yet</h3>
-            <p className="text-muted-foreground mb-4">
-              Create your first AI agent to get started
-            </p>
-            <Button asChild className="gap-2">
-              <Link to="/$workspaceId/agents/create" params={{ workspaceId }}>
-              <Plus className="h-4 w-4" />
-              Create Your First Agent
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center min-h-[500px] text-center p-8">
+           {/* Visual Placeholder for Illustration */}
+           <div className="relative w-64 h-40 mb-8">
+              <div className="absolute inset-x-8 inset-y-0 bg-orange-400/20 rounded-2xl rotate-[-6deg] backdrop-blur-sm" />
+              <div className="absolute inset-x-8 inset-y-0 bg-red-400/20 rounded-2xl rotate-[6deg] backdrop-blur-sm" />
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-100 to-red-50 dark:from-orange-900/10 dark:to-red-900/10 border border-orange-200/50 dark:border-orange-800/30 rounded-2xl shadow-sm flex items-center justify-center">
+                 <div className="space-y-3 w-3/4 opacity-50">
+                    <div className="h-2 w-1/3 bg-orange-200 dark:bg-orange-800 rounded-full" />
+                    <div className="h-2 w-full bg-orange-100 dark:bg-orange-900/50 rounded-full" />
+                    <div className="h-2 w-5/6 bg-orange-100 dark:bg-orange-900/50 rounded-full" />
+                 </div>
+                 <div className="absolute top-4 left-4 p-1.5 bg-white dark:bg-zinc-800 rounded-lg shadow-sm">
+                    <Bot className="w-4 h-4 text-orange-500" />
+                 </div>
+              </div>
+           </div>
+
+          <h3 className="text-xl font-bold tracking-tight mb-3">No agents yet..</h3>
+          <p className="text-muted-foreground max-w-md mb-8 text-base">
+             Create your first AI Agent to start automating support, generating leads, and answering customer questions.
+          </p>
+          <Button asChild size="lg" className="h-10 px-6 bg-black hover:bg-zinc-800 text-white dark:bg-white dark:text-black dark:hover:bg-zinc-200 rounded-md">
+            <Link to="/$workspaceId/agents/create" params={{ workspaceId }}>
+            <Plus className="h-4 w-4 mr-2" />
+            New AI agent
+            </Link>
+          </Button>
+        </div>
       )}
     </div>
   )
