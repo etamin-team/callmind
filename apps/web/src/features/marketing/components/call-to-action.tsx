@@ -7,9 +7,9 @@ export default function CallToAction() {
               <div className="mx-auto max-w-5xl px-6">
                   <div className="rounded-3xl bg-[#387DCD] dark:bg-[#262626] px-8 py-20 text-center shadow-xl">
                       <h2 className="text-balance text-5xl font-bold text-white lg:text-6xl">
-                          Transform Your Calls Today
+                          Deploy AI Agents That Speak Your Customers Language
                           <br />
-                          <span className="text-4xl lg:text-5xl">Start with 100 free conversations.</span>
+                          <span className="text-4xl lg:text-5xl">Start with 100 free minutes across all three languages.</span>
                       </h2>
                       <div className="mt-12">
                           <Button

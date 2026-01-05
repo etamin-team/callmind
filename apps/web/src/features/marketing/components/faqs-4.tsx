@@ -7,28 +7,28 @@ export default function FAQsFour() {
     const faqItems = [
         {
             id: 'item-1',
-            question: 'How does the AI provide real-time guidance?',
-            answer: 'Our AI analyzes live audio streams using advanced natural language processing. It detects key phrases, sentiment, and conversation patterns, then provides contextual suggestions to agents through a discreet interface within 200 milliseconds.',
+            question: 'Which languages do your AI agents support?',
+            answer: 'Our AI agents are fluent in English, Uzbek, and Russian. They understand natural conversation patterns, cultural nuances, and regional dialects in all three languages, providing authentic customer interactions.',
         },
         {
             id: 'item-2',
-            question: 'What phone systems do you integrate with?',
-            answer: 'We integrate with major VoIP providers including RingCentral, Five9, Genesys, Aircall, and Twilio. We also offer a flexible API for custom integrations with legacy or proprietary systems.',
+            question: 'Can the AI agents collect and qualify leads?',
+            answer: 'Absolutely. Our AI agents are trained to engage prospects naturally, collect names, contact information, company details, and specific requirements. They qualify leads based on your criteria and sync everything directly to your CRM.',
         },
         {
             id: 'item-3',
-            question: 'How long does it take to implement?',
-            answer: 'Most teams are up and running within 1-2 days. Cloud-based integrations can be completed in hours, while on-premise deployments typically take 1-3 business days depending on your infrastructure.',
+            question: 'What platforms do your AI agents work on?',
+            answer: 'Our AI agents work across all platforms—desktop computers, mobile phones, tablets, and web browsers. They provide consistent service whether your team is in the office or working remotely, with native mobile apps for iOS and Android.',
         },
         {
             id: 'item-4',
-            question: 'Is the AI coaching noticeable to customers?',
-            answer: 'No, the AI guidance is completely invisible to customers. Agents receive suggestions through a subtle interface that doesn\'t interrupt the natural flow of conversation. The AI enhances human interaction without replacing it.',
+            question: 'How accurate is the sentiment analysis?',
+            answer: 'Our sentiment analysis achieves over 95% accuracy across all three languages. It detects happiness, frustration, confusion, and urgency by analyzing tone, word choice, and conversation patterns, allowing you to respond appropriately in real-time.',
         },
         {
             id: 'item-5',
-            question: 'How do you ensure data security and compliance?',
-            answer: 'We use enterprise-grade encryption, maintain SOC 2 Type II certification, and are GDPR compliant. All call data can be stored in your region, and we offer dedicated instances for enterprises with strict security requirements.',
+            question: 'Can I customize the AI agent scripts and workflows?',
+            answer: 'Yes, you have complete control. Customize conversation flows, brand voice, qualifying questions, and response patterns. Our no-code workflow builder lets you design agent behaviors for different scenarios, products, and customer types.',
         },
     ]
 
@@ -37,7 +37,7 @@ export default function FAQsFour() {
             <div className="mx-auto max-w-5xl px-4 md:px-6">
                 <div className="mx-auto max-w-xl text-center">
                     <h2 className="text-balance text-3xl font-bold md:text-4xl lg:text-5xl">Frequently Asked Questions</h2>
-                    <p className="text-muted-foreground mt-4 text-balance">Discover quick and comprehensive answers to common questions about our platform, services, and features.</p>
+                    <p className="text-muted-foreground mt-4 text-balance">Discover quick and comprehensive answers to common questions about our AI call center agents and multilingual capabilities.</p>
                 </div>
 
                 <div className="mx-auto mt-12 max-w-xl">

@@ -109,7 +109,7 @@ export default function HeroSection() {
                                     as="h1"
                                     className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]"
                                     style={{ fontFamily: 'Geist, sans-serif' }}>
-                                   AI Voice Agents for Customer Support & Sales Teams 
+                                   AI-Powered Call Center Agents That Never Sleep 
 
 
  
@@ -123,7 +123,7 @@ export default function HeroSection() {
                                     as="p"
                                     className="mx-auto mt-8 max-w-2xl text-balance text-lg"
                                     style={{ fontFamily: 'Geist, sans-serif' }}>
-                                      Transform every call into a winning conversation. Our AI analyzes speech in real-time, provides instant talking points, and helps your team close more deals with confidence.
+Deploy intelligent voice agents that handle customer calls in English, Uzbek, and Russian. Collect leads, analyze sentiments, and deliver exceptional customer experiences 24/7 across desktop and mobile platforms.
                                       
 
                                 </TextEffect>

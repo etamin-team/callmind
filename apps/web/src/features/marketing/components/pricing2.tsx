@@ -42,7 +42,7 @@ interface Pricing2Props {
 
 const Pricing2 = ({
   heading = "Simple, Transparent Pricing",
-  description = "Get started with AI-powered conversation intelligence. Scale as your team grows.",
+  description = "Start with AI call center agents today. Scale as your business grows across languages and channels.",
   plans = [
     {
       id: "starter",
@@ -51,9 +51,10 @@ const Pricing2 = ({
       monthlyPrice: "$19",
       yearlyPrice: "$179",
       features: [
-        { text: "Up to 3 agents" },
-        { text: "Real-time conversation guidance" },
-        { text: "Basic analytics dashboard" },
+        { text: "1 AI agent" },
+        { text: "English & Russian language support" },
+        { text: "Up to 500 minutes/month" },
+        { text: "Basic lead collection" },
         { text: "Email support" },
       ],
       button: {
@@ -68,10 +69,12 @@ const Pricing2 = ({
       monthlyPrice: "$49",
       yearlyPrice: "$359",
       features: [
-        { text: "Up to 25 agents" },
-        { text: "Advanced AI coaching engine" },
-        { text: "Sentiment analysis & analytics" },
-        { text: "CRM integration (Salesforce, HubSpot)" },
+        { text: "5 AI agents" },
+        { text: "English, Uzbek & Russian languages" },
+        { text: "Up to 3,000 minutes/month" },
+        { text: "Advanced sentiment analysis" },
+        { text: "CRM integration (HubSpot, Salesforce)" },
+        { text: "Lead qualification & scoring" },
         { text: "Priority chat & email support" },
       ],
       button: {
@@ -86,8 +89,9 @@ const Pricing2 = ({
       monthlyPrice: "$99",
       yearlyPrice: "$999",
       features: [
-        { text: "Unlimited agents" },
-        { text: "Custom AI model training" },
+        { text: "Unlimited AI agents" },
+        { text: "All languages + custom models" },
+        { text: "Unlimited minutes" },
         { text: "Advanced conversation analytics" },
         { text: "Custom integrations & API access" },
         { text: "Dedicated success manager" },

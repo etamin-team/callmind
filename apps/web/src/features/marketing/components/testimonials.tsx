@@ -10,76 +10,76 @@ type Testimonial = {
 
 const testimonials: Testimonial[] = [
     {
-        name: 'Sarah Mitchell',
-        role: 'Sales Manager at TechSolutions',
-        image: 'https://randomuser.me/api/portraits/women/1.jpg',
-        quote: 'Our conversion rate increased by 34% in the first month. The AI suggestions help our new agents sound like seasoned pros within days.',
+        name: 'Dilshod Karimov',
+        role: 'Call Center Manager at UzbekTel',
+        image: 'https://randomuser.me/api/portraits/men/1.jpg',
+        quote: 'The Uzbek language support is phenomenal. We can now serve our entire customer base without hiring specialized bilingual agents. Our coverage has expanded by 300%.',
     },
     {
-        name: 'Marcus Chen',
-        role: 'Contact Center Director',
-        image: 'https://randomuser.me/api/portraits/men/6.jpg',
-        quote: "The real-time sentiment detection is a game-changer. We can now spot frustrated customers instantly and de-escalate before it's too late.",
+        name: 'Elena Volkov',
+        role: 'Operations Director at GlobalConnect',
+        image: 'https://randomuser.me/api/portraits/women/2.jpg',
+        quote: 'Russian-speaking customers finally get the same quality service as our English base. The AI captures leads perfectly in all three languages and syncs seamlessly with our CRM.',
     },
     {
-        name: 'Jennifer Lopez',
-        role: 'Customer Success Lead',
-        image: 'https://randomuser.me/api/portraits/women/7.jpg',
-        quote: "Training time for new agents dropped from 6 weeks to 2 weeks. The AI coaching gives them confidence and keeps them on script when it matters most.",
+        name: 'Michael Chen',
+        role: 'Founder of QuickLead Pro',
+        image: 'https://randomuser.me/api/portraits/men/3.jpg',
+        quote: 'Lead collection has never been easier. The AI agents qualify prospects 24/7, collect all the details we need, and only pass hot leads to our sales team. We have doubled our qualified leads.',
     },
     {
-        name: 'David Rodriguez',
-        role: 'Inside Sales Rep',
-        image: 'https://randomuser.me/api/portraits/men/8.jpg',
-        quote: "I was skeptical at first, but the AI suggestions have become my secret weapon. It's like having a top performer whispering in my ear during every call.",
-    },
-    {
-        name: 'Amanda Foster',
-        role: 'VP of Sales at CloudNet',
+        name: 'Zarina Ahmedova',
+        role: 'Customer Experience Lead',
         image: 'https://randomuser.me/api/portraits/women/4.jpg',
-        quote: "The analytics dashboard shows us exactly what's working. We identified our top performers' techniques and scaled them across the entire team. Revenue is up 42% quarter over quarter.",
+        quote: 'Sentiment analysis across languages is incredible. We can tell instantly when a customer is frustrated, regardless of whether they are speaking English, Uzbek, or Russian. Response time improved by 60%.',
     },
     {
-        name: 'Tyler Brooks',
-        role: 'Outbound Sales Team Lead',
-        image: 'https://randomuser.me/api/portraits/men/2.jpg',
-        quote: 'Objection handling used to be our biggest weakness. Now the AI suggests proven responses in real-time, and our close rate has nearly doubled.',
+        name: 'Alex Thompson',
+        role: 'Sales Manager at MobileFirst Solutions',
+        image: 'https://randomuser.me/api/portraits/men/5.jpg',
+        quote: 'Mobile deployment was a game-changer. Our field agents use the AI agents on their phones to handle initial calls, collect customer info, and schedule appointments. Productivity is through the roof.',
     },
     {
-        name: 'Priya Patel',
-        role: 'Operations Manager',
-        image: 'https://randomuser.me/api/portraits/women/5.jpg',
-        quote: "The conversation analytics help us identify coaching opportunities we never saw before. We're developing our team based on data, not guesswork.",
+        name: 'Nadiya Kovalenko',
+        role: 'Support Center Manager',
+        image: 'https://randomuser.me/api/portraits/women/6.jpg',
+        quote: 'We tested four different solutions before finding this. The trilingual capabilities are authentic—not just basic translation, but true contextual understanding in Uzbek and Russian dialects.',
     },
     {
-        name: 'Carlos Mendez',
-        role: 'Enterprise Account Executive',
+        name: 'Ravshan Rustamov',
+        role: 'CEO of UzCommerce',
+        image: 'https://randomuser.me/api/portraits/men/7.jpg',
+        quote: 'As a Uzbek business expanding internationally, we needed authentic language support. This solution let us serve local Uzbek customers and international clients with the same quality and efficiency.',
+    },
+    {
+        name: 'Sofia Petrova',
+        role: 'Digital Transformation Lead',
+        image: 'https://randomuser.me/api/portraits/women/8.jpg',
+        quote: 'Implementation was shockingly fast. We had our first AI agent handling Russian customer inquiries within hours. The desktop and mobile sync works flawlessly across our distributed team.',
+    },
+    {
+        name: 'James Morrison',
+        role: 'VP of Business Development',
         image: 'https://randomuser.me/api/portraits/men/9.jpg',
-        quote: 'My confidence on complex enterprise calls has skyrocketed. The AI helps me stay on track, remember key talking points, and handle technical questions like an expert.',
+        quote: 'The ROI was immediate. We deployed AI agents for after-hours English support, then expanded to Uzbek and Russian markets. Revenue from those regions grew 180% in six months.',
     },
     {
-        name: 'Khatab Wedaa',
-        role: 'MerakiUI Creator',
-        image: 'https://randomuser.me/api/portraits/men/10.jpg',
-        quote: "Tailus is an elegant, clean, and responsive tailwind css components it's very helpful to start fast with your project.",
+        name: 'Gulnara Tashpulatova',
+        role: 'Customer Success Manager',
+        image: 'https://randomuser.me/api/portraits/women/10.jpg',
+        quote: 'Lead quality improved dramatically. The AI does not just collect names—it qualifies prospects, identifies buying intent, and passes complete customer profiles to our team.',
     },
     {
-        name: 'Mike Henderson',
-        role: 'SaaS Sales Director',
+        name: 'Dmitri Sokolov',
+        role: 'Technical Operations Manager',
         image: 'https://randomuser.me/api/portraits/men/11.jpg',
-        quote: "We've tried other coaching tools, but nothing compares to real-time guidance. The integration was seamless and our team adopted it instantly.",
+        quote: 'The sentiment analysis accuracy is scary good. It picks up subtle frustration cues in Russian that human agents sometimes miss. Our customer satisfaction scores reflect the difference.',
     },
     {
-        name: 'Lisa Thompson',
-        role: 'Customer Support Manager',
+        name: 'Layla Ahmed',
+        role: 'Startup Founder',
         image: 'https://randomuser.me/api/portraits/women/12.jpg',
-        quote: 'Customer satisfaction scores are up 28% since we started using the AI guidance. Agents feel more prepared and customers feel better understood.',
-    },
-    {
-        name: 'James Wilson',
-        role: 'Business Development Representative',
-        image: 'https://randomuser.me/api/portraits/men/13.jpg',
-        quote: "The AI picks up on buying signals I used to miss. It's helped me identify hot leads and close deals I would have let slip away before."
+        quote: 'As a small business, we could not afford a multilingual support team. These AI agents let us punch way above our weight, serving three language markets with enterprise-level quality.',
     },
 ]
 
@@ -99,8 +99,8 @@ export default function WallOfLoveSection() {
             <div className="py-16 md:py-32">
                 <div className="mx-auto max-w-6xl px-6">
                     <div className="text-center">
-                        <h2 className="text-3xl font-semibold">Loved by the Community</h2>
-                        <p className="mt-6">Harum quae dolore orrupti aut temporibus ariatur.</p>
+                        <h2 className="text-3xl font-semibold">Trusted by Call Centers Worldwide</h2>
+                        <p className="mt-6">See how AI agents are transforming customer engagement across languages and platforms.</p>
                     </div>
                     <div className="mt-8 grid gap-3 sm:grid-cols-2 md:mt-12 lg:grid-cols-3">
                         {testimonialChunks.map((chunk, chunkIndex) => (
