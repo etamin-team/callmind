@@ -1,31 +1,6 @@
-// Agent types and interfaces
-export interface AIAgent {
-  id: string
-  name: string
-  description: string
-  status: 'active' | 'inactive' | 'training' | 'error'
-  avatar?: string
-  capabilities: string[]
-  model: string
-  temperature: number
-  maxTokens: number
-  createdAt: Date
-  updatedAt: Date
-  performance: {
-    totalCalls: number
-    successRate: number
-    avgResponseTime: number
-    customerSatisfaction: number
-  }
-  configuration: {
-    language: string
-    voice: string
-    personality: string
-    knowledgeBase: string[]
-    escalationThreshold: number
-  }
-}
+export * from '@repo/types/agent'
 
+// Keep existing UI specific types if needed, or remove if replaced
 export interface AgentTemplate {
   id: string
   name: string
@@ -37,7 +12,7 @@ export interface AgentTemplate {
     model?: string
     temperature?: number
     maxTokens?: number
-    configuration?: Partial<AIAgent['configuration']>
+    configuration?: any
   }
 }
 

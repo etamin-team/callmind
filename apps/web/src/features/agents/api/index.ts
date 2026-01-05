@@ -4,12 +4,13 @@ const API_BASE_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:3001/api' 
   : 'https://api.callmind.ai/v1'
 
-export async function createAgent(data: CreateAgentRequest): Promise<CreateAgentResponse> {
+export async function createAgent(data: CreateAgentRequest, token: string): Promise<CreateAgentResponse> {
   try {
     const response = await fetch(`${API_BASE_URL}/agents`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(data),
     })
@@ -25,12 +26,13 @@ export async function createAgent(data: CreateAgentRequest): Promise<CreateAgent
   }
 }
 
-export async function updateAgent(id: string, data: UpdateAgentRequest): Promise<Agent> {
+export async function updateAgent(id: string, data: UpdateAgentRequest, token: string): Promise<Agent> {
   try {
     const response = await fetch(`${API_BASE_URL}/agents/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(data),
     })
@@ -46,12 +48,13 @@ export async function updateAgent(id: string, data: UpdateAgentRequest): Promise
   }
 }
 
-export async function getAgents(): Promise<Array<Agent>> {
+export async function getAgents(token: string): Promise<Array<Agent>> {
   try {
     const response = await fetch(`${API_BASE_URL}/agents`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
     })
 

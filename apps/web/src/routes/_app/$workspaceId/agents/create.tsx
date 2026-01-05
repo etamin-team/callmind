@@ -2,9 +2,11 @@ import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router'
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { BookText, Bot, Briefcase, ChevronLeft, ChevronRight, Phone, Zap, Sparkles, BrainCircuit, Globe, MessageSquare } from 'lucide-react'
+import { useAuth } from '@clerk/clerk-react'
 
 import { Button } from '@/components/ui/button'
 import { useAgentStore } from '@/features/agents/store'
+import { CreateAgentRequest } from '@/features/agents/types'
 import { 
   AgentBasicsStep,
   BusinessContextStep,
@@ -13,12 +15,30 @@ import {
   ReviewStep,
 } from '@/features/agents/components'
 
+// Local form state type to ensure compatibility with step components
+type AgentFormState = {
+  name: string
+  type: string
+  language: string
+  voice: string
+  greeting: string
+  phoneTransfer: string
+  objectionHandling: string
+  businessName: string
+  businessDescription: string
+  businessIndustry: string
+  targetCallers: string
+  knowledgeText: string
+  primaryGoal: string
+  collectFields: string[]
+}
+
 const steps = [
   { 
     title: 'Identity', 
     icon: Bot, 
     description: 'Define your agent\'s core persona',
-    details: 'Namem, Voice, Personality'
+    details: 'Name, Voice, Personality'
   },
   { 
     title: 'Context', 
@@ -45,19 +65,6 @@ const steps = [
     details: 'Final Review' 
   },
 ]
-
-type AgentConfig = {
-  name: string
-  type: string
-  language: string
-  voice: string
-  businessName: string
-  businessDescription: string
-  targetCallers: string
-  knowledgeText: string
-  primaryGoal: string
-  collectFields: Array<string>
-}
 
 // Visual component for the left sidebar based on current step
 const StepVisual = ({ step }: { step: number }) => {
@@ -87,7 +94,7 @@ const StepVisual = ({ step }: { step: number }) => {
               </div>
               <div className="space-y-2 max-w-md">
                 <h2 className="text-3xl font-bold text-zinc-900 dark:text-white">Agent Identity</h2>
-                <p className="text-zinc-500 dark:text-zinc-400 text-lg">Let's start by giving your agent a name and a voice.</p>
+                <p className="text-zinc-500 dark:text-zinc-400 text-lg">Set name, voice, and personality.</p>
               </div>
             </>
           )}
@@ -105,7 +112,7 @@ const StepVisual = ({ step }: { step: number }) => {
               </div>
               <div className="space-y-2 max-w-md">
                 <h2 className="text-3xl font-bold text-zinc-900 dark:text-white">Business Context</h2>
-                <p className="text-zinc-500 dark:text-zinc-400 text-lg">Teach your agent about your company and its mission.</p>
+                <p className="text-zinc-500 dark:text-zinc-400 text-lg">Define industry and company details.</p>
               </div>
             </>
           )}
@@ -123,7 +130,7 @@ const StepVisual = ({ step }: { step: number }) => {
               </div>
               <div className="space-y-2 max-w-md">
                 <h2 className="text-3xl font-bold text-zinc-900 dark:text-white">Knowledge Base</h2>
-                <p className="text-zinc-500 dark:text-zinc-400 text-lg">Upload documents to build your agent's brain.</p>
+                <p className="text-zinc-500 dark:text-zinc-400 text-lg">Upload docs and FAQs.</p>
               </div>
             </>
           )}
@@ -144,7 +151,7 @@ const StepVisual = ({ step }: { step: number }) => {
               </div>
               <div className="space-y-2 max-w-md">
                 <h2 className="text-3xl font-bold text-zinc-900 dark:text-white">Call Flow</h2>
-                <p className="text-zinc-500 dark:text-zinc-400 text-lg">Define how your agent handles conversations.</p>
+                <p className="text-zinc-500 dark:text-zinc-400 text-lg">Structure greetings, transfers, and logic.</p>
               </div>
             </>
           )}
@@ -162,7 +169,7 @@ const StepVisual = ({ step }: { step: number }) => {
               </div>
               <div className="space-y-2 max-w-md">
                 <h2 className="text-3xl font-bold text-zinc-900 dark:text-white">Ready to Launch</h2>
-                <p className="text-zinc-500 dark:text-zinc-400 text-lg">Review your configuration and bring your agent to life.</p>
+                <p className="text-zinc-500 dark:text-zinc-400 text-lg">Review and deploy your agent.</p>
               </div>
             </>
           )}
@@ -175,23 +182,30 @@ const StepVisual = ({ step }: { step: number }) => {
 function RouteComponent() {
   const { workspaceId } = useParams({ from: '/_app/$workspaceId/agents/create' })
   const navigate = useNavigate()
+  const { getToken } = useAuth()
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
-  const [config, setConfig] = useState<AgentConfig>({
+  
+  // Use local strict type for form state
+  const [config, setConfig] = useState<AgentFormState>({
     name: '',
     type: '',
-    language: '',
+    language: 'en',
     voice: '',
+    greeting: '',
+    phoneTransfer: '',
+    objectionHandling: '',
     businessName: '',
     businessDescription: '',
+    businessIndustry: '',
     targetCallers: '',
     knowledgeText: '',
     primaryGoal: '',
     collectFields: [],
   })
 
-  // Mock function if store not available or just for demo, but we import useAgentStore
-  const createAgent = useAgentStore((state) => state.createAgent)
+  // Use store
+  const { createAgent } = useAgentStore()
   
   const updateConfig = (field: string, value: any) => {
     setConfig(prev => ({ ...prev, [field]: value }))
@@ -200,8 +214,13 @@ function RouteComponent() {
   const handleCreate = async () => {
     setLoading(true)
     try {
-      await createAgent(config)
-      navigate({ to: `/${workspaceId}/agents` })
+      const token = await getToken()
+      if (token) {
+        await createAgent(config as CreateAgentRequest, token)
+        navigate({ to: `/${workspaceId}/agents` })
+      } else {
+        console.error('No auth token available')
+      }
     } catch (error) {
       console.error(error)
     } finally {

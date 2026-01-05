@@ -1,111 +1,69 @@
 import { create } from 'zustand'
-import type { Agent } from '../types'
+import { Agent, CreateAgentRequest, UpdateAgentRequest } from '../types'
+import { createAgent, updateAgent, getAgents } from '../api'
 
 interface AgentStore {
   agents: Agent[]
   currentAgent: Agent | null
   isLoading: boolean
   error: string | null
-  createAgent: (agentData: Omit<Agent, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>
-  updateAgent: (id: string, updates: Partial<Omit<Agent, 'id' | 'createdAt' | 'updatedAt'>>) => Promise<void>
-  fetchAgents: () => Promise<void>
+  
+  createAgent: (agentData: CreateAgentRequest, token: string) => Promise<void>
+  updateAgent: (id: string, updates: UpdateAgentRequest, token: string) => Promise<void>
+  fetchAgents: (token: string) => Promise<void>
+  
   setCurrentAgent: (agent: Agent | null) => void
   clearError: () => void
 }
 
-export const useAgentStore = create<AgentStore>((set, get) => ({
+export const useAgentStore = create<AgentStore>((set) => ({
   agents: [],
   currentAgent: null,
   isLoading: false,
   error: null,
   
-  createAgent: async (agentData: Omit<Agent, 'id' | 'createdAt' | 'updatedAt'>) => {
-    set((state) => ({ 
-      ...state, 
-      agents: [...state.agents, { ...agentData, id: crypto.randomUUID(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }],
-      isLoading: true,
-      error: null,
-    }))
+  createAgent: async (agentData: CreateAgentRequest, token: string) => {
+    set((state) => ({ ...state, isLoading: true, error: null }))
     
     try {
-      const response = await fetch(`${process.env.NODE_ENV === 'development' ? 'http://localhost:3001/api' : 'https://api.callmind.ai/v1'}/agents`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(agentData),
-      })
-
-      if (!response.ok) {
-        set((state) => ({ ...state, isLoading: false, error: 'Failed to create agent' }))
-        return
-      }
-
-      const createdAgent = await response.json()
+      const createdAgent = await createAgent(agentData, token)
       set((state) => ({ 
         ...state, 
-        agents: [...state.agents, createdAgent],
+        agents: [createdAgent, ...state.agents],
         currentAgent: createdAgent,
         isLoading: false,
       }))
-    } catch (error) {
-      set((state) => ({ ...state, isLoading: false, error: error.message }))
+    } catch (error: any) {
+      set((state) => ({ ...state, isLoading: false, error: error.message || 'Failed to create agent' }))
+      throw error
     }
   },
   
-  updateAgent: async (id: string, updates: Partial<Omit<Agent, 'id' | 'createdAt' | 'updatedAt'>>) => {
-    set((state) => ({ 
-      ...state, 
-      agents: state.agents.map(agent => 
-        agent.id === id ? { ...agent, ...updates, updatedAt: new Date().toISOString() } : agent
-      ),
-      currentAgent: state.agents.find(agent => agent.id === id) || null,
-      isLoading: true,
-      error: null,
-    }))
+  updateAgent: async (id: string, updates: UpdateAgentRequest, token: string) => {
+    set((state) => ({ ...state, isLoading: true, error: null }))
     
     try {
-      const response = await fetch(`${process.env.NODE_ENV === 'development' ? 'http://localhost:3001/api' : 'https://api.callmind.ai/v1'}/agents/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updates),
-      })
-
-      if (!response.ok) {
-        set((state) => ({ ...state, isLoading: false, error: 'Failed to update agent' }))
-        return
-      }
-
-      const updatedAgent = await response.json()
+      const updatedAgent = await updateAgent(id, updates, token)
       set((state) => ({ 
         ...state, 
-        agents: state.agents.map(agent => 
-          agent.id === id ? { ...agent, ...updates, updatedAt: new Date().toISOString() } : agent
-        ),
+        agents: state.agents.map(agent => agent.id === id ? updatedAgent : agent),
         currentAgent: updatedAgent,
         isLoading: false,
       }))
     } catch (error: any) {
-      set((state) => ({ ...state, isLoading: false, error: error.message }))
+      set((state) => ({ ...state, isLoading: false, error: error.message || 'Failed to update agent' }))
+      throw error
     }
   },
   
-  fetchAgents: async () => {
+  fetchAgents: async (token: string) => {
     set((state) => ({ ...state, isLoading: true, error: null }))
     
     try {
-      const response = await fetch(`${process.env.NODE_ENV === 'development' ? 'http://localhost:3001/api' : 'https://api.callmind.ai/v1'}/agents`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      })
-
-      if (!response.ok) {
-        set((state) => ({ ...state, isLoading: false, error: 'Failed to fetch agents' }))
-        return
-      }
-
-      const agents = await response.json()
+      const agents = await getAgents(token)
       set((state) => ({ ...state, agents, isLoading: false }))
-    } catch (error) {
-      set((state) => ({ ...state, isLoading: false, error: error.message }))
+    } catch (error: any) {
+      set((state) => ({ ...state, isLoading: false, error: error.message || 'Failed to fetch agents' }))
     }
   },
   
@@ -116,5 +74,4 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
   clearError: () => {
     set((state) => ({ ...state, error: null }))
   },
-})
-)
+}))
