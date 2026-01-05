@@ -25,6 +25,8 @@ const agentSchema = new Schema<IAgent>(
     phoneTransfer: { type: String },
     objectionHandling: { type: String },
     collectFields: [{ type: String }],
+    
+    systemPrompt: { type: String },
   },
   {
     timestamps: true,

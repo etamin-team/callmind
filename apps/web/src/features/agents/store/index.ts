@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { Agent, CreateAgentRequest, UpdateAgentRequest } from '../types'
-import { createAgent, updateAgent, getAgents } from '../api'
+import { createAgent, updateAgent, getAgents, deleteAgent } from '../api'
 
 interface AgentStore {
   agents: Agent[]
@@ -10,6 +10,7 @@ interface AgentStore {
   
   createAgent: (agentData: CreateAgentRequest, token: string) => Promise<Agent>
   updateAgent: (id: string, updates: UpdateAgentRequest, token: string) => Promise<void>
+  deleteAgent: (id: string, token: string) => Promise<void>
   fetchAgents: (token: string) => Promise<void>
   
   setCurrentAgent: (agent: Agent | null) => void
@@ -55,6 +56,21 @@ export const useAgentStore = create<AgentStore>((set) => ({
       set((state) => ({ ...state, isLoading: false, error: error.message || 'Failed to update agent' }))
       throw error
     }
+  },
+
+  deleteAgent: async (id: string, token: string) => {
+     set((state) => ({ ...state, isLoading: true, error: null }))
+     try {
+        await deleteAgent(id, token)
+        set((state) => ({
+           ...state,
+           agents: state.agents.filter(a => a.id !== id),
+           isLoading: false
+        }))
+     } catch (error: any) {
+        set((state) => ({ ...state, isLoading: false, error: error.message || 'Failed to delete agent' }))
+        throw error
+     }
   },
   
   fetchAgents: async (token: string) => {

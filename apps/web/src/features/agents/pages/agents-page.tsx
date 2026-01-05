@@ -1,10 +1,27 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from '@tanstack/react-router'
-import { Plus, Bot, Loader2 } from 'lucide-react'
+import { Plus, Bot, Loader2, MoreVertical, Trash } from 'lucide-react'
 import { useAuth } from '@clerk/clerk-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Input } from "@/components/ui/input"
 
 import { useAgentStore } from '../store'
 
@@ -12,7 +29,10 @@ export default function AgentsPage() {
   const navigate = useNavigate()
   const { workspaceId } = useParams({ from: '/_app/$workspaceId/agents/' })
   const { getToken } = useAuth()
-  const { agents, isLoading, fetchAgents } = useAgentStore()
+  const { agents, isLoading, fetchAgents, deleteAgent } = useAgentStore()
+  
+  const [deleteAgentId, setDeleteAgentId] = useState<string | null>(null)
+  const [deleteConfirmation, setDeleteConfirmation] = useState('')
 
   useEffect(() => {
     const loadAgents = async () => {
@@ -28,11 +48,21 @@ export default function AgentsPage() {
     document.title = 'AI Agents - Callmind'
   }, [])
 
-  /* Delete functionality can be re-implemented later
-  const handleDeleteAgent = (agentId: string) => {
-    // setAgents(agents.filter(agent => agent.id !== agentId))
+  const handleDeleteClick = (e: React.MouseEvent, agentId: string) => {
+    e.stopPropagation()
+    setDeleteAgentId(agentId)
+    setDeleteConfirmation('')
   }
-  */
+
+  const handleConfirmDelete = async () => {
+    if (!deleteAgentId) return
+    
+    const token = await getToken()
+    if (token) {
+      deleteAgent(deleteAgentId, token)
+    }
+    setDeleteAgentId(null)
+  }
 
   if (isLoading) {
       return (
@@ -44,70 +74,83 @@ export default function AgentsPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">AI Agents</h1>
-            <p className="text-muted-foreground">Manage your intelligent workforce</p>
+      {/* Header - Only show if there are agents */}
+      {agents.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">AI Agents</h1>
+              <p className="text-muted-foreground">Manage your intelligent workforce</p>
+            </div>
+            <Button asChild size="lg" className="gap-2">
+              <Link to="/$workspaceId/agents/create" params={{ workspaceId }}>
+                <Plus className="h-4 w-4" />
+                New AI Agent
+              </Link>
+            </Button>
           </div>
-          <Button asChild size="lg" className="gap-2">
-            <Link to="/$workspaceId/agents/create" params={{ workspaceId }}>
-              <Plus className="h-4 w-4" />
-              New AI Agent
-            </Link>
-          </Button>
         </div>
-      </div>  
+      )}
 
       {/* Agents Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {agents.map((agent) => (
-          <Card 
-            key={agent.id} 
-            className="relative overflow-hidden group hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => navigate({ to: `/${workspaceId}/agents/${agent.id}` })}
-          >
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 transition-colors">
-                    <Bot className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
+      {agents.length > 0 && (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {agents.map((agent) => (
+            <Card 
+              key={agent.id} 
+              className="relative overflow-hidden group hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => navigate({ to: `/${workspaceId}/agents/${agent.id}` })}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 transition-colors">
+                      <Bot className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold">{agent.name}</h3>
+                      <p className="text-xs text-muted-foreground capitalize">{agent.type}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold">{agent.name}</h3>
-                    <p className="text-xs text-muted-foreground capitalize">{agent.type}</p>
-                  </div>
+                  
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem 
+                        className="text-destructive focus:text-destructive cursor-pointer"
+                        onClick={(e) => handleDeleteClick(e, agent.id)}
+                      >
+                        <Trash className="mr-2 h-4 w-4" />
+                        Delete Agent
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  
                 </div>
-                {/* 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      Delete Agent
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                */}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground line-clamp-3">
-                {agent.businessDescription || "No description provided."}
-              </p>
-              <div className='flex gap-2 mt-4'>
-                 <div className='px-2 py-1 bg-secondary/50 rounded text-xs font-mono text-muted-foreground'>
-                    {agent.language === 'en' ? 'English' : agent.language}
-                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground line-clamp-3">
+                  {agent.businessDescription || "No description provided."}
+                </p>
+                <div className='flex gap-2 mt-4'>
+                   <div className='px-2 py-1 bg-secondary/50 rounded text-xs font-mono text-muted-foreground'>
+                      {agent.language === 'en' ? 'English' : agent.language}
+                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* Empty State */}
       {!isLoading && agents.length === 0 && (
@@ -140,6 +183,38 @@ export default function AgentsPage() {
           </Button>
         </div>
       )}
+      
+      <AlertDialog open={!!deleteAgentId} onOpenChange={(open) => !open && setDeleteAgentId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your agent and remove their data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4">
+             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2 block">
+                Type <span className="font-bold">I understand</span> to confirm.
+             </label>
+             <Input 
+                value={deleteConfirmation}
+                onChange={(e) => setDeleteConfirmation(e.target.value)}
+                placeholder="I understand"
+                className="col-span-3"
+             />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+               onClick={handleConfirmDelete}
+               disabled={deleteConfirmation !== 'I understand'}
+               className="bg-destructive hover:bg-destructive/90"
+            >
+              Delete Agent
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

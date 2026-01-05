@@ -28,6 +28,7 @@ export const AgentSchema = z.object({
   collectFields: z.array(z.string()).optional(),
   
   // Meta
+  systemPrompt: z.string().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
 })
