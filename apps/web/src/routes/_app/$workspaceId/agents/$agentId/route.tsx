@@ -7,9 +7,9 @@ import { Loader2 } from 'lucide-react'
 
 function AgentDashboardLayout() {
   const { workspaceId, agentId } = useParams({ from: '/_app/$workspaceId/agents/$agentId' })
-  const { agents, fetchAgents, isLoading } = useAgentStore()
+  const { agents, fetchAgents, isLoading, setCurrentAgent } = useAgentStore()
   const { getToken, isLoaded } = useAuth()
-  
+
   const currentAgent = agents.find(a => a.id === agentId)
 
   useEffect(() => {
@@ -22,6 +22,13 @@ function AgentDashboardLayout() {
     }
   }, [agentId, currentAgent, isLoaded, getToken, fetchAgents, isLoading])
 
+  // Set current agent in store when found
+  useEffect(() => {
+    if (currentAgent) {
+      setCurrentAgent(currentAgent)
+    }
+  }, [currentAgent, setCurrentAgent])
+
   if (isLoading && !currentAgent) {
      return (
         <div className="flex items-center justify-center h-screen">
@@ -31,9 +38,9 @@ function AgentDashboardLayout() {
   }
 
   return (
-    <div className="flex h-full w-full bg-background overflow-hidden">
+    <div className="flex h-screen w-full bg-background overflow-hidden">
        <AgentSidebar />
-       <main className="flex-1 overflow-y-auto min-w-0">
+       <main className="flex-1 overflow-y-auto min-w-0 ml-64">
           <Outlet />
        </main>
     </div>

@@ -3,34 +3,49 @@ import { Store } from '@tanstack/store'
 export interface OnboardingState {
   step: number
   data: {
+    // Core identity
     name: string
-    description: string
-    model: string
-    temperature: number
-    maxTokens: number
+    type: string
     language: string
     voice: string
-    personality: string
-    capabilities: string[]
-    knowledgeBase: string[]
-    escalationThreshold: number
-    initialGreeting?: string
+    greeting: string
+
+    // Business context
+    businessName: string
+    businessDescription: string
+    businessIndustry: string
+    targetCallers: string
+
+    // Call behavior
+    primaryGoal: string
+    phoneTransfer?: string
+
+    // Generated
+    systemPrompt?: string
+
+    // Optional fields with defaults
+    knowledgeText?: string
+    objectionHandling?: string
+    collectFields?: string[]
   }
 }
 
 export const initialOnboardingData = {
   name: '',
-  description: '',
-  model: 'gpt-4',
-  temperature: 0.7,
-  maxTokens: 500,
+  type: '',
   language: 'English',
-  voice: 'professional',
-  personality: 'analytical',
-  capabilities: [],
-  knowledgeBase: [],
-  escalationThreshold: 0.3,
-  initialGreeting: ''
+  voice: '',
+  greeting: '',
+  businessName: '',
+  businessDescription: '',
+  businessIndustry: '',
+  targetCallers: '',
+  primaryGoal: '',
+  phoneTransfer: '',
+  systemPrompt: '',
+  knowledgeText: '',
+  objectionHandling: '',
+  collectFields: []
 }
 
 export const onboardingStore = new Store<OnboardingState>({

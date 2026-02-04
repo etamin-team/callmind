@@ -14,11 +14,14 @@
     "clean": "rm -rf **/node_modules **/dist **/.next **/.turbo",
     "setup": "pnpm install && pnpm check-types",
     "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "migrate:users": "tsx scripts/migrate-users.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
+    "dotenv": "^16.6.1",
     "prettier": "^3.7.4",
+    "tsx": "^4.19.2",
     "turbo": "^2.7.2",
     "typescript": "5.7.3"
   },

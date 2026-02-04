@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsageRouteRouteImport } from './routes/usage/route'
+import { Route as SsoCallbackRouteRouteImport } from './routes/sso-callback/route'
 import { Route as RegisterRouteRouteImport } from './routes/register/route'
 import { Route as LoginRouteRouteImport } from './routes/login/route'
+import { Route as DownloadRouteRouteImport } from './routes/download/route'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as AgentsRouteRouteImport } from './routes/agents/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
@@ -31,10 +33,18 @@ import { Route as AppWorkspaceIdSettingsBillingRouteImport } from './routes/_app
 import { Route as AppWorkspaceIdAgentsCreateRouteImport } from './routes/_app/$workspaceId/agents/create'
 import { Route as AppWorkspaceIdAgentsAgentIdRouteRouteImport } from './routes/_app/$workspaceId/agents/$agentId/route'
 import { Route as AppWorkspaceIdAgentsAgentIdIndexRouteImport } from './routes/_app/$workspaceId/agents/$agentId/index'
+import { Route as AppWorkspaceIdAgentsAgentIdSettingsRouteImport } from './routes/_app/$workspaceId/agents/$agentId/settings'
+import { Route as AppWorkspaceIdAgentsAgentIdHistoryRouteImport } from './routes/_app/$workspaceId/agents/$agentId/history'
+import { Route as AppWorkspaceIdAgentsAgentIdContactsRouteImport } from './routes/_app/$workspaceId/agents/$agentId/contacts'
 
 const UsageRouteRoute = UsageRouteRouteImport.update({
   id: '/usage',
   path: '/usage',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SsoCallbackRouteRoute = SsoCallbackRouteRouteImport.update({
+  id: '/sso-callback',
+  path: '/sso-callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRouteRoute = RegisterRouteRouteImport.update({
@@ -45,6 +55,11 @@ const RegisterRouteRoute = RegisterRouteRouteImport.update({
 const LoginRouteRoute = LoginRouteRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DownloadRouteRoute = DownloadRouteRouteImport.update({
+  id: '/download',
+  path: '/download',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
@@ -152,13 +167,33 @@ const AppWorkspaceIdAgentsAgentIdIndexRoute =
     path: '/',
     getParentRoute: () => AppWorkspaceIdAgentsAgentIdRouteRoute,
   } as any)
+const AppWorkspaceIdAgentsAgentIdSettingsRoute =
+  AppWorkspaceIdAgentsAgentIdSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AppWorkspaceIdAgentsAgentIdRouteRoute,
+  } as any)
+const AppWorkspaceIdAgentsAgentIdHistoryRoute =
+  AppWorkspaceIdAgentsAgentIdHistoryRouteImport.update({
+    id: '/history',
+    path: '/history',
+    getParentRoute: () => AppWorkspaceIdAgentsAgentIdRouteRoute,
+  } as any)
+const AppWorkspaceIdAgentsAgentIdContactsRoute =
+  AppWorkspaceIdAgentsAgentIdContactsRouteImport.update({
+    id: '/contacts',
+    path: '/contacts',
+    getParentRoute: () => AppWorkspaceIdAgentsAgentIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agents': typeof AgentsRouteRoute
   '/dashboard': typeof DashboardRouteRoute
+  '/download': typeof DownloadRouteRoute
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
+  '/sso-callback': typeof SsoCallbackRouteRoute
   '/usage': typeof UsageRouteRoute
   '/$workspaceId': typeof AppWorkspaceIdRouteRouteWithChildren
   '/$workspaceId/settings': typeof AppWorkspaceIdSettingsRouteRouteWithChildren
@@ -174,14 +209,19 @@ export interface FileRoutesByFullPath {
   '/$workspaceId/settings/security': typeof AppWorkspaceIdSettingsSecurityRoute
   '/$workspaceId/agents': typeof AppWorkspaceIdAgentsIndexRoute
   '/$workspaceId/settings/': typeof AppWorkspaceIdSettingsIndexRoute
+  '/$workspaceId/agents/$agentId/contacts': typeof AppWorkspaceIdAgentsAgentIdContactsRoute
+  '/$workspaceId/agents/$agentId/history': typeof AppWorkspaceIdAgentsAgentIdHistoryRoute
+  '/$workspaceId/agents/$agentId/settings': typeof AppWorkspaceIdAgentsAgentIdSettingsRoute
   '/$workspaceId/agents/$agentId/': typeof AppWorkspaceIdAgentsAgentIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agents': typeof AgentsRouteRoute
   '/dashboard': typeof DashboardRouteRoute
+  '/download': typeof DownloadRouteRoute
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
+  '/sso-callback': typeof SsoCallbackRouteRoute
   '/usage': typeof UsageRouteRoute
   '/$workspaceId': typeof AppWorkspaceIdRouteRouteWithChildren
   '/$workspaceId/dashboard': typeof AppWorkspaceIdDashboardRoute
@@ -195,6 +235,9 @@ export interface FileRoutesByTo {
   '/$workspaceId/settings/security': typeof AppWorkspaceIdSettingsSecurityRoute
   '/$workspaceId/agents': typeof AppWorkspaceIdAgentsIndexRoute
   '/$workspaceId/settings': typeof AppWorkspaceIdSettingsIndexRoute
+  '/$workspaceId/agents/$agentId/contacts': typeof AppWorkspaceIdAgentsAgentIdContactsRoute
+  '/$workspaceId/agents/$agentId/history': typeof AppWorkspaceIdAgentsAgentIdHistoryRoute
+  '/$workspaceId/agents/$agentId/settings': typeof AppWorkspaceIdAgentsAgentIdSettingsRoute
   '/$workspaceId/agents/$agentId': typeof AppWorkspaceIdAgentsAgentIdIndexRoute
 }
 export interface FileRoutesById {
@@ -203,8 +246,10 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteRouteWithChildren
   '/agents': typeof AgentsRouteRoute
   '/dashboard': typeof DashboardRouteRoute
+  '/download': typeof DownloadRouteRoute
   '/login': typeof LoginRouteRoute
   '/register': typeof RegisterRouteRoute
+  '/sso-callback': typeof SsoCallbackRouteRoute
   '/usage': typeof UsageRouteRoute
   '/_app/$workspaceId': typeof AppWorkspaceIdRouteRouteWithChildren
   '/_app/$workspaceId/settings': typeof AppWorkspaceIdSettingsRouteRouteWithChildren
@@ -220,6 +265,9 @@ export interface FileRoutesById {
   '/_app/$workspaceId/settings/security': typeof AppWorkspaceIdSettingsSecurityRoute
   '/_app/$workspaceId/agents/': typeof AppWorkspaceIdAgentsIndexRoute
   '/_app/$workspaceId/settings/': typeof AppWorkspaceIdSettingsIndexRoute
+  '/_app/$workspaceId/agents/$agentId/contacts': typeof AppWorkspaceIdAgentsAgentIdContactsRoute
+  '/_app/$workspaceId/agents/$agentId/history': typeof AppWorkspaceIdAgentsAgentIdHistoryRoute
+  '/_app/$workspaceId/agents/$agentId/settings': typeof AppWorkspaceIdAgentsAgentIdSettingsRoute
   '/_app/$workspaceId/agents/$agentId/': typeof AppWorkspaceIdAgentsAgentIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -228,8 +276,10 @@ export interface FileRouteTypes {
     | '/'
     | '/agents'
     | '/dashboard'
+    | '/download'
     | '/login'
     | '/register'
+    | '/sso-callback'
     | '/usage'
     | '/$workspaceId'
     | '/$workspaceId/settings'
@@ -245,14 +295,19 @@ export interface FileRouteTypes {
     | '/$workspaceId/settings/security'
     | '/$workspaceId/agents'
     | '/$workspaceId/settings/'
+    | '/$workspaceId/agents/$agentId/contacts'
+    | '/$workspaceId/agents/$agentId/history'
+    | '/$workspaceId/agents/$agentId/settings'
     | '/$workspaceId/agents/$agentId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/agents'
     | '/dashboard'
+    | '/download'
     | '/login'
     | '/register'
+    | '/sso-callback'
     | '/usage'
     | '/$workspaceId'
     | '/$workspaceId/dashboard'
@@ -266,6 +321,9 @@ export interface FileRouteTypes {
     | '/$workspaceId/settings/security'
     | '/$workspaceId/agents'
     | '/$workspaceId/settings'
+    | '/$workspaceId/agents/$agentId/contacts'
+    | '/$workspaceId/agents/$agentId/history'
+    | '/$workspaceId/agents/$agentId/settings'
     | '/$workspaceId/agents/$agentId'
   id:
     | '__root__'
@@ -273,8 +331,10 @@ export interface FileRouteTypes {
     | '/_app'
     | '/agents'
     | '/dashboard'
+    | '/download'
     | '/login'
     | '/register'
+    | '/sso-callback'
     | '/usage'
     | '/_app/$workspaceId'
     | '/_app/$workspaceId/settings'
@@ -290,6 +350,9 @@ export interface FileRouteTypes {
     | '/_app/$workspaceId/settings/security'
     | '/_app/$workspaceId/agents/'
     | '/_app/$workspaceId/settings/'
+    | '/_app/$workspaceId/agents/$agentId/contacts'
+    | '/_app/$workspaceId/agents/$agentId/history'
+    | '/_app/$workspaceId/agents/$agentId/settings'
     | '/_app/$workspaceId/agents/$agentId/'
   fileRoutesById: FileRoutesById
 }
@@ -298,8 +361,10 @@ export interface RootRouteChildren {
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AgentsRouteRoute: typeof AgentsRouteRoute
   DashboardRouteRoute: typeof DashboardRouteRoute
+  DownloadRouteRoute: typeof DownloadRouteRoute
   LoginRouteRoute: typeof LoginRouteRoute
   RegisterRouteRoute: typeof RegisterRouteRoute
+  SsoCallbackRouteRoute: typeof SsoCallbackRouteRoute
   UsageRouteRoute: typeof UsageRouteRoute
 }
 
@@ -310,6 +375,13 @@ declare module '@tanstack/react-router' {
       path: '/usage'
       fullPath: '/usage'
       preLoaderRoute: typeof UsageRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sso-callback': {
+      id: '/sso-callback'
+      path: '/sso-callback'
+      fullPath: '/sso-callback'
+      preLoaderRoute: typeof SsoCallbackRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -324,6 +396,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/download': {
+      id: '/download'
+      path: '/download'
+      fullPath: '/download'
+      preLoaderRoute: typeof DownloadRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -459,6 +538,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkspaceIdAgentsAgentIdIndexRouteImport
       parentRoute: typeof AppWorkspaceIdAgentsAgentIdRouteRoute
     }
+    '/_app/$workspaceId/agents/$agentId/settings': {
+      id: '/_app/$workspaceId/agents/$agentId/settings'
+      path: '/settings'
+      fullPath: '/$workspaceId/agents/$agentId/settings'
+      preLoaderRoute: typeof AppWorkspaceIdAgentsAgentIdSettingsRouteImport
+      parentRoute: typeof AppWorkspaceIdAgentsAgentIdRouteRoute
+    }
+    '/_app/$workspaceId/agents/$agentId/history': {
+      id: '/_app/$workspaceId/agents/$agentId/history'
+      path: '/history'
+      fullPath: '/$workspaceId/agents/$agentId/history'
+      preLoaderRoute: typeof AppWorkspaceIdAgentsAgentIdHistoryRouteImport
+      parentRoute: typeof AppWorkspaceIdAgentsAgentIdRouteRoute
+    }
+    '/_app/$workspaceId/agents/$agentId/contacts': {
+      id: '/_app/$workspaceId/agents/$agentId/contacts'
+      path: '/contacts'
+      fullPath: '/$workspaceId/agents/$agentId/contacts'
+      preLoaderRoute: typeof AppWorkspaceIdAgentsAgentIdContactsRouteImport
+      parentRoute: typeof AppWorkspaceIdAgentsAgentIdRouteRoute
+    }
   }
 }
 
@@ -488,11 +588,20 @@ const AppWorkspaceIdSettingsRouteRouteWithChildren =
   )
 
 interface AppWorkspaceIdAgentsAgentIdRouteRouteChildren {
+  AppWorkspaceIdAgentsAgentIdContactsRoute: typeof AppWorkspaceIdAgentsAgentIdContactsRoute
+  AppWorkspaceIdAgentsAgentIdHistoryRoute: typeof AppWorkspaceIdAgentsAgentIdHistoryRoute
+  AppWorkspaceIdAgentsAgentIdSettingsRoute: typeof AppWorkspaceIdAgentsAgentIdSettingsRoute
   AppWorkspaceIdAgentsAgentIdIndexRoute: typeof AppWorkspaceIdAgentsAgentIdIndexRoute
 }
 
 const AppWorkspaceIdAgentsAgentIdRouteRouteChildren: AppWorkspaceIdAgentsAgentIdRouteRouteChildren =
   {
+    AppWorkspaceIdAgentsAgentIdContactsRoute:
+      AppWorkspaceIdAgentsAgentIdContactsRoute,
+    AppWorkspaceIdAgentsAgentIdHistoryRoute:
+      AppWorkspaceIdAgentsAgentIdHistoryRoute,
+    AppWorkspaceIdAgentsAgentIdSettingsRoute:
+      AppWorkspaceIdAgentsAgentIdSettingsRoute,
     AppWorkspaceIdAgentsAgentIdIndexRoute:
       AppWorkspaceIdAgentsAgentIdIndexRoute,
   }
@@ -544,8 +653,10 @@ const rootRouteChildren: RootRouteChildren = {
   AppRouteRoute: AppRouteRouteWithChildren,
   AgentsRouteRoute: AgentsRouteRoute,
   DashboardRouteRoute: DashboardRouteRoute,
+  DownloadRouteRoute: DownloadRouteRoute,
   LoginRouteRoute: LoginRouteRoute,
   RegisterRouteRoute: RegisterRouteRoute,
+  SsoCallbackRouteRoute: SsoCallbackRouteRoute,
   UsageRouteRoute: UsageRouteRoute,
 }
 export const routeTree = rootRouteImport

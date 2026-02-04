@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 3000",
+    "dev": "vite dev --port 3000 ",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
@@ -14,6 +14,7 @@
   "dependencies": {
     "@clerk/clerk-react": "^5.49.0",
     "@faker-js/faker": "^10.0.0",
+    "@google/generative-ai": "^0.24.1",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.11",

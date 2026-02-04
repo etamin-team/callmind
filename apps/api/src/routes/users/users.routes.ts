@@ -221,12 +221,88 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
     async (request, reply) => {
       const { id } = request.params as { id: string }
       const user = await UserModel.findByIdAndDelete(id)
-      
+
       if (!user) {
         return reply.status(404).send({ error: 'User not found' })
       }
-      
+
       return reply.status(204).send()
+    }
+  )
+
+  // Decrement credits
+  fastify.post(
+    '/users/:id/decrement-credits',
+    {
+      schema: {
+        tags: ['users'],
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string' },
+          },
+        },
+        body: {
+          type: 'object',
+          properties: {
+            amount: { type: 'number', minimum: 1 },
+          },
+          required: ['amount'],
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              email: { type: 'string' },
+              name: { type: 'string' },
+              plan: { type: 'string' },
+              credits: { type: 'number' },
+            },
+          },
+          400: {
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+            },
+          },
+          404: {
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params as { id: string }
+      const { amount } = request.body as { amount: number }
+
+      try {
+        const user = await UserModel.findById(id)
+
+        if (!user) {
+          return reply.status(404).send({ error: 'User not found' })
+        }
+
+        const currentCredits = (user as any).credits || 0
+
+        if (currentCredits < amount) {
+          return reply.status(400).send({ error: 'Insufficient credits' })
+        }
+
+        const updatedUser = await UserModel.findByIdAndUpdate(
+          id,
+          { $inc: { credits: -amount } },
+          { new: true }
+        )
+
+        return reply.status(200).send(updatedUser)
+      } catch (error) {
+        fastify.log.error(error)
+        return reply.status(400).send({ error: 'Failed to decrement credits' })
+      }
     }
   )
 }

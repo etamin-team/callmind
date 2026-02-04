@@ -21,6 +21,18 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: false,
     },
+    plan: {
+      type: String,
+      enum: ['free', 'starter', 'professional', 'enterprise'],
+      default: 'free',
+      required: false,
+    },
+    credits: {
+      type: Number,
+      default: 10,
+      min: 0,
+      required: false,
+    },
   },
   {
     timestamps: true,
