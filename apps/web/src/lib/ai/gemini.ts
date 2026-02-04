@@ -89,7 +89,7 @@ Generate ONLY the system prompt text, nothing else. Make it professional, detail
     return text;
 
   } catch (error: any) {
-    console.error("Gemini SDK Error:", error);
+    console.error("Gemini SDK Error:", error);  
     throw new Error(error.message || "Failed to generate system prompt via SDK");
   }
 };

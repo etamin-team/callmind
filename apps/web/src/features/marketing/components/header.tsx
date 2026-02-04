@@ -9,10 +9,10 @@ import { cn } from '@/lib/utils'
 import { AnimatedThemeToggler } from './animated-theme-toggler'
 
 const menuItems = [
-    { name: 'Features', href: '#link' },
-    { name: 'Solutions', href: '#link' },
-    { name: 'Pricing', href: '#link' },
-    { name: 'Testimonials', href: '#link' },
+    { name: 'Features', href: '#features' },
+    { name: 'Solutions', href: '#solutions' },
+    { name: 'Pricing', href: '#pricing' },
+    { name: 'Testimonials', href: '#testimonials' },
 ]
 
 export const HeroHeader = () => {
@@ -27,6 +27,15 @@ export const HeroHeader = () => {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
+
+    const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+        e.preventDefault()
+        const element = document.querySelector(href)
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' })
+            setMenuState(false)
+        }
+    }
     return (
         <header>
             <nav
@@ -58,7 +67,8 @@ export const HeroHeader = () => {
                                         {item.href.startsWith('#') ? (
                                             <a
                                                 href={item.href}
-                                                className="text-muted-foreground hover:text-accent-foreground block duration-150">
+                                                onClick={(e) => handleNavClick(e, item.href)}
+                                                className="text-muted-foreground hover:text-accent-foreground block duration-150 cursor-pointer">
                                                 <span>{item.name}</span>
                                             </a>
                                         ) : (
@@ -82,7 +92,8 @@ export const HeroHeader = () => {
                                             {item.href.startsWith('#') ? (
                                                 <a
                                                     href={item.href}
-                                                    className="text-muted-foreground hover:text-accent-foreground block duration-150">
+                                                    onClick={(e) => handleNavClick(e, item.href)}
+                                                    className="text-muted-foreground hover:text-accent-foreground block duration-150 cursor-pointer">
                                                     <span>{item.name}</span>
                                                 </a>
                                             ) : (

@@ -109,8 +109,7 @@ export default function HeroSection() {
                                     as="h1"
                                     className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]"
                                     style={{ fontFamily: 'Geist, sans-serif' }}>
-                                   AI-Powered Call Center Agents That Never Sleep 
-
+Automate Customer Calls with AI
 
  
 
@@ -123,7 +122,7 @@ export default function HeroSection() {
                                     as="p"
                                     className="mx-auto mt-8 max-w-2xl text-balance text-lg"
                                     style={{ fontFamily: 'Geist, sans-serif' }}>
-Deploy intelligent voice agents that handle customer calls in English, Uzbek, and Russian. Collect leads, analyze sentiments, and deliver exceptional customer experiences 24/7 across desktop and mobile platforms.
+Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analyze sentiment, and provide reliable 24/7 support across desktop and mobile.
                                       
 
                                 </TextEffect>

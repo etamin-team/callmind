@@ -11,15 +11,23 @@ export default function LandingPage() {
   return (
     <>
       <HeroSection />
-      <FeaturesSection />
-       <Features />
-      <Pricing2 />
-      <WallOfLoveSection />
-      <CallToAction />
-     
-      <FAQsFour />
+      <div id="features" className="scroll-mt-20">
+        <FeaturesSection />
+        <Features />
+      </div>
+      <div id="pricing" className="scroll-mt-20">
+        <Pricing2 />
+      </div>
+      <div id="testimonials" className="scroll-mt-20">
+        <WallOfLoveSection />
+      </div>
+      <div id="solutions" className="scroll-mt-20">
+        <CallToAction />
+      </div>
+      <div id="faq" className="scroll-mt-20">
+        <FAQsFour />
+      </div>
       <FooterSection />
-      
     </>
   );
 }
