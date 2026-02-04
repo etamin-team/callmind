@@ -51,7 +51,7 @@ const Pricing2 = ({
       monthlyPrice: "$0",
       yearlyPrice: "$0",
       features: [
-        { text: "2 calls/month" },
+        { text: "10 calls/month" },
         { text: "1 AI agent" },
         { text: "Uzbek language support" },
         { text: "Basic voice options" },
