@@ -22,11 +22,11 @@ async function migrateUsers() {
 
     console.log(`Found ${users.length} users to migrate`)
 
-    // Update each user with plan='free' and credits=10
+    // Update each user with plan='free' and credits=2
     for (const user of users) {
       await UserModel.findByIdAndUpdate(user.id, {
         plan: 'free',
-        credits: 10
+        credits: 2
       })
       console.log(`Migrated user: ${user.email}`)
     }

@@ -8,7 +8,7 @@ export const UserSchema = z.object({
   name: z.string().min(1).max(100),
   avatar: z.string().url().optional(),
   plan: PlanEnum.default('free'),
-  credits: z.number().int().min(0).default(10),
+  credits: z.number().int().min(0).default(2),
   createdAt: z.date(),
   updatedAt: z.date(),
 })

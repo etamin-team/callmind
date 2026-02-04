@@ -15,9 +15,9 @@ const menuItems = [
 
 const PLAN_LIMITS: Record<string, number> = {
   free: 10,
-  starter: 100,
-  professional: 500,
-  enterprise: 2000,
+  starter: 50,
+  professional: 125,
+  enterprise: 500,
 }
 
 export function AgentSidebar() {

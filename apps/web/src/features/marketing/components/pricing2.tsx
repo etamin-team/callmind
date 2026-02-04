@@ -37,6 +37,7 @@ interface Pricing2Props {
   heading?: string;
   description?: string;
   plans?: PricingPlan[];
+  enterprisePlan?: PricingPlan;
   className?: string;
 }
 
@@ -51,7 +52,7 @@ const Pricing2 = ({
       monthlyPrice: "$0",
       yearlyPrice: "$0",
       features: [
-        { text: "10 calls/month" },
+        { text: "2 calls/month" },
         { text: "1 AI agent" },
         { text: "Uzbek language support" },
         { text: "Basic voice options" },
@@ -65,15 +66,15 @@ const Pricing2 = ({
     {
       id: "starter",
       name: "Starter",
-      description: "Perfect for small teams",
-      monthlyPrice: "$29",
-      yearlyPrice: "$290",
+      description: "Perfect for small businesses",
+      monthlyPrice: "$69",
+      yearlyPrice: "$690",
       features: [
-        { text: "100 calls/month" },
+        { text: "50 calls/month" },
         { text: "3 AI agents" },
-        { text: "Uzbek, English & Russian languages" },
+        { text: "Uzbek, English & Russian" },
         { text: "Multiple voice options" },
-        { text: "Call transcripts & recording" },
+        { text: "Call transcripts" },
         { text: "Basic analytics" },
         { text: "Email support" },
       ],
@@ -86,16 +87,16 @@ const Pricing2 = ({
       id: "pro",
       name: "Professional",
       description: "For growing call centers",
-      monthlyPrice: "$79",
-      yearlyPrice: "$790",
+      monthlyPrice: "$172",
+      yearlyPrice: "$1,720",
       features: [
-        { text: "500 calls/month" },
+        { text: "125 calls/month" },
         { text: "10 AI agents" },
-        { text: "All language support" },
+        { text: "All languages" },
         { text: "Premium voices & emotions" },
         { text: "Advanced sentiment analysis" },
-        { text: "CRM integration (HubSpot, Salesforce)" },
-        { text: "Knowledge base & training" },
+        { text: "CRM integrations" },
+        { text: "Knowledge base" },
         { text: "Priority support" },
       ],
       button: {
@@ -104,28 +105,51 @@ const Pricing2 = ({
       },
     },
     {
-      id: "enterprise",
-      name: "Enterprise",
-      description: "For enterprise teams",
-      monthlyPrice: "$199",
-      yearlyPrice: "$1,990",
+      id: "business",
+      name: "Business",
+      description: "For established teams",
+      monthlyPrice: "$345",
+      yearlyPrice: "$3,450",
       features: [
-        { text: "2,000 calls/month" },
-        { text: "Unlimited AI agents" },
-        { text: "All languages + custom models" },
-        { text: "Custom voice cloning" },
-        { text: "Advanced conversation analytics" },
-        { text: "Custom integrations & API access" },
-        { text: "Dedicated success manager" },
-        { text: "SSO & advanced security" },
-        { text: "On-premise deployment option" },
+        { text: "250 calls/month" },
+        { text: "25 AI agents" },
+        { text: "All languages" },
+        { text: "Premium voices & emotions" },
+        { text: "Advanced sentiment analysis" },
+        { text: "CRM integrations" },
+        { text: "Knowledge base" },
+        { text: "Priority support" },
+        { text: "Custom integrations" },
       ],
       button: {
-        text: "Contact Sales",
+        text: "Purchase",
         url: "https://shadcnblocks.com",
       },
     },
   ],
+  enterprisePlan = {
+    id: "enterprise",
+    name: "Enterprise",
+    description: "For large organizations",
+    monthlyPrice: "Negotiable",
+    yearlyPrice: "Negotiable",
+    features: [
+      { text: "Custom call volume" },
+      { text: "Unlimited AI agents" },
+      { text: "All languages + custom models" },
+      { text: "Custom voice cloning" },
+      { text: "Advanced analytics dashboard" },
+      { text: "Full API access" },
+      { text: "Dedicated account manager" },
+      { text: "SSO & advanced security" },
+      { text: "SLA guarantee" },
+      { text: "On-premise option" },
+    ],
+    button: {
+      text: "Contact Sales",
+      url: "mailto:sales@callmind.uz",
+    },
+  },
   className,
 }: Pricing2Props) => {
   const [isYearly, setIsYearly] = useState(false);
@@ -174,11 +198,6 @@ const Pricing2 = ({
                       Everything in Plus, and:
                     </p>
                   )}
-                  {plan.id === "enterprise" && (
-                    <p className="mb-3 font-semibold">
-                      Everything in Pro, and:
-                    </p>
-                  )}
                   <ul className="space-y-4">
                     {plan.features.map((feature, index) => (
                       <li
@@ -202,6 +221,71 @@ const Pricing2 = ({
             ))}
           </div>
         </div>
+
+        {/* Enterprise Plan - Separate Section */}
+        {enterprisePlan && (
+          <div className="mt-20 max-w-4xl mx-auto">
+            <Card className="bg-gradient-to-br from-muted to-muted/50 border-2">
+              <CardHeader>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between md:gap-8">
+                  <div className="space-y-2">
+                    <CardTitle className="text-2xl lg:text-3xl">
+                      {enterprisePlan.name}
+                    </CardTitle>
+                    <p className="text-muted-foreground">
+                      {enterprisePlan.description}
+                    </p>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm text-muted-foreground mb-1">Pricing</p>
+                    <p className="text-2xl font-semibold">{enterprisePlan.monthlyPrice}</p>
+                    <p className="text-xs text-muted-foreground">Contact us for custom quote</p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Separator className="mb-6" />
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div>
+                    <p className="mb-4 font-semibold">Key Features:</p>
+                    <ul className="space-y-3">
+                      {enterprisePlan.features.slice(0, 5).map((feature, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center gap-2 text-sm"
+                        >
+                          <CircleCheck className="size-4 text-primary" />
+                          <span>{feature.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="mb-4 font-semibold">Enterprise Benefits:</p>
+                    <ul className="space-y-3">
+                      {enterprisePlan.features.slice(5).map((feature, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center gap-2 text-sm"
+                        >
+                          <CircleCheck className="size-4 text-primary" />
+                          <span>{feature.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="mt-auto">
+                <Button asChild size="lg" className="w-full">
+                  <a href={enterprisePlan.button.url}>
+                    {enterprisePlan.button.text}
+                  </a>
+                </Button>
+              </CardFooter>
+            </Card>
+          </div>
+        )}
       </div>
     </section>
   );

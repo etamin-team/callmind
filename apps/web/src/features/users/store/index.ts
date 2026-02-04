@@ -13,7 +13,7 @@ interface UserStore {
 }
 
 export const useUserStore = create<UserStore>((set, get) => ({
-  credits: 10,
+  credits: 2,
   plan: 'free',
   isLoading: false,
 

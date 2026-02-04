@@ -114,12 +114,7 @@ export const HeroHeader = () => {
                                     size="sm"
                                     className="hidden lg:inline-flex gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white shadow-lg shadow-blue-500/20 border-0 rounded-full font-medium transition-all hover:scale-105"
                                 >
-                                    <Link to="/download">
-                                        <svg className="w-4 h-4 mr-1" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M0 12.402L35.2 7.61399V41.488H0V12.402ZM0 46.426H35.2V80.366L0 75.52V46.426ZM39.674 6.94199L87.198 0V41.488H39.674V6.94199ZM39.674 46.424H87.198V88L39.674 81.026V46.424Z" fill="currentColor"/>
-                                        </svg>
-                                        <span>Download</span>
-                                    </Link>
+                                 
                                 </Button>
                                 {isLoaded && isSignedIn ? (
                                     <Button
@@ -128,7 +123,7 @@ export const HeroHeader = () => {
                                         className="bg-blue-600 hover:bg-blue-700 text-white border-0"
                                     >
                                         <Link to="/agents">
-                                            <span>Agents</span>
+                                            <span>Dashboard</span>
                                         </Link>
                                     </Button>
                                 ) : (

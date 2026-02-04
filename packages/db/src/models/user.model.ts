@@ -29,7 +29,7 @@ const userSchema = new Schema<IUser>(
     },
     credits: {
       type: Number,
-      default: 10,
+      default: 2,
       min: 0,
       required: false,
     },
