@@ -46,7 +46,7 @@ export default function HeroSection() {
                                 container: {
                                     visible: {
                                         transition: {
-                                            delayChildren: 0.75,
+                                            delayChildren: 0,
                                         },
                                     },
                                 },
@@ -68,11 +68,11 @@ export default function HeroSection() {
                             }}
                             className="mask-b-from-35% mask-b-to-90% absolute inset-0 top-56 -z-20 lg:top-32">
                             <img
-                                src="https://ik.imagekit.io/lrigu76hy/tailark/night-background.jpg?updatedAt=1745733451120"
+                                src="https://ik.imagekit.io/lrigu76hy/tailark/night-background.jpg?updatedAt=1745733451120&tr=w-1920,h-1080,fo-auto"
                                 alt="background"
                                 className="hidden size-full dark:block"
-                                width="3276"
-                                height="4095"
+                                width="1920"
+                                height="1080"
                             />
                         </AnimatedGroup>
 
@@ -118,7 +118,7 @@ Automate Customer Calls with AI
                                     per="line"
                                     preset="fade-in-blur"
                                     speedSegment={0.225}
-                                    delay={0.375}
+                                    delay={0}
                                     as="p"
                                     className="mx-auto mt-8 max-w-2xl text-balance text-lg"
                                     style={{ fontFamily: 'Geist, sans-serif' }}>
@@ -133,7 +133,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                             visible: {
                                                 transition: {
                                                     staggerChildren: 0.05,
-                                                    delayChildren: 0.5625,
+                                                    delayChildren: 0.1,
                                                 },
                                             },
                                         },
@@ -172,7 +172,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                     visible: {
                                         transition: {
                                             staggerChildren: 0.05,
-                                            delayChildren: 0.5625,
+                                            delayChildren: 0.1,
                                         },
                                     },
                                 },
@@ -181,18 +181,16 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                             <div className="mask-b-from-55% relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
                                 <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
                                     <img
-                                        className="bg-background aspect-15/8 relative hidden rounded-2xl dark:block"
+                                        className="bg-background aspect-15/8 relative hidden w-full rounded-2xl dark:block"
                                         src="/wallhaven-8xreqk.jpg"
                                         alt="app screen"
-                                        width="2700"
-                                        height="1440"
+                                        loading="lazy"
                                     />
                                     <img
-                                        className="z-2 border-border/25 aspect-15/8 relative rounded-2xl border dark:hidden"
+                                        className="z-2 border-border/25 aspect-15/8 relative w-full rounded-2xl border dark:hidden"
                                         src="/wallhaven-8xreqk.jpg"
                                         alt="app screen"
-                                        width="2700"
-                                        height="1440"
+                                        loading="lazy"
                                     />
                                 </div>
                             </div>
@@ -216,8 +214,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                     className="mx-auto h-5 w-fit dark:invert"
                                     src="https://html.tailus.io/blocks/customers/nvidia.svg"
                                     alt="Nvidia Logo"
-                                    height="20"
-                                    width="auto"
+                                    loading="lazy"
                                 />
                             </div>
 
@@ -226,8 +223,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                     className="mx-auto h-4 w-fit dark:invert"
                                     src="https://html.tailus.io/blocks/customers/column.svg"
                                     alt="Column Logo"
-                                    height="16"
-                                    width="auto"
+                                    loading="lazy"
                                 />
                             </div>
                             <div className="flex">
@@ -235,8 +231,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                     className="mx-auto h-4 w-fit dark:invert"
                                     src="https://html.tailus.io/blocks/customers/github.svg"
                                     alt="GitHub Logo"
-                                    height="16"
-                                    width="auto"
+                                    loading="lazy"
                                 />
                             </div>
                             <div className="flex">
@@ -244,8 +239,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                     className="mx-auto h-5 w-fit dark:invert"
                                     src="https://html.tailus.io/blocks/customers/nike.svg"
                                     alt="Nike Logo"
-                                    height="20"
-                                    width="auto"
+                                    loading="lazy"
                                 />
                             </div>
                             <div className="flex">
@@ -253,8 +247,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                     className="mx-auto h-5 w-fit dark:invert"
                                     src="https://html.tailus.io/blocks/customers/lemonsqueezy.svg"
                                     alt="Lemon Squeezy Logo"
-                                    height="20"
-                                    width="auto"
+                                    loading="lazy"
                                 />
                             </div>
                             <div className="flex">
@@ -262,8 +255,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                     className="mx-auto h-4 w-fit dark:invert"
                                     src="https://html.tailus.io/blocks/customers/laravel.svg"
                                     alt="Laravel Logo"
-                                    height="16"
-                                    width="auto"
+                                    loading="lazy"
                                 />
                             </div>
                             <div className="flex">
@@ -271,8 +263,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                     className="mx-auto h-7 w-fit dark:invert"
                                     src="https://html.tailus.io/blocks/customers/lilly.svg"
                                     alt="Lilly Logo"
-                                    height="28"
-                                    width="auto"
+                                    loading="lazy"
                                 />
                             </div>
 
@@ -281,8 +272,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                     className="mx-auto h-6 w-fit dark:invert"
                                     src="https://html.tailus.io/blocks/customers/openai.svg"
                                     alt="OpenAI Logo"
-                                    height="24"
-                                    width="auto"
+                                    loading="lazy"
                                 />
                             </div>
                         </div>
