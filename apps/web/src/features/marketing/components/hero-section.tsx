@@ -21,7 +21,7 @@ const transitionVariants = {
             transition: {
                 type: 'spring',
                 bounce: 0.3,
-                duration: 1.5,
+                duration: 1.125,
             },
         },
     },
@@ -46,7 +46,7 @@ export default function HeroSection() {
                                 container: {
                                     visible: {
                                         transition: {
-                                            delayChildren: 1,
+                                            delayChildren: 0.75,
                                         },
                                     },
                                 },
@@ -61,7 +61,7 @@ export default function HeroSection() {
                                         transition: {
                                             type: 'spring',
                                             bounce: 0.3,
-                                            duration: 2,
+                                            duration: 1.5,
                                         },
                                     },
                                 },
@@ -105,25 +105,25 @@ export default function HeroSection() {
 
                                 <TextEffect
                                     preset="fade-in-blur"
-                                    speedSegment={0.3}
+                                    speedSegment={0.225}
                                     as="h1"
                                     className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]"
                                     style={{ fontFamily: 'Geist, sans-serif' }}>
 Automate Customer Calls with AI
 
- 
+
 
                                 </TextEffect>
                                 <TextEffect
                                     per="line"
                                     preset="fade-in-blur"
-                                    speedSegment={0.3}
-                                    delay={0.5}
+                                    speedSegment={0.225}
+                                    delay={0.375}
                                     as="p"
                                     className="mx-auto mt-8 max-w-2xl text-balance text-lg"
                                     style={{ fontFamily: 'Geist, sans-serif' }}>
 Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analyze sentiment, and provide reliable 24/7 support across desktop and mobile.
-                                      
+
 
                                 </TextEffect>
 
@@ -133,7 +133,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                             visible: {
                                                 transition: {
                                                     staggerChildren: 0.05,
-                                                    delayChildren: 0.75,
+                                                    delayChildren: 0.5625,
                                                 },
                                             },
                                         },
@@ -172,7 +172,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                     visible: {
                                         transition: {
                                             staggerChildren: 0.05,
-                                            delayChildren: 0.75,
+                                            delayChildren: 0.5625,
                                         },
                                     },
                                 },
