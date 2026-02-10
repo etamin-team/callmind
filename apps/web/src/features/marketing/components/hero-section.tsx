@@ -11,17 +11,15 @@ const transitionVariants = {
     item: {
         hidden: {
             opacity: 0,
-            filter: 'blur(12px)',
-            y: 12,
+            y: 8,
         },
         visible: {
             opacity: 1,
-            filter: 'blur(0px)',
             y: 0,
             transition: {
                 type: 'spring',
-                bounce: 0.3,
-                duration: 1.125,
+                bounce: 0.2,
+                duration: 0.6,
             },
         },
     },
@@ -53,15 +51,11 @@ export default function HeroSection() {
                                 item: {
                                     hidden: {
                                         opacity: 0,
-                                        y: 20,
                                     },
                                     visible: {
                                         opacity: 1,
-                                        y: 0,
                                         transition: {
-                                            type: 'spring',
-                                            bounce: 0.3,
-                                            duration: 1.5,
+                                            duration: 0.5,
                                         },
                                     },
                                 },
@@ -104,11 +98,11 @@ export default function HeroSection() {
                                 </AnimatedGroup>
 
                                 <TextEffect
-                                    preset="fade-in-blur"
+                                    preset="fade"
                                     speedSegment={0.225}
                                     as="h1"
                                     className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]"
-                                    style={{ fontFamily: 'Geist, sans-serif' }}>
+                                    style={{ fontFamily: 'Geist, sans-serif', willChange: 'opacity, transform' }}>
 Automate Customer Calls with AI
 
 
@@ -116,12 +110,12 @@ Automate Customer Calls with AI
                                 </TextEffect>
                                 <TextEffect
                                     per="line"
-                                    preset="fade-in-blur"
+                                    preset="fade"
                                     speedSegment={0.225}
                                     delay={0}
                                     as="p"
                                     className="mx-auto mt-8 max-w-2xl text-balance text-lg"
-                                    style={{ fontFamily: 'Geist, sans-serif' }}>
+                                    style={{ fontFamily: 'Geist, sans-serif', willChange: 'opacity, transform' }}>
 Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analyze sentiment, and provide reliable 24/7 support across desktop and mobile.
 
 
@@ -137,7 +131,21 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                                 },
                                             },
                                         },
-                                        ...transitionVariants,
+                                        item: {
+                                            hidden: {
+                                                opacity: 0,
+                                                y: 8,
+                                            },
+                                            visible: {
+                                                opacity: 1,
+                                                y: 0,
+                                                transition: {
+                                                    type: 'spring',
+                                                    bounce: 0.2,
+                                                    duration: 0.5,
+                                                },
+                                            },
+                                        },
                                     }}
                                     className="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row">
                                     <div
@@ -176,7 +184,21 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                         },
                                     },
                                 },
-                                ...transitionVariants,
+                                item: {
+                                    hidden: {
+                                        opacity: 0,
+                                        y: 8,
+                                    },
+                                    visible: {
+                                        opacity: 1,
+                                        y: 0,
+                                        transition: {
+                                            type: 'spring',
+                                            bounce: 0.2,
+                                            duration: 0.5,
+                                        },
+                                    },
+                                },
                             }}>
                             <div className="mask-b-from-55% relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
                                 <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
