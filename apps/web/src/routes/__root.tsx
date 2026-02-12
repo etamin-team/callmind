@@ -136,7 +136,7 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
         },
       },
     })
-  }, [isSignedIn, user, isLoaded, router])
+  }, [isSignedIn, user, isLoaded])
 
   return <>{children}</>
 }
