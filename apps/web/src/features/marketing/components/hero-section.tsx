@@ -1,6 +1,6 @@
 import React from 'react'
 import {Link} from '@tanstack/react-router'
-import { ArrowRight, ChevronRight } from 'lucide-react'
+import { ArrowRight, ChevronRight, Phone, Bot, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 import { TextEffect } from '@/components/ui/text-effect'
@@ -25,6 +25,24 @@ const transitionVariants = {
     },
 }
 
+const features = [
+  {
+    icon: Phone,
+    title: "24/7 Calls",
+    description: "Never miss a customer call"
+  },
+  {
+    icon: Bot,
+    title: "AI Agents",
+    description: "Intelligent voice assistants"
+  },
+  {
+    icon: MessageSquare,
+    title: "Multi-language",
+    description: "Uzbek, English, Russian"
+  },
+]
+
 export default function HeroSection() {
     return (
         <>
@@ -37,39 +55,8 @@ export default function HeroSection() {
                     <div className="h-320 absolute left-0 top-0 w-60 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.06)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)] [translate:5%_-50%]" />
                     <div className="h-320 -translate-y-87.5 absolute left-0 top-0 w-60 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
                 </div>
-                <section>
-                    <div className="relative pt-24 md:pt-36">
-                        <AnimatedGroup
-                            variants={{
-                                container: {
-                                    visible: {
-                                        transition: {
-                                            delayChildren: 0,
-                                        },
-                                    },
-                                },
-                                item: {
-                                    hidden: {
-                                        opacity: 0,
-                                    },
-                                    visible: {
-                                        opacity: 1,
-                                        transition: {
-                                            duration: 0.5,
-                                        },
-                                    },
-                                },
-                            }}
-                            className="mask-b-from-35% mask-b-to-90% absolute inset-0 top-56 -z-20 lg:top-32">
-                            <img
-                                src="https://ik.imagekit.io/lrigu76hy/tailark/night-background.jpg?updatedAt=1745733451120&tr=w-1920,h-1080,fo-auto"
-                                alt="background"
-                                className="hidden size-full dark:block"
-                                width="1920"
-                                height="1080"
-                            />
-                        </AnimatedGroup>
-
+                <section className="min-h-screen flex flex-col">
+                    <div className="relative pt-24 md:pt-36 flex-1 flex flex-col">
                         <div
                             aria-hidden
                             className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--color-background)_75%)]"
@@ -81,7 +68,7 @@ export default function HeroSection() {
                                     <Link
                                         href="#link"
                                         className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950">
-                                        <span className="text-foreground text-sm">🚀 Real-Time Conversation Intelligence</span>
+                                        <span className="text-foreground text-sm">Real-Time Conversation Intelligence</span>
                                         <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
 
                                         <div className="bg-background group-hover:bg-muted size-6 overflow-hidden rounded-full duration-500">
@@ -103,10 +90,7 @@ export default function HeroSection() {
                                     as="h1"
                                     className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]"
                                     style={{ fontFamily: 'Geist, sans-serif', willChange: 'opacity, transform' }}>
-Automate Customer Calls with AI
-
-
-
+                                    Automate Customer Calls with AI
                                 </TextEffect>
                                 <TextEffect
                                     per="line"
@@ -114,11 +98,9 @@ Automate Customer Calls with AI
                                     speedSegment={0.225}
                                     delay={0}
                                     as="p"
-                                    className="mx-auto mt-8 max-w-2xl text-balance text-lg"
+                                    className="mx-auto mt-8 max-w-2xl text-balance text-lg text-muted-foreground"
                                     style={{ fontFamily: 'Geist, sans-serif', willChange: 'opacity, transform' }}>
-Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analyze sentiment, and provide reliable 24/7 support across desktop and mobile.
-
-
+                                    Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analyze sentiment, and provide reliable 24/7 support.
                                 </TextEffect>
 
                                 <AnimatedGroup
@@ -155,7 +137,7 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                             asChild
                                             size="lg"
                                             className="rounded-xl px-5 text-base">
-                                            <Link href="#link">
+                                            <Link href="/sign-up">
                                                 <span className="text-nowrap">Start Free Trial</span>
                                             </Link>
                                         </Button>
@@ -166,57 +148,56 @@ Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analy
                                         size="lg"
                                         variant="ghost"
                                         className="h-10.5 rounded-xl px-5">
-                                        <Link href="#link">
-                                            <span className="text-nowrap">See It Live</span>
+                                        <Link href="#demo">
+                                            <span className="text-nowrap">Watch Demo</span>
                                         </Link>
                                     </Button>
                                 </AnimatedGroup>
+
+                                {/* Feature Cards */}
+                                <AnimatedGroup
+                                    variants={{
+                                        container: {
+                                            visible: {
+                                                transition: {
+                                                    staggerChildren: 0.1,
+                                                    delayChildren: 0.3,
+                                                },
+                                            },
+                                        },
+                                        item: {
+                                            hidden: {
+                                                opacity: 0,
+                                                y: 20,
+                                            },
+                                            visible: {
+                                                opacity: 1,
+                                                y: 0,
+                                                transition: {
+                                                    type: 'spring',
+                                                    bounce: 0.2,
+                                                    duration: 0.6,
+                                                },
+                                            },
+                                        },
+                                    }}
+                                    className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto"
+                                >
+                                    {features.map((feature, index) => (
+                                        <div
+                                            key={index}
+                                            className="group relative rounded-xl border bg-muted/30 p-6 text-left transition-all hover:bg-muted/50 hover:border-primary/50"
+                                        >
+                                            <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
+                                                <feature.icon className="h-6 w-6 text-primary" />
+                                            </div>
+                                            <h3 className="font-semibold text-lg">{feature.title}</h3>
+                                            <p className="mt-1 text-sm text-muted-foreground">{feature.description}</p>
+                                        </div>
+                                    ))}
+                                </AnimatedGroup>
                             </div>
                         </div>
-
-                        <AnimatedGroup
-                            variants={{
-                                container: {
-                                    visible: {
-                                        transition: {
-                                            staggerChildren: 0.05,
-                                            delayChildren: 0.1,
-                                        },
-                                    },
-                                },
-                                item: {
-                                    hidden: {
-                                        opacity: 0,
-                                        y: 8,
-                                    },
-                                    visible: {
-                                        opacity: 1,
-                                        y: 0,
-                                        transition: {
-                                            type: 'spring',
-                                            bounce: 0.2,
-                                            duration: 0.5,
-                                        },
-                                    },
-                                },
-                            }}>
-                            <div className="mask-b-from-55% relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
-                                <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
-                                    <img
-                                        className="bg-background aspect-15/8 relative hidden w-full rounded-2xl dark:block"
-                                        src="/wallhaven-8xreqk.jpg"
-                                        alt="app screen"
-                                        loading="lazy"
-                                    />
-                                    <img
-                                        className="z-2 border-border/25 aspect-15/8 relative w-full rounded-2xl border dark:hidden"
-                                        src="/wallhaven-8xreqk.jpg"
-                                        alt="app screen"
-                                        loading="lazy"
-                                    />
-                                </div>
-                            </div>
-                        </AnimatedGroup>
                     </div>
                 </section>
                 <section className="bg-background pb-16 pt-16 md:pb-32">
