@@ -68,13 +68,13 @@ const plans = [
 const enterprisePlan = {
   id: "enterprise",
   name: "Enterprise",
-  price: { monthly: 690, yearly: 6900 },
   description: "For large organizations",
   features: [
     "Unlimited calls",
     "Unlimited super realistic calls",
     "Unlimited AI agents",
     "White-label solution",
+    "Integrations to custom systems",
     "Priority support",
     "SLA guarantee",
     "Custom contract",
@@ -159,13 +159,7 @@ const Pricing2 = ({ className }: Pricing2Props) => {
                   Premium
                 </span>
               </div>
-              <p className="text-lg text-muted-foreground mb-6">{enterprisePlan.description}</p>
-              <div className="mb-6">
-                <span className="text-5xl font-bold">
-                  ${yearly ? enterprisePlan.price.yearly : enterprisePlan.price.monthly}
-                </span>
-                <span className="text-muted-foreground text-xl">/{yearly ? "yr" : "mo"}</span>
-              </div>
+              <p className="text-lg text-muted-foreground mb-8">{enterprisePlan.description}</p>
               <Button size="lg" className="w-full md:w-auto" asChild>
                 <a href={enterprisePlan.href}>{enterprisePlan.cta}</a>
               </Button>
