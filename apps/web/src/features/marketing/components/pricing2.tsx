@@ -65,6 +65,24 @@ const plans = [
   },
 ];
 
+const enterprisePlan = {
+  id: "enterprise",
+  name: "Enterprise",
+  price: { monthly: 690, yearly: 6900 },
+  description: "For large organizations",
+  features: [
+    "Unlimited calls",
+    "Unlimited super realistic calls",
+    "Unlimited AI agents",
+    "White-label solution",
+    "Priority support",
+    "SLA guarantee",
+    "Custom contract",
+  ],
+  cta: "Contact Sales",
+  href: "mailto:sales@callmind.uz",
+};
+
 interface Pricing2Props {
   className?: string;
 }
@@ -88,7 +106,7 @@ const Pricing2 = ({ className }: Pricing2Props) => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-4">
+        <div className="grid md:grid-cols-4 gap-4 mb-6">
           {plans.map((plan) => (
             <div
               key={plan.id}
@@ -129,6 +147,40 @@ const Pricing2 = ({ className }: Pricing2Props) => {
               </Button>
             </div>
           ))}
+        </div>
+
+        {/* Enterprise Card - Full Width */}
+        <div className="relative rounded-xl border-2 border-primary bg-gradient-to-r from-primary/5 to-primary/10 p-8 md:p-12">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <h3 className="text-3xl font-bold">{enterprisePlan.name}</h3>
+                <span className="bg-primary text-primary-foreground text-sm px-3 py-1 rounded-full">
+                  Premium
+                </span>
+              </div>
+              <p className="text-lg text-muted-foreground mb-6">{enterprisePlan.description}</p>
+              <div className="mb-6">
+                <span className="text-5xl font-bold">
+                  ${yearly ? enterprisePlan.price.yearly : enterprisePlan.price.monthly}
+                </span>
+                <span className="text-muted-foreground text-xl">/{yearly ? "yr" : "mo"}</span>
+              </div>
+              <Button size="lg" className="w-full md:w-auto" asChild>
+                <a href={enterprisePlan.href}>{enterprisePlan.cta}</a>
+              </Button>
+            </div>
+            <div>
+              <ul className="space-y-4">
+                {enterprisePlan.features.map((feature) => (
+                  <li key={feature} className="flex items-center gap-3 text-base">
+                    <Check className="h-5 w-5 text-primary shrink-0" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
