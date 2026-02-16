@@ -225,14 +225,23 @@ export function TextEffect({
   style,
 }: TextEffectProps) {
   const segments = splitText(children, per);
-  const MotionTag = motion[as as keyof typeof motion] as typeof motion.div;
+  const MotionTagElement = motion[as as keyof typeof motion] as typeof motion.div;
+  const StaticTag = as;
+
+  if (!trigger) {
+    // Render static content during SSR / before hydration to prevent layout shift
+    return (
+      <StaticTag className={className} style={style}>
+        {children}
+      </StaticTag>
+    );
+  }
 
   const baseVariants = preset
     ? presetVariants[preset]
     : { container: defaultContainerVariants, item: defaultItemVariants };
 
   const stagger = defaultStaggerTimes[per] / speedReveal;
-
   const baseDuration = 0.3 / speedSegment;
 
   const customStagger = hasTransition(variants?.container?.visible ?? {})
@@ -266,29 +275,27 @@ export function TextEffect({
 
   return (
     <AnimatePresence mode='popLayout'>
-      {trigger && (
-        <MotionTag
-          initial='hidden'
-          animate='visible'
-          exit='exit'
-          variants={computedVariants.container}
-          className={className}
-          onAnimationComplete={onAnimationComplete}
-          onAnimationStart={onAnimationStart}
-          style={style}
-        >
-          {per !== 'line' ? <span className='sr-only'>{children}</span> : null}
-          {segments.map((segment, index) => (
-            <AnimationComponent
-              key={`${per}-${index}-${segment}`}
-              segment={segment}
-              variants={computedVariants.item}
-              per={per}
-              segmentWrapperClassName={segmentWrapperClassName}
-            />
-          ))}
-        </MotionTag>
-      )}
+      <MotionTagElement
+        initial='hidden'
+        animate='visible'
+        exit='exit'
+        variants={computedVariants.container}
+        className={className}
+        onAnimationComplete={onAnimationComplete}
+        onAnimationStart={onAnimationStart}
+        style={style}
+      >
+        {per !== 'line' ? <span className='sr-only'>{children}</span> : null}
+        {segments.map((segment, index) => (
+          <AnimationComponent
+            key={`${per}-${index}-${segment}`}
+            segment={segment}
+            variants={computedVariants.item}
+            per={per}
+            segmentWrapperClassName={segmentWrapperClassName}
+          />
+        ))}
+      </MotionTagElement>
     </AnimatePresence>
   );
 }

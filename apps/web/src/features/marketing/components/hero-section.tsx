@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState, useEffect } from 'react'
 import {Link} from '@tanstack/react-router'
 import { ArrowRight, ChevronRight, Phone, Bot, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -44,6 +44,14 @@ const features = [
 ]
 
 export default function HeroSection() {
+    const [hasMounted, setHasMounted] = useState(false)
+
+    useEffect(() => {
+        // Small delay to ensure hydration is complete before triggering animations
+        const id = requestAnimationFrame(() => setHasMounted(true))
+        return () => cancelAnimationFrame(id)
+    }, [])
+
     return (
         <>
             <HeroHeader />
@@ -88,6 +96,7 @@ export default function HeroSection() {
                                     preset="fade"
                                     speedSegment={0.225}
                                     as="h1"
+                                    trigger={hasMounted}
                                     className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]"
                                     style={{ fontFamily: 'Geist, sans-serif', willChange: 'opacity, transform' }}>
                                     Automate Customer Calls with AI
@@ -96,7 +105,8 @@ export default function HeroSection() {
                                     per="line"
                                     preset="fade"
                                     speedSegment={0.225}
-                                    delay={0}
+                                    delay={0.3}
+                                    trigger={hasMounted}
                                     as="p"
                                     className="mx-auto mt-8 max-w-2xl text-balance text-lg text-muted-foreground"
                                     style={{ fontFamily: 'Geist, sans-serif', willChange: 'opacity, transform' }}>
