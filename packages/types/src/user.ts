@@ -9,6 +9,9 @@ export const UserSchema = z.object({
   avatar: z.string().url().optional(),
   plan: PlanEnum.default('free'),
   credits: z.number().int().min(0).default(2),
+  paddleCustomerId: z.string().optional(),
+  paddleSubscriptionId: z.string().optional(),
+  subscriptionId: z.string().optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
 })

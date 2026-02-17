@@ -1,8 +1,7 @@
 import type { CreateAgentRequest, Agent, UpdateAgentRequest } from '../types'
+import { env } from '@/env'
 
-const API_BASE_URL = process.env.NODE_ENV === 'development' 
-  ? 'http://localhost:3001/api' 
-  : 'https://api.callmind.ai/v1'
+const API_BASE_URL = env.VITE_API_URL + '/api'
 
 export async function createAgent(data: CreateAgentRequest, token: string): Promise<Agent> {
   try {
@@ -68,7 +67,6 @@ export async function getAgents(token: string): Promise<Array<Agent>> {
     throw error
   }
 }
-// ... existing imports ...
 
 export async function deleteAgent(id: string, token: string): Promise<void> {
   try {

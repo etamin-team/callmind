@@ -108,6 +108,12 @@ const todosRoutes: FastifyPluginAsync = async (fastify) => {
               updatedAt: { type: 'string' },
             },
           },
+          404: {
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+            },
+          },
         },
       },
     },
@@ -144,6 +150,12 @@ const todosRoutes: FastifyPluginAsync = async (fastify) => {
         },
         response: {
           204: { type: 'null' },
+          404: {
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+            },
+          },
         },
       },
     },

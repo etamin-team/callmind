@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Bot, Phone, Settings2, Loader2, PhoneCall, Clock, Mic, MessageSquare, Sparkles, Activity } from 'lucide-react'
+import { Bot, Phone, Settings2, Loader2, PhoneOff, CheckCircle2, AlertCircle } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAgentStore } from '@/features/agents/store'
 import { useUserStore } from '@/features/users/store'
@@ -40,7 +40,7 @@ const voiceOptions = [
 ]
 
 function PlaygroundPage() {
-  const { agents, currentAgent, updateAgent, fetchAgents } = useAgentStore()
+  const { currentAgent, updateAgent, fetchAgents } = useAgentStore()
   const { getToken, userId } = useAuth()
   const { agentId } = Route.useParams()
   const { credits, fetchUserCredits, decrementCreditsOnServer } = useUserStore()
@@ -235,275 +235,324 @@ function PlaygroundPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background border-b">
-        <div className="max-w-3xl mx-auto px-6 py-4">
+      <div className="border-b">
+        <div className="max-w-6xl mx-auto px-8 py-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg border flex items-center justify-center">
-                <Bot className="h-5 w-5 text-muted-foreground" />
+            <div className="flex items-center gap-4">
+              <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <Bot className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <h1 className="text-lg font-semibold">{currentAgent.name}</h1>
-                <p className="text-xs text-muted-foreground">{currentAgent.businessDescription}</p>
+                <p className="text-sm text-muted-foreground">{currentAgent.businessDescription}</p>
               </div>
             </div>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() => setShowSettings(!showSettings)}
-              className="gap-2"
+              className={cn("gap-2", showSettings && "bg-accent")}
             >
               <Settings2 className="w-4 h-4" />
-              Settings
+              Configure
             </Button>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className="max-w-3xl mx-auto px-6 py-8">
-        {/* Settings Panel */}
-        {showSettings && (
-          <div className="mb-8 rounded-lg border p-6">
-            <h3 className="text-sm font-semibold mb-4">Agent Configuration</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-xs">Voice</Label>
-                <Select
-                  value={tempConfig.voice}
-                  onValueChange={(value) => setTempConfig({ ...tempConfig, voice: value })}
-                >
-                  <SelectTrigger className="h-10">
-                    <SelectValue>
-                      <div className="flex items-center gap-2">
-                        <div className={cn("w-2 h-2 rounded-full", selectedVoice.color)} />
-                        <span className="text-sm">{selectedVoice.label}</span>
-                      </div>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {voiceOptions.map((voice) => (
-                      <SelectItem key={voice.value} value={voice.value}>
-                        <div className="flex items-center gap-2">
-                          <div className={cn("w-2 h-2 rounded-full", voice.color)} />
-                          <span>{voice.label}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-xs">Greeting</Label>
-                <Input
-                  value={tempConfig.greeting}
-                  onChange={(e) => setTempConfig({ ...tempConfig, greeting: e.target.value })}
-                  placeholder="Hi, how can I help you today?"
-                  className="h-10"
-                />
-              </div>
-            </div>
-
-            {(hasUnsavedChanges || isSaving) && (
-              <div className="mt-4 flex items-center gap-3 pt-4 border-t">
-                <Button
-                  onClick={handleSaveConfig}
-                  disabled={isSaving}
-                  size="sm"
-                  className="h-8 text-xs"
-                >
-                  {isSaving ? (
-                    <>
-                      <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    'Save Changes'
-                  )}
-                </Button>
-                {hasUnsavedChanges && !isSaving && (
-                  <span className="text-xs text-amber-600">Unsaved changes</span>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Main Call Interface - Interesting Layout */}
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Column - Phone & Call */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Header */}
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">Make a Call</h2>
-              <p className="text-muted-foreground">Start a conversation with your AI agent</p>
-            </div>
-
-            {/* Phone Input - Hero */}
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="phone" className="text-sm font-medium">Phone Number</Label>
-                <p className="text-xs text-muted-foreground mt-1">Enter Uzbekistan number (+998)</p>
-              </div>
-              <div className="flex gap-3">
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+998 90 123 45 67"
-                  value={phoneNumberDisplay}
-                  onChange={handlePhoneChange}
-                  className={cn(
-                    "h-14 text-lg",
-                    !isValidUzbekNumber && phoneNumberDisplay.length > 5 && "border-amber-500"
-                  )}
-                  autoFocus
-                />
-                <Button
-                  onClick={handleMakeCall}
-                  disabled={!isValidUzbekNumber || isCalling}
-                  className="h-14 px-8 text-base"
-                >
-                  {isCalling ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Calling...
-                    </>
-                  ) : (
-                    <>
-                      <Phone className="w-5 h-5 mr-2" />
-                      Call
-                    </>
-                  )}
-                </Button>
-              </div>
-
-              {/* Call Status Messages */}
-              {callError && (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-                  <p className="text-sm text-red-600">{callError}</p>
-                </div>
-              )}
-
-              {activeCallSid && !isCalling && (
-                <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                        <p className="text-sm font-medium text-green-600">Call initiated successfully!</p>
-                      </div>
-                      <p className="text-xs text-green-600">Call ID: {activeCallSid}</p>
+      <main className="max-w-6xl mx-auto px-8 py-8">
+        <div className="grid lg:grid-cols-[1fr_320px] gap-8">
+          {/* Main Content */}
+          <div className="space-y-8">
+            {/* Settings Card */}
+            {showSettings && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Agent Configuration</CardTitle>
+                  <CardDescription>Customize voice and greeting settings</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-5">
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <div className="space-y-2.5">
+                      <Label htmlFor="voice" className="text-sm font-medium">Voice</Label>
+                      <Select
+                        value={tempConfig.voice}
+                        onValueChange={(value) => setTempConfig({ ...tempConfig, voice: value })}
+                      >
+                        <SelectTrigger id="voice">
+                          <SelectValue>
+                            <div className="flex items-center gap-2.5">
+                              <div className={cn("w-2 h-2 rounded-full", selectedVoice.color)} />
+                              <span className="font-medium">{selectedVoice.label}</span>
+                              <span className="text-muted-foreground">• {selectedVoice.description}</span>
+                            </div>
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {voiceOptions.map((voice) => (
+                            <SelectItem key={voice.value} value={voice.value}>
+                              <div className="flex items-center gap-2.5">
+                                <div className={cn("w-2 h-2 rounded-full", voice.color)} />
+                                <div>
+                                  <div className="font-medium">{voice.label}</div>
+                                  <div className="text-xs text-muted-foreground">{voice.description}</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
+
+                    <div className="space-y-2.5">
+                      <Label htmlFor="greeting" className="text-sm font-medium">Greeting Message</Label>
+                      <Input
+                        id="greeting"
+                        value={tempConfig.greeting}
+                        onChange={(e) => setTempConfig({ ...tempConfig, greeting: e.target.value })}
+                        placeholder="Hi, how can I help you today?"
+                      />
+                    </div>
+                  </div>
+
+                  {(hasUnsavedChanges || isSaving) && (
+                    <div className="flex items-center justify-between pt-5 border-t">
+                      <span className="text-sm text-muted-foreground">
+                        {hasUnsavedChanges && !isSaving && 'You have unsaved changes'}
+                      </span>
+                      <Button
+                        onClick={handleSaveConfig}
+                        disabled={isSaving}
+                        size="sm"
+                      >
+                        {isSaving ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          'Save Changes'
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Phone Call Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Make a Call</CardTitle>
+                <CardDescription>Enter a phone number to start an AI-powered call</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Phone Input */}
+                <div className="space-y-3">
+                  <Label htmlFor="phone" className="text-sm font-medium">Phone Number</Label>
+                  <div className="flex gap-3">
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+998 90 123 45 67"
+                      value={phoneNumberDisplay}
+                      onChange={handlePhoneChange}
+                      className={cn(
+                        "h-11 flex-1",
+                         !isValidUzbekNumber && phoneNumberDisplay.length > 5 && "border-amber-500 focus-visible:ring-amber-500/20"
+                      )}
+                    />
                     <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={resetCall}
-                      className="h-8 text-xs"
+                      onClick={handleMakeCall}
+                      disabled={!isValidUzbekNumber || isCalling}
+                      className="h-11 px-6"
                     >
-                      New Call
+                      {isCalling ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Calling...
+                        </>
+                      ) : (
+                        <>
+                          <Phone className="w-4 h-4" />
+                          Call Now
+                        </>
+                      )}
                     </Button>
                   </div>
-                </div>
-              )}
-
-              {!isValidUzbekNumber && phoneNumberDisplay.length > 5 && (
-                <p className="text-xs text-amber-600">
-                  Please enter a valid Uzbekistan phone number
-                </p>
-              )}
-            </div>
-
-            {/* Optional Fields */}
-            <div className="space-y-5">
-              <div className="border-t pt-6">
-                <h3 className="text-sm font-medium mb-4">Call Details</h3>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-5">
-                <div className="space-y-2">
-                  <Label htmlFor="customerName" className="text-sm">Customer Name</Label>
-                  <Input
-                    id="customerName"
-                    placeholder="John Doe"
-                    value={callDetails.customerName}
-                    onChange={(e) => setCallDetails({ ...callDetails, customerName: e.target.value })}
-                    className="h-11"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="purpose" className="text-sm">Purpose</Label>
-                  <Input
-                    id="purpose"
-                    placeholder="Sales follow-up"
-                    value={callDetails.purpose}
-                    onChange={(e) => setCallDetails({ ...callDetails, purpose: e.target.value })}
-                    className="h-11"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="notes" className="text-sm">Notes</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Additional context for this call..."
-                  value={callDetails.notes}
-                  onChange={(e) => setCallDetails({ ...callDetails, notes: e.target.value })}
-                  rows={3}
-                  className="resize-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Stats & Info */}
-          <div className="space-y-6">
-            {/* Agent Status Card */}
-            <div className="rounded-lg border p-5">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                  <Bot className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">{currentAgent.name}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{currentAgent.type}</p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Voice</span>
-                  <span className="font-medium">{selectedVoice.label}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Language</span>
-                  <span className="font-medium">{currentAgent.language === 'en' ? 'English' : currentAgent.language}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Status</span>
-                  {activeCallSid ? (
-                    <span className="font-medium text-green-600">On Call</span>
-                  ) : (
-                    <span className="font-medium text-green-600">Active</span>
+                  {!isValidUzbekNumber && phoneNumberDisplay.length > 5 && (
+                    <p className="text-xs text-amber-600 flex items-center gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5" />
+                      Please enter a valid Uzbekistan phone number (12 digits)
+                    </p>
                   )}
                 </div>
-              </div>
-            </div>
 
-            {/* Quick Stats */}
-            <div className="rounded-lg border p-5">
-              <h3 className="text-sm font-medium mb-4">Statistics</h3>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-2xl font-bold">0</p>
-                  <p className="text-xs text-muted-foreground">Total Calls</p>
+                {/* Status Messages */}
+                {callError && (
+                  <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-3.5">
+                    <div className="flex items-start gap-2.5">
+                      <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                      <div className="space-y-0.5">
+                        <p className="text-sm font-medium text-destructive">Call Failed</p>
+                        <p className="text-xs text-destructive/80">{callError}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeCallSid && !isCalling && (
+                  <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-3.5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+                        <div className="space-y-0.5">
+                          <p className="text-sm font-medium text-green-700 dark:text-green-400">Call Initiated Successfully</p>
+                          <p className="text-xs text-green-600/80 dark:text-green-500/80 font-mono">ID: {activeCallSid}</p>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={resetCall}
+                        className="shrink-0 h-8"
+                      >
+                        <PhoneOff className="w-3.5 h-3.5" />
+                        Reset
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                <Separator className="my-6" />
+
+                {/* Call Details */}
+                <div className="space-y-5">
+                  <h4 className="text-sm font-medium text-foreground/90">Call Details (Optional)</h4>
+                  
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2.5">
+                      <Label htmlFor="customerName" className="text-sm">Customer Name</Label>
+                      <Input
+                        id="customerName"
+                        placeholder="e.g. John Doe"
+                        value={callDetails.customerName}
+                        onChange={(e) => setCallDetails({ ...callDetails, customerName: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-2.5">
+                      <Label htmlFor="purpose" className="text-sm">Call Purpose</Label>
+                      <Input
+                        id="purpose"
+                        placeholder="e.g. Sales follow-up"
+                        value={callDetails.purpose}
+                        onChange={(e) => setCallDetails({ ...callDetails, purpose: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    <Label htmlFor="notes" className="text-sm">Additional Notes</Label>
+                    <Textarea
+                      id="notes"
+                      placeholder="Add context or special instructions for this call..."
+                      value={callDetails.notes}
+                      onChange={(e) => setCallDetails({ ...callDetails, notes: e.target.value })}
+                      rows={3}
+                      className="resize-none"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <p className="text-2xl font-bold">0m</p>
-                  <p className="text-xs text-muted-foreground">Talk Time</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Agent Info Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Agent Info</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3.5">
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-sm text-muted-foreground">Voice</span>
+                  <div className="flex items-center gap-2">
+                    <div className={cn("w-2 h-2 rounded-full", selectedVoice.color)} />
+                    <span className="text-sm font-medium">{selectedVoice.label}</span>
+                  </div>
                 </div>
-              </div>
-            </div>
+                
+                <Separator />
+                
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-sm text-muted-foreground">Language</span>
+                  <span className="text-sm font-medium capitalize">
+                    {currentAgent.language === 'en' ? 'English' : currentAgent.language}
+                  </span>
+                </div>
+                
+                <Separator />
+                
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-sm text-muted-foreground">Type</span>
+                  <Badge variant="secondary" className="capitalize text-xs">
+                    {currentAgent.type}
+                  </Badge>
+                </div>
+                
+                <Separator />
+                
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-sm text-muted-foreground">Status</span>
+                  <Badge variant={activeCallSid ? "default" : "secondary"} className="gap-1.5 text-xs">
+                    <div className={cn("w-1.5 h-1.5 rounded-full", activeCallSid ? "bg-white animate-pulse" : "bg-green-500")} />
+                    {activeCallSid ? 'On Call' : 'Ready'}
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Statistics Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Usage Stats</CardTitle>
+                <CardDescription>Track your calling activity</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <div className="space-y-1.5">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold tabular-nums">0</span>
+                    <span className="text-sm text-muted-foreground">calls</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Total calls made</p>
+                </div>
+                
+                <Separator />
+                
+                <div className="space-y-1.5">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold tabular-nums">0</span>
+                    <span className="text-sm text-muted-foreground">min</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Total talk time</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Credits Info */}
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium">Available Credits</span>
+                  <span className="text-2xl font-bold tabular-nums">{credits}</span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Each call uses 1 credit
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>

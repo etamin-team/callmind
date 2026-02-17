@@ -2,6 +2,7 @@ import Fastify from 'fastify'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import autoLoad from '@fastify/autoload'
+import rawBody from 'fastify-raw-body'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
 import swagger from '@fastify/swagger'
@@ -31,13 +32,43 @@ const fastify = Fastify({
   },
 })
 
+// Register raw body parser (needed for webhooks verification)
+await fastify.register(rawBody, {
+  field: 'rawBody', // attach raw body to request.rawBody
+  global: false, // only for routes that request it
+  encoding: 'utf8', // default encoding
+  runFirst: true, // ensure it runs before body parser
+})
+
 // Register plugins
 await fastify.register(helmet, {
   contentSecurityPolicy: config.NODE_ENV === 'production',
 })
 
 await fastify.register(cors, {
-  origin: config.CORS_ORIGINS.split(','),
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, etc)
+    if (!origin) return callback(null, true)
+
+    const allowedOrigins = [
+      ...config.CORS_ORIGINS.split(','),
+      // Allow ngrok URLs for testing
+      /https:\/\/.*\.ngrok-free\.app$/,
+      /https:\/\/.*\.ngrok\.io$/,
+    ]
+
+    // Check if origin matches any allowed pattern
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed instanceof RegExp) return allowed.test(origin)
+      return origin === allowed
+    })
+
+    if (isAllowed) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true,
 })
 

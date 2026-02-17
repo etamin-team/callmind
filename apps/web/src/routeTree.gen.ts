@@ -9,6 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as RefundRouteImport } from './routes/refund'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as UsageRouteRouteImport } from './routes/usage/route'
 import { Route as SsoCallbackRouteRouteImport } from './routes/sso-callback/route'
 import { Route as RegisterRouteRouteImport } from './routes/register/route'
@@ -18,6 +21,8 @@ import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as AgentsRouteRouteImport } from './routes/agents/route'
 import { Route as AppRouteRouteImport } from './routes/_app/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PaymentSuccessRouteImport } from './routes/payment/success'
+import { Route as PaymentCancelRouteImport } from './routes/payment/cancel'
 import { Route as AppWorkspaceIdRouteRouteImport } from './routes/_app/$workspaceId/route'
 import { Route as AppWorkspaceIdUsageRouteImport } from './routes/_app/$workspaceId/usage'
 import { Route as AppWorkspaceIdTasksRouteImport } from './routes/_app/$workspaceId/tasks'
@@ -37,6 +42,21 @@ import { Route as AppWorkspaceIdAgentsAgentIdSettingsRouteImport } from './route
 import { Route as AppWorkspaceIdAgentsAgentIdHistoryRouteImport } from './routes/_app/$workspaceId/agents/$agentId/history'
 import { Route as AppWorkspaceIdAgentsAgentIdContactsRouteImport } from './routes/_app/$workspaceId/agents/$agentId/contacts'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RefundRoute = RefundRouteImport.update({
+  id: '/refund',
+  path: '/refund',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UsageRouteRoute = UsageRouteRouteImport.update({
   id: '/usage',
   path: '/usage',
@@ -79,6 +99,16 @@ const AppRouteRoute = AppRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
+  id: '/payment/success',
+  path: '/payment/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentCancelRoute = PaymentCancelRouteImport.update({
+  id: '/payment/cancel',
+  path: '/payment/cancel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppWorkspaceIdRouteRoute = AppWorkspaceIdRouteRouteImport.update({
@@ -195,7 +225,12 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRouteRoute
   '/sso-callback': typeof SsoCallbackRouteRoute
   '/usage': typeof UsageRouteRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund': typeof RefundRoute
+  '/terms': typeof TermsRoute
   '/$workspaceId': typeof AppWorkspaceIdRouteRouteWithChildren
+  '/payment/cancel': typeof PaymentCancelRoute
+  '/payment/success': typeof PaymentSuccessRoute
   '/$workspaceId/settings': typeof AppWorkspaceIdSettingsRouteRouteWithChildren
   '/$workspaceId/dashboard': typeof AppWorkspaceIdDashboardRoute
   '/$workspaceId/tasks': typeof AppWorkspaceIdTasksRoute
@@ -223,7 +258,12 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRouteRoute
   '/sso-callback': typeof SsoCallbackRouteRoute
   '/usage': typeof UsageRouteRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund': typeof RefundRoute
+  '/terms': typeof TermsRoute
   '/$workspaceId': typeof AppWorkspaceIdRouteRouteWithChildren
+  '/payment/cancel': typeof PaymentCancelRoute
+  '/payment/success': typeof PaymentSuccessRoute
   '/$workspaceId/dashboard': typeof AppWorkspaceIdDashboardRoute
   '/$workspaceId/tasks': typeof AppWorkspaceIdTasksRoute
   '/$workspaceId/usage': typeof AppWorkspaceIdUsageRoute
@@ -251,7 +291,12 @@ export interface FileRoutesById {
   '/register': typeof RegisterRouteRoute
   '/sso-callback': typeof SsoCallbackRouteRoute
   '/usage': typeof UsageRouteRoute
+  '/privacy': typeof PrivacyRoute
+  '/refund': typeof RefundRoute
+  '/terms': typeof TermsRoute
   '/_app/$workspaceId': typeof AppWorkspaceIdRouteRouteWithChildren
+  '/payment/cancel': typeof PaymentCancelRoute
+  '/payment/success': typeof PaymentSuccessRoute
   '/_app/$workspaceId/settings': typeof AppWorkspaceIdSettingsRouteRouteWithChildren
   '/_app/$workspaceId/dashboard': typeof AppWorkspaceIdDashboardRoute
   '/_app/$workspaceId/tasks': typeof AppWorkspaceIdTasksRoute
@@ -281,7 +326,12 @@ export interface FileRouteTypes {
     | '/register'
     | '/sso-callback'
     | '/usage'
+    | '/privacy'
+    | '/refund'
+    | '/terms'
     | '/$workspaceId'
+    | '/payment/cancel'
+    | '/payment/success'
     | '/$workspaceId/settings'
     | '/$workspaceId/dashboard'
     | '/$workspaceId/tasks'
@@ -309,7 +359,12 @@ export interface FileRouteTypes {
     | '/register'
     | '/sso-callback'
     | '/usage'
+    | '/privacy'
+    | '/refund'
+    | '/terms'
     | '/$workspaceId'
+    | '/payment/cancel'
+    | '/payment/success'
     | '/$workspaceId/dashboard'
     | '/$workspaceId/tasks'
     | '/$workspaceId/usage'
@@ -336,7 +391,12 @@ export interface FileRouteTypes {
     | '/register'
     | '/sso-callback'
     | '/usage'
+    | '/privacy'
+    | '/refund'
+    | '/terms'
     | '/_app/$workspaceId'
+    | '/payment/cancel'
+    | '/payment/success'
     | '/_app/$workspaceId/settings'
     | '/_app/$workspaceId/dashboard'
     | '/_app/$workspaceId/tasks'
@@ -366,10 +426,36 @@ export interface RootRouteChildren {
   RegisterRouteRoute: typeof RegisterRouteRoute
   SsoCallbackRouteRoute: typeof SsoCallbackRouteRoute
   UsageRouteRoute: typeof UsageRouteRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RefundRoute: typeof RefundRoute
+  TermsRoute: typeof TermsRoute
+  PaymentCancelRoute: typeof PaymentCancelRoute
+  PaymentSuccessRoute: typeof PaymentSuccessRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refund': {
+      id: '/refund'
+      path: '/refund'
+      fullPath: '/refund'
+      preLoaderRoute: typeof RefundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/usage': {
       id: '/usage'
       path: '/usage'
@@ -431,6 +517,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment/success': {
+      id: '/payment/success'
+      path: '/payment/success'
+      fullPath: '/payment/success'
+      preLoaderRoute: typeof PaymentSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment/cancel': {
+      id: '/payment/cancel'
+      path: '/payment/cancel'
+      fullPath: '/payment/cancel'
+      preLoaderRoute: typeof PaymentCancelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/$workspaceId': {
@@ -658,6 +758,11 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRouteRoute: RegisterRouteRoute,
   SsoCallbackRouteRoute: SsoCallbackRouteRoute,
   UsageRouteRoute: UsageRouteRoute,
+  PrivacyRoute: PrivacyRoute,
+  RefundRoute: RefundRoute,
+  TermsRoute: TermsRoute,
+  PaymentCancelRoute: PaymentCancelRoute,
+  PaymentSuccessRoute: PaymentSuccessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

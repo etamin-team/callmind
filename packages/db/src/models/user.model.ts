@@ -33,6 +33,18 @@ const userSchema = new Schema<IUser>(
       min: 0,
       required: false,
     },
+    paddleCustomerId: {
+      type: String,
+      required: false,
+    },
+    paddleSubscriptionId: {
+      type: String,
+      required: false,
+    },
+    subscriptionId: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,

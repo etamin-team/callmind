@@ -1,11 +1,14 @@
 "use client";
 
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useUser } from "@clerk/clerk-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { useCreateCheckoutForPlan } from "@/features/payments/api";
+import { usePaddle } from "@/features/payments/components/paddle-provider";
 
 const plans = [
   {
@@ -30,7 +33,7 @@ const plans = [
       "Email support",
     ],
     cta: "Get Started",
-    href: "/sign-up",
+    polarPlan: "starter",
     popular: true,
   },
   {
@@ -46,7 +49,7 @@ const plans = [
       "CRM integrations",
     ],
     cta: "Get Started",
-    href: "/sign-up",
+    polarPlan: "pro",
   },
   {
     id: "business",
@@ -60,8 +63,8 @@ const plans = [
       "Custom integrations",
       "Dedicated support",
     ],
-    cta: "Contact Sales",
-    href: "mailto:sales@callmind.uz",
+    cta: "Get Started",
+    polarPlan: "business",
   },
 ];
 
@@ -89,6 +92,54 @@ interface Pricing2Props {
 
 const Pricing2 = ({ className }: Pricing2Props) => {
   const [yearly, setYearly] = useState(false);
+  const { user, isSignedIn } = useUser();
+  const createCheckout = useCreateCheckoutForPlan();
+  const { openCheckout } = usePaddle();
+
+  const handlePlanClick = (plan: typeof plans[0]) => {
+    // Free plan or enterprise - use regular links
+    if (plan.id === "free" || !plan.polarPlan) {
+      if (plan.href) {
+        window.location.href = plan.href;
+      }
+      return;
+    }
+
+    // Paid plans - use Paddle checkout
+    if (!isSignedIn) {
+      // Redirect to sign up if not logged in
+      window.location.href = `/sign-up?redirect=pricing`;
+      return;
+    }
+
+    createCheckout.mutate(
+      {
+        plan: plan.polarPlan,
+        data: {
+          yearly,
+          customerEmail: user?.primaryEmailAddress?.emailAddress,
+          customerName: user?.fullName || undefined,
+          metadata: {
+            userId: user?.id || '',
+            plan: plan.id,
+          },
+        },
+      },
+      {
+        onSuccess: (data) => {
+          // Open Paddle checkout overlay with the transaction ID
+          if (data.transactionId) {
+            openCheckout(data.transactionId);
+          }
+        },
+      }
+    );
+  };
+
+  const isLoading = (planId: string) => {
+    const plan = plans.find(p => p.id === planId);
+    return createCheckout.isPending && plan?.polarPlan && createCheckout.variables?.plan === plan.polarPlan;
+  };
 
   return (
     <section className={cn("py-24", className)}>
@@ -141,9 +192,17 @@ const Pricing2 = ({ className }: Pricing2Props) => {
               <Button
                 className="w-full"
                 variant={plan.popular ? "default" : "outline"}
-                asChild
+                onClick={() => handlePlanClick(plan)}
+                disabled={isLoading(plan.id)}
               >
-                <a href={plan.href}>{plan.cta}</a>
+                {isLoading(plan.id) ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  plan.cta
+                )}
               </Button>
             </div>
           ))}
