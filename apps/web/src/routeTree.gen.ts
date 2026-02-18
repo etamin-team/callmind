@@ -41,6 +41,7 @@ import { Route as AppWorkspaceIdAgentsAgentIdIndexRouteImport } from './routes/_
 import { Route as AppWorkspaceIdAgentsAgentIdSettingsRouteImport } from './routes/_app/$workspaceId/agents/$agentId/settings'
 import { Route as AppWorkspaceIdAgentsAgentIdHistoryRouteImport } from './routes/_app/$workspaceId/agents/$agentId/history'
 import { Route as AppWorkspaceIdAgentsAgentIdContactsRouteImport } from './routes/_app/$workspaceId/agents/$agentId/contacts'
+import { Route as AppWorkspaceIdAgentsAgentIdHistoryCallIdRouteImport } from './routes/_app/$workspaceId/agents/$agentId/history/$callId'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -215,6 +216,12 @@ const AppWorkspaceIdAgentsAgentIdContactsRoute =
     path: '/contacts',
     getParentRoute: () => AppWorkspaceIdAgentsAgentIdRouteRoute,
   } as any)
+const AppWorkspaceIdAgentsAgentIdHistoryCallIdRoute =
+  AppWorkspaceIdAgentsAgentIdHistoryCallIdRouteImport.update({
+    id: '/$callId',
+    path: '/$callId',
+    getParentRoute: () => AppWorkspaceIdAgentsAgentIdHistoryRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -245,9 +252,10 @@ export interface FileRoutesByFullPath {
   '/$workspaceId/agents': typeof AppWorkspaceIdAgentsIndexRoute
   '/$workspaceId/settings/': typeof AppWorkspaceIdSettingsIndexRoute
   '/$workspaceId/agents/$agentId/contacts': typeof AppWorkspaceIdAgentsAgentIdContactsRoute
-  '/$workspaceId/agents/$agentId/history': typeof AppWorkspaceIdAgentsAgentIdHistoryRoute
+  '/$workspaceId/agents/$agentId/history': typeof AppWorkspaceIdAgentsAgentIdHistoryRouteWithChildren
   '/$workspaceId/agents/$agentId/settings': typeof AppWorkspaceIdAgentsAgentIdSettingsRoute
   '/$workspaceId/agents/$agentId/': typeof AppWorkspaceIdAgentsAgentIdIndexRoute
+  '/$workspaceId/agents/$agentId/history/$callId': typeof AppWorkspaceIdAgentsAgentIdHistoryCallIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -276,9 +284,10 @@ export interface FileRoutesByTo {
   '/$workspaceId/agents': typeof AppWorkspaceIdAgentsIndexRoute
   '/$workspaceId/settings': typeof AppWorkspaceIdSettingsIndexRoute
   '/$workspaceId/agents/$agentId/contacts': typeof AppWorkspaceIdAgentsAgentIdContactsRoute
-  '/$workspaceId/agents/$agentId/history': typeof AppWorkspaceIdAgentsAgentIdHistoryRoute
+  '/$workspaceId/agents/$agentId/history': typeof AppWorkspaceIdAgentsAgentIdHistoryRouteWithChildren
   '/$workspaceId/agents/$agentId/settings': typeof AppWorkspaceIdAgentsAgentIdSettingsRoute
   '/$workspaceId/agents/$agentId': typeof AppWorkspaceIdAgentsAgentIdIndexRoute
+  '/$workspaceId/agents/$agentId/history/$callId': typeof AppWorkspaceIdAgentsAgentIdHistoryCallIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -311,9 +320,10 @@ export interface FileRoutesById {
   '/_app/$workspaceId/agents/': typeof AppWorkspaceIdAgentsIndexRoute
   '/_app/$workspaceId/settings/': typeof AppWorkspaceIdSettingsIndexRoute
   '/_app/$workspaceId/agents/$agentId/contacts': typeof AppWorkspaceIdAgentsAgentIdContactsRoute
-  '/_app/$workspaceId/agents/$agentId/history': typeof AppWorkspaceIdAgentsAgentIdHistoryRoute
+  '/_app/$workspaceId/agents/$agentId/history': typeof AppWorkspaceIdAgentsAgentIdHistoryRouteWithChildren
   '/_app/$workspaceId/agents/$agentId/settings': typeof AppWorkspaceIdAgentsAgentIdSettingsRoute
   '/_app/$workspaceId/agents/$agentId/': typeof AppWorkspaceIdAgentsAgentIdIndexRoute
+  '/_app/$workspaceId/agents/$agentId/history/$callId': typeof AppWorkspaceIdAgentsAgentIdHistoryCallIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -349,6 +359,7 @@ export interface FileRouteTypes {
     | '/$workspaceId/agents/$agentId/history'
     | '/$workspaceId/agents/$agentId/settings'
     | '/$workspaceId/agents/$agentId/'
+    | '/$workspaceId/agents/$agentId/history/$callId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -380,6 +391,7 @@ export interface FileRouteTypes {
     | '/$workspaceId/agents/$agentId/history'
     | '/$workspaceId/agents/$agentId/settings'
     | '/$workspaceId/agents/$agentId'
+    | '/$workspaceId/agents/$agentId/history/$callId'
   id:
     | '__root__'
     | '/'
@@ -414,6 +426,7 @@ export interface FileRouteTypes {
     | '/_app/$workspaceId/agents/$agentId/history'
     | '/_app/$workspaceId/agents/$agentId/settings'
     | '/_app/$workspaceId/agents/$agentId/'
+    | '/_app/$workspaceId/agents/$agentId/history/$callId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -659,6 +672,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppWorkspaceIdAgentsAgentIdContactsRouteImport
       parentRoute: typeof AppWorkspaceIdAgentsAgentIdRouteRoute
     }
+    '/_app/$workspaceId/agents/$agentId/history/$callId': {
+      id: '/_app/$workspaceId/agents/$agentId/history/$callId'
+      path: '/$callId'
+      fullPath: '/$workspaceId/agents/$agentId/history/$callId'
+      preLoaderRoute: typeof AppWorkspaceIdAgentsAgentIdHistoryCallIdRouteImport
+      parentRoute: typeof AppWorkspaceIdAgentsAgentIdHistoryRoute
+    }
   }
 }
 
@@ -687,9 +707,24 @@ const AppWorkspaceIdSettingsRouteRouteWithChildren =
     AppWorkspaceIdSettingsRouteRouteChildren,
   )
 
+interface AppWorkspaceIdAgentsAgentIdHistoryRouteChildren {
+  AppWorkspaceIdAgentsAgentIdHistoryCallIdRoute: typeof AppWorkspaceIdAgentsAgentIdHistoryCallIdRoute
+}
+
+const AppWorkspaceIdAgentsAgentIdHistoryRouteChildren: AppWorkspaceIdAgentsAgentIdHistoryRouteChildren =
+  {
+    AppWorkspaceIdAgentsAgentIdHistoryCallIdRoute:
+      AppWorkspaceIdAgentsAgentIdHistoryCallIdRoute,
+  }
+
+const AppWorkspaceIdAgentsAgentIdHistoryRouteWithChildren =
+  AppWorkspaceIdAgentsAgentIdHistoryRoute._addFileChildren(
+    AppWorkspaceIdAgentsAgentIdHistoryRouteChildren,
+  )
+
 interface AppWorkspaceIdAgentsAgentIdRouteRouteChildren {
   AppWorkspaceIdAgentsAgentIdContactsRoute: typeof AppWorkspaceIdAgentsAgentIdContactsRoute
-  AppWorkspaceIdAgentsAgentIdHistoryRoute: typeof AppWorkspaceIdAgentsAgentIdHistoryRoute
+  AppWorkspaceIdAgentsAgentIdHistoryRoute: typeof AppWorkspaceIdAgentsAgentIdHistoryRouteWithChildren
   AppWorkspaceIdAgentsAgentIdSettingsRoute: typeof AppWorkspaceIdAgentsAgentIdSettingsRoute
   AppWorkspaceIdAgentsAgentIdIndexRoute: typeof AppWorkspaceIdAgentsAgentIdIndexRoute
 }
@@ -699,7 +734,7 @@ const AppWorkspaceIdAgentsAgentIdRouteRouteChildren: AppWorkspaceIdAgentsAgentId
     AppWorkspaceIdAgentsAgentIdContactsRoute:
       AppWorkspaceIdAgentsAgentIdContactsRoute,
     AppWorkspaceIdAgentsAgentIdHistoryRoute:
-      AppWorkspaceIdAgentsAgentIdHistoryRoute,
+      AppWorkspaceIdAgentsAgentIdHistoryRouteWithChildren,
     AppWorkspaceIdAgentsAgentIdSettingsRoute:
       AppWorkspaceIdAgentsAgentIdSettingsRoute,
     AppWorkspaceIdAgentsAgentIdIndexRoute:
