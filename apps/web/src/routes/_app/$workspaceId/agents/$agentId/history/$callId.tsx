@@ -1,5 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Phone, Clock, Calendar, User, Play, Pause, ArrowLeft, FileText, Database } from 'lucide-react'
+import {
+  Phone,
+  Clock,
+  Calendar,
+  User,
+  Play,
+  Pause,
+  ArrowLeft,
+  FileText,
+  Database,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -106,7 +116,12 @@ function CallDetailPage() {
       <div className="p-8">
         <Button
           variant="ghost"
-          onClick={() => navigate({ to: '/$workspaceId/agents/$agentId/history', params: { workspaceId: 'default', agentId } })}
+          onClick={() =>
+            navigate({
+              to: '/$workspaceId/agents/$agentId/history',
+              params: { workspaceId: 'default', agentId },
+            })
+          }
           className="mb-4"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -136,7 +151,12 @@ function CallDetailPage() {
         <div className="space-y-1">
           <Button
             variant="ghost"
-            onClick={() => navigate({ to: '/$workspaceId/agents/$agentId/history', params: { workspaceId: 'default', agentId } })}
+            onClick={() =>
+              navigate({
+                to: '/$workspaceId/agents/$agentId/history',
+                params: { workspaceId: 'default', agentId },
+              })
+            }
             className="mb-2"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -159,7 +179,10 @@ function CallDetailPage() {
                   {call.callerNumber || call.callerName || 'Unknown Caller'}
                 </CardTitle>
                 <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="outline" className={getStatusColor(call.status)}>
+                  <Badge
+                    variant="outline"
+                    className={getStatusColor(call.status)}
+                  >
                     {call.status}
                   </Badge>
                   <Badge variant="outline" className="text-xs">
@@ -182,7 +205,11 @@ function CallDetailPage() {
                   className="hidden"
                 />
                 <Button onClick={handlePlayPause} className="gap-2">
-                  {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                  {isPlaying ? (
+                    <Pause className="w-4 h-4" />
+                  ) : (
+                    <Play className="w-4 h-4" />
+                  )}
                   {isPlaying ? 'Pause' : 'Play Recording'}
                 </Button>
               </div>
@@ -195,14 +222,18 @@ function CallDetailPage() {
               <p className="text-sm text-muted-foreground mb-1">Duration</p>
               <p className="font-medium flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                {call.duration ? `${Math.floor(call.duration / 60)}:${String(call.duration % 60).padStart(2, '0')}` : '0:00'}
+                {call.duration
+                  ? `${Math.floor(call.duration / 60)}:${String(call.duration % 60).padStart(2, '0')}`
+                  : '0:00'}
               </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Started At</p>
               <p className="font-medium flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                {call.startedAt ? new Date(call.startedAt).toLocaleString() : 'Unknown'}
+                {call.startedAt
+                  ? new Date(call.startedAt).toLocaleString()
+                  : 'Unknown'}
               </p>
             </div>
             {call.cost !== undefined && (
@@ -226,6 +257,23 @@ function CallDetailPage() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">{call.summary}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Notes */}
+      {'notes' in call && call.notes && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              Notes
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground whitespace-pre-wrap">
+              {call.notes}
+            </p>
           </CardContent>
         </Card>
       )}
@@ -260,7 +308,9 @@ function CallDetailPage() {
             <dl className="grid grid-cols-2 gap-4">
               {Object.entries(call.collectedData).map(([key, value]) => (
                 <div key={key} className="border-b pb-2">
-                  <dt className="text-sm text-muted-foreground capitalize">{key}</dt>
+                  <dt className="text-sm text-muted-foreground capitalize">
+                    {key}
+                  </dt>
                   <dd className="font-medium">{value as string}</dd>
                 </div>
               ))}
@@ -290,6 +340,8 @@ function CallDetailPage() {
   )
 }
 
-export const Route = createFileRoute('/_app/$workspaceId/agents/$agentId/history/$callId')({
+export const Route = createFileRoute(
+  '/_app/$workspaceId/agents/$agentId/history/$callId',
+)({
   component: CallDetailPage,
 })
