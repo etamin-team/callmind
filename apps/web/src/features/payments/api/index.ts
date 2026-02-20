@@ -24,6 +24,16 @@ export interface CheckoutResponse {
   yearly?: boolean
 }
 
+export interface PaymeCheckoutResponse {
+  checkoutUrl: string
+  orderId: string
+  amount: number
+  amountDisplay: number
+  currency: string
+  plan: string
+  yearly: boolean
+}
+
 export interface CustomerPortalRequest {
   customerId: string
 }
@@ -33,7 +43,9 @@ export interface CustomerPortalResponse {
 }
 
 // Create a generic checkout session
-async function createCheckout(data: CreateCheckoutRequest): Promise<CheckoutResponse> {
+async function createCheckout(
+  data: CreateCheckoutRequest,
+): Promise<CheckoutResponse> {
   const response = await fetch(`${API_URL}/api/payments/checkout`, {
     method: 'POST',
     headers: {
@@ -53,7 +65,7 @@ async function createCheckout(data: CreateCheckoutRequest): Promise<CheckoutResp
 // Create a checkout session for a specific plan
 async function createCheckoutForPlan(
   plan: string,
-  data: CreateCheckoutForPlanRequest
+  data: CreateCheckoutForPlanRequest,
 ): Promise<CheckoutResponse> {
   const response = await fetch(`${API_URL}/api/payments/checkout/${plan}`, {
     method: 'POST',
@@ -84,7 +96,9 @@ async function getProducts() {
 }
 
 // Create customer portal session
-async function createCustomerPortal(data: CustomerPortalRequest): Promise<CustomerPortalResponse> {
+async function createCustomerPortal(
+  data: CustomerPortalRequest,
+): Promise<CustomerPortalResponse> {
   const response = await fetch(`${API_URL}/api/payments/customer-portal`, {
     method: 'POST',
     headers: {
@@ -111,8 +125,13 @@ export function useCreateCheckout() {
 
 export function useCreateCheckoutForPlan() {
   return useMutation({
-    mutationFn: ({ plan, data }: { plan: string; data: CreateCheckoutForPlanRequest }) =>
-      createCheckoutForPlan(plan, data),
+    mutationFn: ({
+      plan,
+      data,
+    }: {
+      plan: string
+      data: CreateCheckoutForPlanRequest
+    }) => createCheckoutForPlan(plan, data),
     // Return data for the component to handle Paddle checkout overlay
   })
 }
@@ -133,5 +152,61 @@ export function useCreateCustomerPortal() {
         window.location.href = data.customerPortalUrl
       }
     },
+  })
+}
+
+// Payme checkout functions
+export async function createPaymeCheckout(
+  plan: string,
+  data: {
+    yearly?: boolean
+    userId?: string
+    phone?: string
+    recurring?: boolean
+  },
+): Promise<PaymeCheckoutResponse> {
+  const response = await fetch(`${API_URL}/api/payme/checkout/${plan}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to create Payme checkout')
+  }
+
+  return response.json()
+}
+
+export function useCreatePaymeCheckout() {
+  return useMutation({
+    mutationFn: ({
+      plan,
+      data,
+    }: {
+      plan: string
+      data: Parameters<typeof createPaymeCheckout>[1]
+    }) => createPaymeCheckout(plan, data),
+  })
+}
+
+export async function getPaymePrices() {
+  const response = await fetch(`${API_URL}/api/payme/prices`)
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch Payme prices')
+  }
+
+  return response.json()
+}
+
+export function useGetPaymePrices() {
+  return useQuery({
+    queryKey: ['payme-prices'],
+    queryFn: getPaymePrices,
   })
 }

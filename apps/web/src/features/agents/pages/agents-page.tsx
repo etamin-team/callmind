@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams, Link } from '@tanstack/react-router'
+import { useParams, Link } from '@tanstack/react-router'
 import { Plus, Bot, Loader2, MoreVertical, Trash } from 'lucide-react'
 import { useAuth } from '@clerk/clerk-react'
 
@@ -20,17 +20,19 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/alert-dialog'
+import { Input } from '@/components/ui/input'
 
 import { useAgentStore } from '../store'
 
 export default function AgentsPage() {
-  const navigate = useNavigate()
-  const { workspaceId } = useParams({ from: '/_app/$workspaceId/agents/' })
+  const { workspaceId: workspaceIdRaw } = useParams({
+    from: '/_app/$workspaceId/agents/',
+  })
+  const workspaceId = workspaceIdRaw!
   const { getToken } = useAuth()
   const { agents, isLoading, fetchAgents, deleteAgent } = useAgentStore()
-  
+
   const [deleteAgentId, setDeleteAgentId] = useState<string | null>(null)
   const [deleteConfirmation, setDeleteConfirmation] = useState('')
 
@@ -56,7 +58,7 @@ export default function AgentsPage() {
 
   const handleConfirmDelete = async () => {
     if (!deleteAgentId) return
-    
+
     const token = await getToken()
     if (token) {
       deleteAgent(deleteAgentId, token)
@@ -65,11 +67,11 @@ export default function AgentsPage() {
   }
 
   if (isLoading) {
-      return (
-          <div className="flex h-64 items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-      )
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
   }
 
   return (
@@ -80,7 +82,9 @@ export default function AgentsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">AI Agents</h1>
-              <p className="text-muted-foreground">Manage your intelligent workforce</p>
+              <p className="text-muted-foreground">
+                Manage your intelligent workforce
+              </p>
             </div>
             <Button asChild size="lg" className="gap-2">
               <Link to="/$workspaceId/agents/create" params={{ workspaceId }}>
@@ -96,11 +100,15 @@ export default function AgentsPage() {
       {agents.length > 0 && (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {agents.map((agent) => (
-            <Card 
-              key={agent.id} 
+            <Card
+              key={agent.id}
               className="relative overflow-hidden group hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => navigate({ to: `/${workspaceId}/agents/${agent.id}` })}
             >
+              <Link
+                to="/$workspaceId/agents/$agentId"
+                params={{ workspaceId: workspaceId!, agentId: agent.id }}
+                className="absolute inset-0 z-10"
+              />
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -109,15 +117,17 @@ export default function AgentsPage() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold">{agent.name}</h3>
-                      <p className="text-xs text-muted-foreground capitalize">{agent.type}</p>
+                      <p className="text-xs text-muted-foreground capitalize">
+                        {agent.type}
+                      </p>
                     </div>
                   </div>
-                  
+
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -125,26 +135,25 @@ export default function AgentsPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="text-destructive focus:text-destructive cursor-pointer"
-                        onClick={(e) => handleDeleteClick(e, agent.id)}
+                        onClick={(e) => handleDeleteClick(e, agent.id!)}
                       >
                         <Trash className="mr-2 h-4 w-4" />
                         Delete Agent
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground line-clamp-3">
-                  {agent.businessDescription || "No description provided."}
+                  {agent.businessDescription || 'No description provided.'}
                 </p>
-                <div className='flex gap-2 mt-4'>
-                   <div className='px-2 py-1 bg-secondary/50 rounded text-xs font-mono text-muted-foreground'>
-                      {agent.language === 'en' ? 'English' : agent.language}
-                   </div>
+                <div className="flex gap-2 mt-4">
+                  <div className="px-2 py-1 bg-secondary/50 rounded text-xs font-mono text-muted-foreground">
+                    {agent.language === 'en' ? 'English' : agent.language}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -155,60 +164,71 @@ export default function AgentsPage() {
       {/* Empty State */}
       {!isLoading && agents.length === 0 && (
         <div className="flex flex-col items-center justify-center min-h-[500px] text-center p-8">
-           {/* Visual Placeholder for Illustration */}
-           <div className="relative w-64 h-40 mb-8">
-              <div className="absolute inset-x-8 inset-y-0 bg-orange-400/20 rounded-2xl rotate-[-6deg] backdrop-blur-sm" />
-              <div className="absolute inset-x-8 inset-y-0 bg-red-400/20 rounded-2xl rotate-[6deg] backdrop-blur-sm" />
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-100 to-red-50 dark:from-orange-900/10 dark:to-red-900/10 border border-orange-200/50 dark:border-orange-800/30 rounded-2xl shadow-sm flex items-center justify-center">
-                 <div className="space-y-3 w-3/4 opacity-50">
-                    <div className="h-2 w-1/3 bg-orange-200 dark:bg-orange-800 rounded-full" />
-                    <div className="h-2 w-full bg-orange-100 dark:bg-orange-900/50 rounded-full" />
-                    <div className="h-2 w-5/6 bg-orange-100 dark:bg-orange-900/50 rounded-full" />
-                 </div>
-                 <div className="absolute top-4 left-4 p-1.5 bg-white dark:bg-zinc-800 rounded-lg shadow-sm">
-                    <Bot className="w-4 h-4 text-orange-500" />
-                 </div>
+          {/* Visual Placeholder for Illustration */}
+          <div className="relative w-64 h-40 mb-8">
+            <div className="absolute inset-x-8 inset-y-0 bg-orange-400/20 rounded-2xl rotate-[-6deg] backdrop-blur-sm" />
+            <div className="absolute inset-x-8 inset-y-0 bg-red-400/20 rounded-2xl rotate-[6deg] backdrop-blur-sm" />
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-100 to-red-50 dark:from-orange-900/10 dark:to-red-900/10 border border-orange-200/50 dark:border-orange-800/30 rounded-2xl shadow-sm flex items-center justify-center">
+              <div className="space-y-3 w-3/4 opacity-50">
+                <div className="h-2 w-1/3 bg-orange-200 dark:bg-orange-800 rounded-full" />
+                <div className="h-2 w-full bg-orange-100 dark:bg-orange-900/50 rounded-full" />
+                <div className="h-2 w-5/6 bg-orange-100 dark:bg-orange-900/50 rounded-full" />
               </div>
-           </div>
+              <div className="absolute top-4 left-4 p-1.5 bg-white dark:bg-zinc-800 rounded-lg shadow-sm">
+                <Bot className="w-4 h-4 text-orange-500" />
+              </div>
+            </div>
+          </div>
 
-          <h3 className="text-xl font-bold tracking-tight mb-3">No agents yet..</h3>
+          <h3 className="text-xl font-bold tracking-tight mb-3">
+            No agents yet..
+          </h3>
           <p className="text-muted-foreground max-w-md mb-8 text-base">
-             Create your first AI Agent to start automating support, generating leads, and answering customer questions.
+            Create your first AI Agent to start automating support, generating
+            leads, and answering customer questions.
           </p>
-          <Button asChild size="lg" className="h-10 px-6 bg-black hover:bg-zinc-800 text-white dark:bg-white dark:text-black dark:hover:bg-zinc-200 rounded-md">
+          <Button
+            asChild
+            size="lg"
+            className="h-10 px-6 bg-black hover:bg-zinc-800 text-white dark:bg-white dark:text-black dark:hover:bg-zinc-200 rounded-md"
+          >
             <Link to="/$workspaceId/agents/create" params={{ workspaceId }}>
-            <Plus className="h-4 w-4 mr-2" />
-            New AI agent
+              <Plus className="h-4 w-4 mr-2" />
+              New AI agent
             </Link>
           </Button>
         </div>
       )}
-      
-      <AlertDialog open={!!deleteAgentId} onOpenChange={(open) => !open && setDeleteAgentId(null)}>
+
+      <AlertDialog
+        open={!!deleteAgentId}
+        onOpenChange={(open) => !open && setDeleteAgentId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your agent and remove their data from our servers.
+              This action cannot be undone. This will permanently delete your
+              agent and remove their data from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="py-4">
-             <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2 block">
-                Type <span className="font-bold">I understand</span> to confirm.
-             </label>
-             <Input 
-                value={deleteConfirmation}
-                onChange={(e) => setDeleteConfirmation(e.target.value)}
-                placeholder="I understand"
-                className="col-span-3"
-             />
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 mb-2 block">
+              Type <span className="font-bold">I understand</span> to confirm.
+            </label>
+            <Input
+              value={deleteConfirmation}
+              onChange={(e) => setDeleteConfirmation(e.target.value)}
+              placeholder="I understand"
+              className="col-span-3"
+            />
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-               onClick={handleConfirmDelete}
-               disabled={deleteConfirmation !== 'I understand'}
-               className="bg-destructive hover:bg-destructive/90"
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              disabled={deleteConfirmation !== 'I understand'}
+              className="bg-destructive hover:bg-destructive/90"
             >
               Delete Agent
             </AlertDialogAction>

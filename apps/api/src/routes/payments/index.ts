@@ -1,3 +1,3 @@
-import paymentsRoutes from './payments.routes.js'
+import paymentsRoutes from "./payments.routes.js";
 
-export default paymentsRoutes
+export default paymentsRoutes;

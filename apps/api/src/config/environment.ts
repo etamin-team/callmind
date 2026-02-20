@@ -42,6 +42,22 @@ export const config = {
   CLERK_SECRET_KEY: getClerkEnv("CLERK_SECRET_KEY"),
   PADDLE_API_KEY: getOptionalEnv("PADDLE_API_KEY"),
   PADDLE_WEBHOOK_SECRET_KEY: getOptionalEnv("PADDLE_WEBHOOK_SECRET_KEY"),
+
+  // Payme.uz configuration
+  PAYME_MERCHANT_ID: getOptionalEnv("PAYME_MERCHANT_ID"),
+  PAYME_SECRET_KEY: getOptionalEnv("PAYME_SECRET_KEY"),
+  PAYME_CALLBACK_URL: getOptionalEnv("PAYME_CALLBACK_URL", [
+    "https://your-domain.com",
+  ]),
+
+  // Prices in UZS (will be converted to tiyins: amount * 100)
+  PAYME_STARTER_MONTHLY: getOptionalEnv("PAYME_STARTER_MONTHLY"), // e.g., 108000 = 108,000 UZS
+  PAYME_STARTER_YEARLY: getOptionalEnv("PAYME_STARTER_YEARLY"),
+  PAYME_PRO_MONTHLY: getOptionalEnv("PAYME_PRO_MONTHLY"),
+  PAYME_PRO_YEARLY: getOptionalEnv("PAYME_PRO_YEARLY"),
+  PAYME_BUSINESS_MONTHLY: getOptionalEnv("PAYME_BUSINESS_MONTHLY"),
+  PAYME_BUSINESS_YEARLY: getOptionalEnv("PAYME_BUSINESS_YEARLY"),
+
   GEMINI_API_KEY: getOptionalEnv("GEMINI_API_KEY"),
 };
 
@@ -80,6 +96,36 @@ if (config.PADDLE_WEBHOOK_SECRET_KEY) {
 } else {
   console.warn(
     `[Config] Paddle Webhook Secret Key is MISSING. Webhook verification will fail.`,
+  );
+}
+
+// Payme configuration validation
+if (config.PAYME_MERCHANT_ID) {
+  console.log(`[Config] Payme Merchant ID loaded`);
+} else {
+  console.warn(
+    `[Config] Payme Merchant ID is MISSING. Payme payment features will be disabled.`,
+  );
+}
+
+if (config.PAYME_SECRET_KEY) {
+  console.log(`[Config] Payme Secret Key loaded`);
+} else {
+  console.warn(
+    `[Config] Payme Secret Key is MISSING. Payme webhook verification will fail.`,
+  );
+}
+
+const hasPaymePrices = !!(
+  config.PAYME_STARTER_MONTHLY ||
+  config.PAYME_PRO_MONTHLY ||
+  config.PAYME_BUSINESS_MONTHLY
+);
+if (hasPaymePrices) {
+  console.log(`[Config] Payme prices configured`);
+} else {
+  console.warn(
+    `[Config] Payme prices are MISSING. Using default placeholder prices.`,
   );
 }
 

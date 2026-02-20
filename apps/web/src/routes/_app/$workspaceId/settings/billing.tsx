@@ -1,21 +1,47 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useUser } from '@clerk/clerk-react'
-import { CreditCard, Loader2, ExternalLink, Package, Zap, ArrowUpRight, Check } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  CreditCard,
+  Loader2,
+  Package,
+  Zap,
+  ArrowUpRight,
+  Check,
+} from 'lucide-react'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { useCreateCustomerPortal, useCreateCheckoutForPlan } from '@/features/payments/api'
-import { usePaddle } from '@/features/payments/components/paddle-provider'
+import { useCreatePaymeCheckout } from '@/features/payments/api'
+import { usePayme } from '@/features/payments/components/payme-provider'
 
-const planConfig: Record<string, { name: string; color: string; bgColor: string; description: string; maxCalls: number; price: number; features: string[] }> = {
+const planConfig: Record<
+  string,
+  {
+    name: string
+    color: string
+    bgColor: string
+    description: string
+    maxCalls: number
+    priceUzs: number
+    priceUsd: number
+    features: string[]
+  }
+> = {
   free: {
     name: 'Free',
     color: 'text-gray-500',
     bgColor: 'bg-gray-500',
     description: 'Try it out with limited features',
     maxCalls: 2,
-    price: 0,
+    priceUzs: 0,
+    priceUsd: 0,
     features: ['2 calls/month', '1 AI agent', 'Basic analytics'],
   },
   starter: {
@@ -24,8 +50,15 @@ const planConfig: Record<string, { name: string; color: string; bgColor: string;
     bgColor: 'bg-blue-500',
     description: 'For small teams',
     maxCalls: 200,
-    price: 69,
-    features: ['200 calls/month', '3 AI agents', 'All languages', 'Call transcripts', 'Email support'],
+    priceUzs: 108000,
+    priceUsd: 9,
+    features: [
+      '200 calls/month',
+      '3 AI agents',
+      'All languages',
+      'Call transcripts',
+      'Email support',
+    ],
   },
   professional: {
     name: 'Professional',
@@ -33,45 +66,51 @@ const planConfig: Record<string, { name: string; color: string; bgColor: string;
     bgColor: 'bg-purple-500',
     description: 'For growing businesses',
     maxCalls: 1000,
-    price: 172,
-    features: ['1000 calls/month', '40 super realistic calls', '10 AI agents', 'Premium voices', 'CRM integrations'],
+    priceUzs: 348000,
+    priceUsd: 29,
+    features: [
+      '1000 calls/month',
+      '40 super realistic calls',
+      '10 AI agents',
+      'Premium voices',
+      'CRM integrations',
+    ],
   },
-  enterprise: {
-    name: 'Enterprise',
+  business: {
+    name: 'Business',
     color: 'text-amber-500',
     bgColor: 'bg-amber-500',
     description: 'For large organizations',
     maxCalls: 2000,
-    price: 345,
-    features: ['2000 calls/month', '90 super realistic calls', '25 AI agents', 'Custom integrations', 'Dedicated support'],
+    priceUzs: 948000,
+    priceUsd: 79,
+    features: [
+      '2000 calls/month',
+      '90 super realistic calls',
+      '25 AI agents',
+      'Custom integrations',
+      'Dedicated support',
+    ],
   },
 }
 
-const planOrder = ['free', 'starter', 'professional', 'enterprise']
+const planOrder = ['free', 'starter', 'professional', 'business']
 
 function BillingSettingsPage() {
   const { user, isLoaded } = useUser()
-  const createPortal = useCreateCustomerPortal()
-  const createCheckout = useCreateCheckoutForPlan()
-  const { openCheckout } = usePaddle()
+  const createCheckout = useCreatePaymeCheckout()
+  const { redirectToCheckout } = usePayme()
 
-  // Get user metadata from Clerk
   const userPlan = (user?.publicMetadata?.plan as string) || 'free'
   const userCredits = (user?.publicMetadata?.credits as number) || 2
-  const subscriptionId = user?.publicMetadata?.subscriptionId as string | undefined
 
   const plan = planConfig[userPlan] || planConfig.free
   const usagePercentage = Math.min(100, (userCredits / plan.maxCalls) * 100)
 
-  // Determine available upgrade plans
   const currentPlanIndex = planOrder.indexOf(userPlan)
-  const upgradePlans = planOrder.slice(currentPlanIndex + 1).map(p => ({ id: p, ...planConfig[p] }))
-
-  const handleManageSubscription = () => {
-    if (subscriptionId) {
-      createPortal.mutate({ customerId: subscriptionId })
-    }
-  }
+  const upgradePlans = planOrder
+    .slice(currentPlanIndex + 1)
+    .map((p) => ({ id: p, ...planConfig[p] }))
 
   const handleUpgrade = (planId: string) => {
     if (!user) return
@@ -81,27 +120,26 @@ function BillingSettingsPage() {
         plan: planId,
         data: {
           yearly: false,
-          customerEmail: user?.primaryEmailAddress?.emailAddress,
-          customerName: user?.fullName || undefined,
-          metadata: {
-            userId: user?.id || '',
-            plan: planId,
-            upgrade: 'true',
-          },
+          userId: user.id,
+          recurring: false,
         },
       },
       {
         onSuccess: (data) => {
-          if (data.transactionId) {
-            openCheckout(data.transactionId)
+          if (data.checkoutUrl) {
+            redirectToCheckout(data.checkoutUrl)
           }
         },
-      }
+      },
     )
   }
 
   const handleGoToPricing = () => {
     window.location.href = '/#pricing'
+  }
+
+  const formatPrice = (priceUzs: number) => {
+    return new Intl.NumberFormat('uz-UZ').format(priceUzs)
   }
 
   if (!isLoaded) {
@@ -116,7 +154,6 @@ function BillingSettingsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Current Plan */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -125,17 +162,19 @@ function BillingSettingsPage() {
                 <Package className="h-5 w-5" />
                 Current Plan
               </CardTitle>
-              <CardDescription>Manage your subscription and billing</CardDescription>
+              <CardDescription>
+                Manage your subscription and billing
+              </CardDescription>
             </div>
-            <Badge className={`${plan.bgColor} text-white`}>
-              {plan.name}
-            </Badge>
+            <Badge className={`${plan.bgColor} text-white`}>{plan.name}</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold">${plan.price}</span>
-            <span className="text-muted-foreground">/month</span>
+            <span className="text-3xl font-bold">
+              {formatPrice(plan.priceUzs)}
+            </span>
+            <span className="text-muted-foreground">UZS/month</span>
           </div>
           <p className="text-muted-foreground">{plan.description}</p>
 
@@ -148,35 +187,13 @@ function BillingSettingsPage() {
             ))}
           </ul>
 
-          {subscriptionId ? (
-            <Button
-              variant="outline"
-              onClick={handleManageSubscription}
-              disabled={createPortal.isPending}
-            >
-              {createPortal.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                <>
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  Manage Subscription
-                  <ExternalLink className="ml-2 h-3 w-3" />
-                </>
-              )}
-            </Button>
-          ) : (
-            <Button onClick={handleGoToPricing}>
-              <Zap className="mr-2 h-4 w-4" />
-              Upgrade Plan
-            </Button>
-          )}
+          <Button onClick={handleGoToPricing}>
+            <Zap className="mr-2 h-4 w-4" />
+            Upgrade Plan
+          </Button>
         </CardContent>
       </Card>
 
-      {/* Upgrade Options */}
       {upgradePlans.length > 0 && (
         <Card>
           <CardHeader>
@@ -184,7 +201,9 @@ function BillingSettingsPage() {
               <ArrowUpRight className="h-5 w-5" />
               Upgrade Options
             </CardTitle>
-            <CardDescription>Choose a higher plan to get more features</CardDescription>
+            <CardDescription>
+              Choose a higher plan to get more features
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
@@ -199,18 +218,22 @@ function BillingSettingsPage() {
                         {upgradePlan.name}
                       </span>
                       <span className="text-sm text-muted-foreground">
-                        ${upgradePlan.price}/mo
+                        {formatPrice(upgradePlan.priceUzs)} UZS/mo
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {upgradePlan.maxCalls} calls/month • {upgradePlan.features[1]}
+                      {upgradePlan.maxCalls} calls/month
                     </p>
                   </div>
                   <Button
                     onClick={() => handleUpgrade(upgradePlan.id)}
-                    disabled={createCheckout.isPending && createCheckout.variables?.plan === upgradePlan.id}
+                    disabled={
+                      createCheckout.isPending &&
+                      createCheckout.variables?.plan === upgradePlan.id
+                    }
                   >
-                    {createCheckout.isPending && createCheckout.variables?.plan === upgradePlan.id ? (
+                    {createCheckout.isPending &&
+                    createCheckout.variables?.plan === upgradePlan.id ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Loading...
@@ -229,7 +252,6 @@ function BillingSettingsPage() {
         </Card>
       )}
 
-      {/* Usage */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -253,67 +275,6 @@ function BillingSettingsPage() {
           </p>
         </CardContent>
       </Card>
-
-      {/* Payment Method */}
-      {subscriptionId && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
-              Payment Method
-            </CardTitle>
-            <CardDescription>Manage your payment methods</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button
-              variant="outline"
-              onClick={handleManageSubscription}
-              disabled={createPortal.isPending}
-            >
-              {createPortal.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                <>
-                  Update Payment Method
-                  <ExternalLink className="ml-2 h-3 w-3" />
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Billing History */}
-      {subscriptionId && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Billing History</CardTitle>
-            <CardDescription>View your past invoices</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button
-              variant="outline"
-              onClick={handleManageSubscription}
-              disabled={createPortal.isPending}
-            >
-              {createPortal.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                <>
-                  View Invoices
-                  <ExternalLink className="ml-2 h-3 w-3" />
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
     </div>
   )
 }
