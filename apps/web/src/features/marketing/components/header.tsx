@@ -1,5 +1,5 @@
-import {Link} from '@tanstack/react-router'
-import { useState, useEffect, useRef } from 'react'
+import { Link } from '@tanstack/react-router'
+import { useState } from 'react'
 import { useUser } from '@clerk/clerk-react'
 import { Logo } from '@/components/logo'
 import { Menu, X } from 'lucide-react'
@@ -9,142 +9,140 @@ import { cn } from '@/lib/utils'
 import { AnimatedThemeToggler } from './animated-theme-toggler'
 
 const menuItems = [
-    { name: 'Features', href: '#features' },
-    { name: 'Solutions', href: '#solutions' },
-    { name: 'Pricing', href: '#pricing' },
-    { name: 'Testimonials', href: '#testimonials' },
+  { name: 'Features', href: '#features' },
+  { name: 'Solutions', href: '#solutions' },
+  { name: 'Pricing', href: '#pricing' },
+  { name: 'Testimonials', href: '#testimonials' },
 ]
 
 export const HeroHeader = () => {
-    const { isSignedIn, isLoaded } = useUser()
-    const [menuState, setMenuState] = useState(false)
-    const [isScrolled, setIsScrolled] = useState(false)
-    const scrollRAF = useRef<number>(0)
+  const { isSignedIn, isLoaded } = useUser()
+  const [menuState, setMenuState] = useState(false)
 
-    useEffect(() => {
-        const handleScroll = () => {
-            if (scrollRAF.current) cancelAnimationFrame(scrollRAF.current)
-            scrollRAF.current = requestAnimationFrame(() => {
-                setIsScrolled(window.scrollY > 50)
-            })
-        }
-        window.addEventListener('scroll', handleScroll, { passive: true })
-        return () => {
-            window.removeEventListener('scroll', handleScroll)
-            if (scrollRAF.current) cancelAnimationFrame(scrollRAF.current)
-        }
-    }, [])
-
-    const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-        e.preventDefault()
-        const element = document.querySelector(href)
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' })
-            setMenuState(false)
-        }
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    e.preventDefault()
+    const element = document.querySelector(href)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+      setMenuState(false)
     }
-    return (
-        <header>
-            <nav
-                data-state={menuState && 'active'}
-                className="fixed z-20 w-full px-2">
-                <div className={cn('mx-auto mt-2 max-w-6xl px-6 lg:px-12', isScrolled ? 'bg-background/50 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5' : '')} style={{ transition: 'max-width 0.3s ease, padding 0.3s ease, background-color 0.3s ease, border-radius 0.3s ease, border-color 0.3s ease', willChange: 'max-width, padding, background-color' }}>
-                    <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
-                        <div className="flex w-full justify-between lg:w-auto">
-                            <Link
-                                to="/"
-                                aria-label="home"
-                                className="flex items-center space-x-2">
-                                <Logo />
-                            </Link>
+  }
+  return (
+    <header>
+      <nav
+        data-state={menuState && 'active'}
+        className="fixed z-20 w-full px-2"
+      >
+        <div
+          className={cn(
+            'mx-auto mt-2 max-w-6xl px-6 lg:px-12 transition-all duration-300 ease-in-out',
+            'lg:max-w-4xl lg:rounded-2xl lg:border lg:bg-background/50 lg:backdrop-blur-lg',
+          )}
+        >
+          <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
+            <div className="flex w-full justify-between lg:w-auto">
+              <Link
+                to="/"
+                aria-label="home"
+                className="flex items-center space-x-2"
+              >
+                <Logo />
+              </Link>
 
-                            <button
-                                onClick={() => setMenuState(!menuState)}
-                                aria-label={menuState == true ? 'Close Menu' : 'Open Menu'}
-                                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
-                                <Menu className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
-                                <X className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
-                            </button>
-                        </div>
+              <button
+                onClick={() => setMenuState(!menuState)}
+                aria-label={menuState == true ? 'Close Menu' : 'Open Menu'}
+                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
+              >
+                <Menu className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
+                <X className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
+              </button>
+            </div>
 
-                        <div className="absolute inset-0 m-auto hidden size-fit lg:block">
-                            <ul className="flex gap-8 text-sm">
-                                {menuItems.map((item, index) => (
-                                    <li key={index}>
-                                        {item.href.startsWith('#') ? (
-                                            <a
-                                                href={item.href}
-                                                onClick={(e) => handleNavClick(e, item.href)}
-                                                className="text-muted-foreground hover:text-accent-foreground block duration-150 cursor-pointer">
-                                                <span>{item.name}</span>
-                                            </a>
-                                        ) : (
-                                            <Link
-                                                to={item.href}
-                                                className="text-muted-foreground hover:text-accent-foreground block duration-150">
-                                                <span>{item.name}</span>
-                                            </Link>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                       
+            <div className="absolute inset-0 m-auto hidden size-fit lg:block">
+              <ul className="flex gap-8 text-sm">
+                {menuItems.map((item, index) => (
+                  <li key={index}>
+                    {item.href.startsWith('#') ? (
+                      <a
+                        href={item.href}
+                        onClick={(e) => handleNavClick(e, item.href)}
+                        className="text-muted-foreground hover:text-accent-foreground block duration-150 cursor-pointer"
+                      >
+                        <span>{item.name}</span>
+                      </a>
+                    ) : (
+                      <Link
+                        to={item.href}
+                        className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                      >
+                        <span>{item.name}</span>
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-                        <div className="bg-background in-data-[state=active]:block lg:in-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
-                            <div className="lg:hidden">
-                                <ul className="space-y-6 text-base">
-                                    {menuItems.map((item, index) => (
-                                        <li key={index}>
-                                            {item.href.startsWith('#') ? (
-                                                <a
-                                                    href={item.href}
-                                                    onClick={(e) => handleNavClick(e, item.href)}
-                                                    className="text-muted-foreground hover:text-accent-foreground block duration-150 cursor-pointer">
-                                                    <span>{item.name}</span>
-                                                </a>
-                                            ) : (
-                                                <Link
-                                                    to={item.href}
-                                                    className="text-muted-foreground hover:text-accent-foreground block duration-150">
-                                                    <span>{item.name}</span>
-                                                </Link>
-                                            )}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                                <AnimatedThemeToggler />
-                                {!isLoaded ? (
-                                    <div className="h-9 w-[88px] animate-pulse rounded-md bg-muted/50" />
-                                ) : isSignedIn ? (
-                                    <Button
-                                        asChild
-                                        size="sm"
-                                        className="bg-blue-600 hover:bg-blue-700 text-white border-0"
-                                    >
-                                        <Link to="/agents">
-                                            <span>Dashboard</span>
-                                        </Link>
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        asChild
-                                        variant="ghost"
-                                        size="sm"
-                                        className="font-medium" 
-                                    >
-                                        <Link to="/login">
-                                            <span>Login</span>
-                                        </Link>
-                                    </Button>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-        </header>
-    )
+            <div className="bg-background in-data-[state=active]:block lg:in-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
+              <div className="lg:hidden">
+                <ul className="space-y-6 text-base">
+                  {menuItems.map((item, index) => (
+                    <li key={index}>
+                      {item.href.startsWith('#') ? (
+                        <a
+                          href={item.href}
+                          onClick={(e) => handleNavClick(e, item.href)}
+                          className="text-muted-foreground hover:text-accent-foreground block duration-150 cursor-pointer"
+                        >
+                          <span>{item.name}</span>
+                        </a>
+                      ) : (
+                        <Link
+                          to={item.href}
+                          className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                        >
+                          <span>{item.name}</span>
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+                <AnimatedThemeToggler />
+                {!isLoaded ? (
+                  <div className="h-9 w-[88px] animate-pulse rounded-md bg-muted/50" />
+                ) : isSignedIn ? (
+                  <Button
+                    asChild
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                  >
+                    <Link to="/agents">
+                      <span>Dashboard</span>
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="font-medium"
+                  >
+                    <Link to="/login">
+                      <span>Login</span>
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+  )
 }

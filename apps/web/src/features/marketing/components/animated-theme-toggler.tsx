@@ -1,11 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from "react"
-import { Moon, Sun } from "lucide-react"
-import { flushSync } from "react-dom"
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Moon, Sun } from 'lucide-react'
+import { flushSync } from 'react-dom'
 
-import { cn } from "@/lib/utils"
+import { cn } from '@/lib/utils'
 
-interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<"button"> {
+interface AnimatedThemeTogglerProps extends React.ComponentPropsWithoutRef<'button'> {
   duration?: number
+}
+
+function getInitialTheme(): boolean {
+  if (typeof window === 'undefined') return false
+  return document.documentElement.classList.contains('dark')
 }
 
 export const AnimatedThemeToggler = ({
@@ -13,17 +18,19 @@ export const AnimatedThemeToggler = ({
   duration = 400,
   ...props
 }: AnimatedThemeTogglerProps) => {
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof document !== 'undefined') {
-      return document.documentElement.classList.contains('dark')
-    }
-    return false
-  })
+  const [isDark, setIsDark] = useState(getInitialTheme)
+  const [isHydrated, setIsHydrated] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isHydrated) return
+
     const updateTheme = () => {
-      setIsDark(document.documentElement.classList.contains("dark"))
+      setIsDark(document.documentElement.classList.contains('dark'))
     }
 
     updateTheme()
@@ -31,11 +38,11 @@ export const AnimatedThemeToggler = ({
     const observer = new MutationObserver(updateTheme)
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ["class"],
+      attributeFilter: ['class'],
     })
 
     return () => observer.disconnect()
-  }, [])
+  }, [isHydrated])
 
   const toggleTheme = useCallback(async () => {
     if (!buttonRef.current) return
@@ -44,8 +51,8 @@ export const AnimatedThemeToggler = ({
       flushSync(() => {
         const newTheme = !isDark
         setIsDark(newTheme)
-        document.documentElement.classList.toggle("dark")
-        localStorage.setItem("theme", newTheme ? "dark" : "light")
+        document.documentElement.classList.toggle('dark')
+        localStorage.setItem('theme', newTheme ? 'dark' : 'light')
       })
     }).ready
 
@@ -55,7 +62,7 @@ export const AnimatedThemeToggler = ({
     const y = top + height / 2
     const maxRadius = Math.hypot(
       Math.max(left, window.innerWidth - left),
-      Math.max(top, window.innerHeight - top)
+      Math.max(top, window.innerHeight - top),
     )
 
     document.documentElement.animate(
@@ -67,9 +74,9 @@ export const AnimatedThemeToggler = ({
       },
       {
         duration,
-        easing: "ease-in-out",
-        pseudoElement: "::view-transition-new(root)",
-      }
+        easing: 'ease-in-out',
+        pseudoElement: '::view-transition-new(root)',
+      },
     )
   }, [isDark, duration])
 
@@ -80,7 +87,7 @@ export const AnimatedThemeToggler = ({
       className={cn(className)}
       {...props}
     >
-      {isDark ? <Sun /> : <Moon />}
+      {isHydrated ? isDark ? <Sun /> : <Moon /> : <Moon />}
       <span className="sr-only">Toggle theme</span>
     </button>
   )
