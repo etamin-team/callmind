@@ -24,9 +24,10 @@ export interface CheckoutResponse {
   yearly?: boolean
 }
 
-export interface PaymeCheckoutResponse {
+export interface FreedompayCheckoutResponse {
   checkoutUrl: string
   orderId: string
+  paymentId: string
   amount: number
   amountDisplay: number
   currency: string
@@ -42,7 +43,6 @@ export interface CustomerPortalResponse {
   customerPortalUrl: string
 }
 
-// Create a generic checkout session
 async function createCheckout(
   data: CreateCheckoutRequest,
 ): Promise<CheckoutResponse> {
@@ -62,7 +62,6 @@ async function createCheckout(
   return response.json()
 }
 
-// Create a checkout session for a specific plan
 async function createCheckoutForPlan(
   plan: string,
   data: CreateCheckoutForPlanRequest,
@@ -83,7 +82,6 @@ async function createCheckoutForPlan(
   return response.json()
 }
 
-// Get available products
 async function getProducts() {
   const response = await fetch(`${API_URL}/api/payments/products`)
 
@@ -95,7 +93,6 @@ async function getProducts() {
   return response.json()
 }
 
-// Create customer portal session
 async function createCustomerPortal(
   data: CustomerPortalRequest,
 ): Promise<CustomerPortalResponse> {
@@ -115,11 +112,9 @@ async function createCustomerPortal(
   return response.json()
 }
 
-// React Query hooks
 export function useCreateCheckout() {
   return useMutation({
     mutationFn: createCheckout,
-    // Return data for the component to handle Paddle checkout overlay
   })
 }
 
@@ -132,7 +127,6 @@ export function useCreateCheckoutForPlan() {
       plan: string
       data: CreateCheckoutForPlanRequest
     }) => createCheckoutForPlan(plan, data),
-    // Return data for the component to handle Paddle checkout overlay
   })
 }
 
@@ -147,7 +141,6 @@ export function useCreateCustomerPortal() {
   return useMutation({
     mutationFn: createCustomerPortal,
     onSuccess: (data) => {
-      // Redirect to customer portal
       if (data.customerPortalUrl) {
         window.location.href = data.customerPortalUrl
       }
@@ -155,17 +148,15 @@ export function useCreateCustomerPortal() {
   })
 }
 
-// Payme checkout functions
-export async function createPaymeCheckout(
+export async function createFreedompayCheckout(
   plan: string,
   data: {
     yearly?: boolean
     userId?: string
     phone?: string
-    recurring?: boolean
   },
-): Promise<PaymeCheckoutResponse> {
-  const response = await fetch(`${API_URL}/api/payme/checkout/${plan}`, {
+): Promise<FreedompayCheckoutResponse> {
+  const response = await fetch(`${API_URL}/api/freedompay/checkout/${plan}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -175,38 +166,66 @@ export async function createPaymeCheckout(
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to create Payme checkout')
+    throw new Error(error.error || 'Failed to create FreedomPay checkout')
   }
 
   return response.json()
 }
 
-export function useCreatePaymeCheckout() {
+export function useCreateFreedompayCheckout() {
   return useMutation({
     mutationFn: ({
       plan,
       data,
     }: {
       plan: string
-      data: Parameters<typeof createPaymeCheckout>[1]
-    }) => createPaymeCheckout(plan, data),
+      data: Parameters<typeof createFreedompayCheckout>[1]
+    }) => createFreedompayCheckout(plan, data),
   })
 }
 
-export async function getPaymePrices() {
-  const response = await fetch(`${API_URL}/api/payme/prices`)
+export async function getFreedompayPrices() {
+  const response = await fetch(`${API_URL}/api/freedompay/prices`)
 
   if (!response.ok) {
     const error = await response.json()
-    throw new Error(error.error || 'Failed to fetch Payme prices')
+    throw new Error(error.error || 'Failed to fetch FreedomPay prices')
   }
 
   return response.json()
 }
 
-export function useGetPaymePrices() {
+export function useGetFreedompayPrices() {
   return useQuery({
-    queryKey: ['payme-prices'],
-    queryFn: getPaymePrices,
+    queryKey: ['freedompay-prices'],
+    queryFn: getFreedompayPrices,
+  })
+}
+
+export async function chargeRecurringPayment(data: {
+  recurringProfileId: string
+  amount: number
+  orderId: string
+  description?: string
+}) {
+  const response = await fetch(`${API_URL}/api/freedompay/recurring/pay`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to charge recurring payment')
+  }
+
+  return response.json()
+}
+
+export function useChargeRecurringPayment() {
+  return useMutation({
+    mutationFn: chargeRecurringPayment,
   })
 }

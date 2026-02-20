@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link } from '@tanstack/react-router'
-import { Plus, Bot, Loader2, MoreVertical, Trash } from 'lucide-react'
+import {
+  Plus,
+  Bot,
+  Loader2,
+  MoreVertical,
+  Trash,
+  Phone,
+  MessageSquare,
+  Sparkles,
+  Zap,
+} from 'lucide-react'
 import { useAuth } from '@clerk/clerk-react'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +33,109 @@ import {
 import { Input } from '@/components/ui/input'
 
 import { useAgentStore } from '../store'
+
+const agentTypeConfig: Record<
+  string,
+  {
+    color: string
+    bgColor: string
+    icon: typeof Bot
+  }
+> = {
+  support: {
+    color: 'text-violet-500',
+    bgColor: 'bg-violet-500/10',
+    icon: MessageSquare,
+  },
+  sales: {
+    color: 'text-amber-500',
+    bgColor: 'bg-amber-500/10',
+    icon: Zap,
+  },
+  assistant: {
+    color: 'text-cyan-500',
+    bgColor: 'bg-cyan-500/10',
+    icon: Sparkles,
+  },
+  default: {
+    color: 'text-blue-500',
+    bgColor: 'bg-blue-500/10',
+    icon: Bot,
+  },
+}
+
+const languageLabels: Record<string, string> = {
+  en: 'English',
+  ru: 'Русский',
+  uz: "O'zbek",
+}
+
+function AgentCard({
+  agent,
+  workspaceId,
+  onDelete,
+}: {
+  agent: any
+  workspaceId: string
+  onDelete: (e: React.MouseEvent, id: string) => void
+}) {
+  const config = agentTypeConfig[agent.type] || agentTypeConfig.default
+  const IconComponent = config.icon
+
+  return (
+    <div className="group relative rounded-xl border border-border bg-card overflow-hidden">
+      <Link
+        to="/$workspaceId/agents/$agentId"
+        params={{ workspaceId, agentId: agent.id }}
+        className="absolute inset-0 z-10"
+      />
+
+      <div className="p-5">
+        <div className="flex items-start gap-4 mb-4">
+          <div className={`p-2.5 rounded-lg ${config.bgColor}`}>
+            <IconComponent className={`h-5 w-5 ${config.color}`} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-base truncate">{agent.name}</h3>
+            <span
+              className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium ${config.bgColor} ${config.color}`}
+            >
+              {agent.type}
+            </span>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="relative z-20 h-8 w-8 flex items-center justify-center rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreVertical className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive cursor-pointer"
+                onClick={(e) => onDelete(e, agent.id!)}
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+          {agent.businessDescription || 'No description'}
+        </p>
+
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Phone className="h-3 w-3" />
+          <span>{languageLabels[agent.language] || agent.language}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function AgentsPage() {
   const { workspaceId: workspaceIdRaw } = useParams({
@@ -76,7 +188,6 @@ export default function AgentsPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header - Only show if there are agents */}
       {agents.length > 0 && (
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -96,75 +207,21 @@ export default function AgentsPage() {
         </div>
       )}
 
-      {/* Agents Grid */}
       {agents.length > 0 && (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {agents.map((agent) => (
-            <Card
+            <AgentCard
               key={agent.id}
-              className="relative overflow-hidden group hover:shadow-md transition-shadow cursor-pointer"
-            >
-              <Link
-                to="/$workspaceId/agents/$agentId"
-                params={{ workspaceId: workspaceId!, agentId: agent.id }}
-                className="absolute inset-0 z-10"
-              />
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 transition-colors">
-                      <Bot className="h-8 w-8 text-muted-foreground group-hover:text-primary transition-colors" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold">{agent.name}</h3>
-                      <p className="text-xs text-muted-foreground capitalize">
-                        {agent.type}
-                      </p>
-                    </div>
-                  </div>
-
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        className="text-destructive focus:text-destructive cursor-pointer"
-                        onClick={(e) => handleDeleteClick(e, agent.id!)}
-                      >
-                        <Trash className="mr-2 h-4 w-4" />
-                        Delete Agent
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground line-clamp-3">
-                  {agent.businessDescription || 'No description provided.'}
-                </p>
-                <div className="flex gap-2 mt-4">
-                  <div className="px-2 py-1 bg-secondary/50 rounded text-xs font-mono text-muted-foreground">
-                    {agent.language === 'en' ? 'English' : agent.language}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              agent={agent}
+              workspaceId={workspaceId}
+              onDelete={handleDeleteClick}
+            />
           ))}
         </div>
       )}
 
-      {/* Empty State */}
       {!isLoading && agents.length === 0 && (
         <div className="flex flex-col items-center justify-center min-h-[500px] text-center p-8">
-          {/* Visual Placeholder for Illustration */}
           <div className="relative w-64 h-40 mb-8">
             <div className="absolute inset-x-8 inset-y-0 bg-orange-400/20 rounded-2xl rotate-[-6deg] backdrop-blur-sm" />
             <div className="absolute inset-x-8 inset-y-0 bg-red-400/20 rounded-2xl rotate-[6deg] backdrop-blur-sm" />

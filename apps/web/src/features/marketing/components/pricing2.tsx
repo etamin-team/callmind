@@ -24,11 +24,11 @@ const plans = [
   {
     id: 'starter',
     name: 'Starter',
-    price: { monthly: 9, yearly: 86 },
+    price: { monthly: 59, yearly: 590 },
     priceUzs: { monthly: 108000, yearly: 1032000 },
     description: 'For small teams',
     features: [
-      '200 calls/month',
+      '250 calls/month',
       '3 AI agents',
       'All languages',
       'Call transcripts',
@@ -41,7 +41,7 @@ const plans = [
   {
     id: 'pro',
     name: 'Professional',
-    price: { monthly: 29, yearly: 278 },
+    price: { monthly: 172, yearly: 1720 },
     priceUzs: { monthly: 348000, yearly: 3336000 },
     description: 'For growing businesses',
     features: [
@@ -61,7 +61,7 @@ const plans = [
     priceUzs: { monthly: 948000, yearly: 9096000 },
     description: 'For enterprises',
     features: [
-      '2000 calls/month',
+      '3000 calls/month',
       '90 super realistic calls',
       '25 AI agents',
       'Custom integrations',

@@ -43,20 +43,20 @@ export const config = {
   PADDLE_API_KEY: getOptionalEnv("PADDLE_API_KEY"),
   PADDLE_WEBHOOK_SECRET_KEY: getOptionalEnv("PADDLE_WEBHOOK_SECRET_KEY"),
 
-  // Payme.uz configuration
-  PAYME_MERCHANT_ID: getOptionalEnv("PAYME_MERCHANT_ID"),
-  PAYME_SECRET_KEY: getOptionalEnv("PAYME_SECRET_KEY"),
-  PAYME_CALLBACK_URL: getOptionalEnv("PAYME_CALLBACK_URL", [
+  // FreedomPay configuration (Uzbekistan)
+  FREEDOMPAY_MERCHANT_ID: getOptionalEnv("FREEDOMPAY_MERCHANT_ID"),
+  FREEDOMPAY_SECRET_KEY: getOptionalEnv("FREEDOMPAY_SECRET_KEY"),
+  FREEDOMPAY_CALLBACK_URL: getOptionalEnv("FREEDOMPAY_CALLBACK_URL", [
     "https://your-domain.com",
   ]),
 
-  // Prices in UZS (will be converted to tiyins: amount * 100)
-  PAYME_STARTER_MONTHLY: getOptionalEnv("PAYME_STARTER_MONTHLY"), // e.g., 108000 = 108,000 UZS
-  PAYME_STARTER_YEARLY: getOptionalEnv("PAYME_STARTER_YEARLY"),
-  PAYME_PRO_MONTHLY: getOptionalEnv("PAYME_PRO_MONTHLY"),
-  PAYME_PRO_YEARLY: getOptionalEnv("PAYME_PRO_YEARLY"),
-  PAYME_BUSINESS_MONTHLY: getOptionalEnv("PAYME_BUSINESS_MONTHLY"),
-  PAYME_BUSINESS_YEARLY: getOptionalEnv("PAYME_BUSINESS_YEARLY"),
+  // Prices in UZS (amount in tiyins will be calculated: amount * 100)
+  FREEDOMPAY_STARTER_MONTHLY: getOptionalEnv("FREEDOMPAY_STARTER_MONTHLY"),
+  FREEDOMPAY_STARTER_YEARLY: getOptionalEnv("FREEDOMPAY_STARTER_YEARLY"),
+  FREEDOMPAY_PRO_MONTHLY: getOptionalEnv("FREEDOMPAY_PRO_MONTHLY"),
+  FREEDOMPAY_PRO_YEARLY: getOptionalEnv("FREEDOMPAY_PRO_YEARLY"),
+  FREEDOMPAY_BUSINESS_MONTHLY: getOptionalEnv("FREEDOMPAY_BUSINESS_MONTHLY"),
+  FREEDOMPAY_BUSINESS_YEARLY: getOptionalEnv("FREEDOMPAY_BUSINESS_YEARLY"),
 
   GEMINI_API_KEY: getOptionalEnv("GEMINI_API_KEY"),
 };
@@ -99,33 +99,33 @@ if (config.PADDLE_WEBHOOK_SECRET_KEY) {
   );
 }
 
-// Payme configuration validation
-if (config.PAYME_MERCHANT_ID) {
-  console.log(`[Config] Payme Merchant ID loaded`);
+// FreedomPay configuration validation
+if (config.FREEDOMPAY_MERCHANT_ID) {
+  console.log(`[Config] FreedomPay Merchant ID loaded`);
 } else {
   console.warn(
-    `[Config] Payme Merchant ID is MISSING. Payme payment features will be disabled.`,
+    `[Config] FreedomPay Merchant ID is MISSING. FreedomPay payment features will be disabled.`,
   );
 }
 
-if (config.PAYME_SECRET_KEY) {
-  console.log(`[Config] Payme Secret Key loaded`);
+if (config.FREEDOMPAY_SECRET_KEY) {
+  console.log(`[Config] FreedomPay Secret Key loaded`);
 } else {
   console.warn(
-    `[Config] Payme Secret Key is MISSING. Payme webhook verification will fail.`,
+    `[Config] FreedomPay Secret Key is MISSING. FreedomPay webhook verification will fail.`,
   );
 }
 
-const hasPaymePrices = !!(
-  config.PAYME_STARTER_MONTHLY ||
-  config.PAYME_PRO_MONTHLY ||
-  config.PAYME_BUSINESS_MONTHLY
+const hasFreedompayPrices = !!(
+  config.FREEDOMPAY_STARTER_MONTHLY ||
+  config.FREEDOMPAY_PRO_MONTHLY ||
+  config.FREEDOMPAY_BUSINESS_MONTHLY
 );
-if (hasPaymePrices) {
-  console.log(`[Config] Payme prices configured`);
+if (hasFreedompayPrices) {
+  console.log(`[Config] FreedomPay prices configured`);
 } else {
   console.warn(
-    `[Config] Payme prices are MISSING. Using default placeholder prices.`,
+    `[Config] FreedomPay prices are MISSING. Using default placeholder prices.`,
   );
 }
 

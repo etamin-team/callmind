@@ -41,22 +41,22 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: false,
     },
-    // Payme.uz fields
-    paymeCustomerId: {
+    // FreedomPay fields
+    freedompayCustomerId: {
       type: String,
       required: false,
     },
-    paymePhone: {
+    freedompayRecurringProfile: {
       type: String,
       required: false,
     },
-    paymeCardToken: {
-      type: String,
+    freedompayRecurringExpiry: {
+      type: Date,
       required: false,
     },
-    paymeCardRecurrent: {
-      type: Boolean,
-      default: false,
+    freedompaySubscriptionPlan: {
+      type: String,
+      required: false,
     },
     subscriptionId: {
       type: String,
