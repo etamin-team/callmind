@@ -1,13 +1,8 @@
 import { FastifyPluginAsync } from "fastify";
 import { config } from "../../config/environment.js";
 import { UserModel } from "@repo/db";
+import { getCreditsForPlan } from "@repo/types";
 import crypto from "crypto";
-
-const CREDITS_PER_PLAN: Record<string, number> = {
-  starter: 200,
-  professional: 1000,
-  business: 2000,
-};
 
 function parseXmlResponse(xml: string): Record<string, string> {
   const result: Record<string, string> = {};
@@ -124,7 +119,7 @@ const freedompayWebhookRoutes: FastifyPluginAsync = async (fastify) => {
           return reply.status(200).send({ received: true });
         }
 
-        const credits = CREDITS_PER_PLAN[plan] || 0;
+        const credits = getCreditsForPlan(plan);
         const yearlyMultiplier = yearly ? 12 : 1;
         const totalCredits = credits * yearlyMultiplier;
 

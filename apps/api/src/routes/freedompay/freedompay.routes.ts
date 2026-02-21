@@ -1,47 +1,34 @@
 import { FastifyPluginAsync } from "fastify";
 import crypto from "crypto";
 import { config } from "../../config/environment.js";
+import {
+  PRICING_CONFIG,
+  PRICE_PER_PLAN_MONTHLY,
+  PRICE_PER_PLAN_YEARLY,
+  getCreditsForPlan,
+} from "@repo/types";
 
 const FREEDOMPAY_API_URL = "https://api.freedompay.uz";
-
-const DEFAULT_PRICES = {
-  starter_monthly: 108000,
-  starter_yearly: 1032000,
-  pro_monthly: 348000,
-  pro_yearly: 3336000,
-  business_monthly: 948000,
-  business_yearly: 9096000,
-};
 
 const PRICE_IDS = {
   starter_monthly:
     parseInt(process.env.FREEDOMPAY_STARTER_MONTHLY || "") ||
-    DEFAULT_PRICES.starter_monthly,
+    PRICE_PER_PLAN_MONTHLY.starter,
   starter_yearly:
     parseInt(process.env.FREEDOMPAY_STARTER_YEARLY || "") ||
-    DEFAULT_PRICES.starter_yearly,
+    PRICE_PER_PLAN_YEARLY.starter,
   pro_monthly:
     parseInt(process.env.FREEDOMPAY_PRO_MONTHLY || "") ||
-    DEFAULT_PRICES.pro_monthly,
+    PRICE_PER_PLAN_MONTHLY.professional,
   pro_yearly:
     parseInt(process.env.FREEDOMPAY_PRO_YEARLY || "") ||
-    DEFAULT_PRICES.pro_yearly,
+    PRICE_PER_PLAN_YEARLY.professional,
   business_monthly:
     parseInt(process.env.FREEDOMPAY_BUSINESS_MONTHLY || "") ||
-    DEFAULT_PRICES.business_monthly,
+    PRICE_PER_PLAN_MONTHLY.business,
   business_yearly:
     parseInt(process.env.FREEDOMPAY_BUSINESS_YEARLY || "") ||
-    DEFAULT_PRICES.business_yearly,
-};
-
-const CREDITS_PER_PLAN: Record<string, number> = {
-  starter: 200,
-  professional: 1000,
-  business: 2000,
-};
-
-const getCredits = (plan: string): number => {
-  return CREDITS_PER_PLAN[plan] || 0;
+    PRICE_PER_PLAN_YEARLY.business,
 };
 
 function generateFreedompaySignature(
@@ -194,37 +181,51 @@ const freedompayRoutes: FastifyPluginAsync = async (fastify) => {
   });
 
   fastify.get("/prices", async (request, reply) => {
+    const starterYearly =
+      PRICE_IDS.starter_yearly ?? (PRICE_PER_PLAN_YEARLY.starter || 0);
+    const proYearly =
+      PRICE_IDS.pro_yearly ?? (PRICE_PER_PLAN_YEARLY.professional || 0);
+    const businessYearly =
+      PRICE_IDS.business_yearly ?? (PRICE_PER_PLAN_YEARLY.business || 0);
+
     return reply.send({
       prices: {
         starter_monthly: {
-          amount: PRICE_IDS.starter_monthly,
-          amountTiyins: PRICE_IDS.starter_monthly * 100,
-          credits: getCredits("starter"),
+          amount: PRICE_IDS.starter_monthly ?? PRICING_CONFIG.starter.priceUzs,
+          amountTiyins:
+            (PRICE_IDS.starter_monthly ?? PRICING_CONFIG.starter.priceUzs) *
+            100,
+          credits: getCreditsForPlan("starter"),
         },
         starter_yearly: {
-          amount: PRICE_IDS.starter_yearly,
-          amountTiyins: PRICE_IDS.starter_yearly * 100,
-          credits: getCredits("starter") * 12,
+          amount: starterYearly,
+          amountTiyins: starterYearly * 100,
+          credits: getCreditsForPlan("starter") * 12,
         },
         pro_monthly: {
-          amount: PRICE_IDS.pro_monthly,
-          amountTiyins: PRICE_IDS.pro_monthly * 100,
-          credits: getCredits("professional"),
+          amount: PRICE_IDS.pro_monthly ?? PRICING_CONFIG.professional.priceUzs,
+          amountTiyins:
+            (PRICE_IDS.pro_monthly ?? PRICING_CONFIG.professional.priceUzs) *
+            100,
+          credits: getCreditsForPlan("professional"),
         },
         pro_yearly: {
-          amount: PRICE_IDS.pro_yearly,
-          amountTiyins: PRICE_IDS.pro_yearly * 100,
-          credits: getCredits("professional") * 12,
+          amount: proYearly,
+          amountTiyins: proYearly * 100,
+          credits: getCreditsForPlan("professional") * 12,
         },
         business_monthly: {
-          amount: PRICE_IDS.business_monthly,
-          amountTiyins: PRICE_IDS.business_monthly * 100,
-          credits: getCredits("business"),
+          amount:
+            PRICE_IDS.business_monthly ?? PRICING_CONFIG.business.priceUzs,
+          amountTiyins:
+            (PRICE_IDS.business_monthly ?? PRICING_CONFIG.business.priceUzs) *
+            100,
+          credits: getCreditsForPlan("business"),
         },
         business_yearly: {
-          amount: PRICE_IDS.business_yearly,
-          amountTiyins: PRICE_IDS.business_yearly * 100,
-          credits: getCredits("business") * 12,
+          amount: businessYearly,
+          amountTiyins: businessYearly * 100,
+          credits: getCreditsForPlan("business") * 12,
         },
       },
     });

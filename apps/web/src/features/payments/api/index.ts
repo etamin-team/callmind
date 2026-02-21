@@ -229,3 +229,50 @@ export function useChargeRecurringPayment() {
     mutationFn: chargeRecurringPayment,
   })
 }
+
+export interface PaymeCheckoutResponse {
+  checkoutUrl: string
+  orderId: string
+  plan: string
+  yearly: boolean
+}
+
+async function createPaymeCheckout(
+  plan: string,
+  data: {
+    yearly?: boolean
+    userId?: string
+    recurring?: boolean
+  },
+): Promise<PaymeCheckoutResponse> {
+  const response = await fetch(`${API_URL}/api/payme/checkout/${plan}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to create Payme checkout')
+  }
+
+  return response.json()
+}
+
+export function useCreatePaymeCheckout() {
+  return useMutation({
+    mutationFn: ({
+      plan,
+      data,
+    }: {
+      plan: string
+      data: {
+        yearly?: boolean
+        userId?: string
+        recurring?: boolean
+      }
+    }) => createPaymeCheckout(plan, data),
+  })
+}

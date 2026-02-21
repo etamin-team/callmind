@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/clerk-react'
 import { Logo } from '@/components/logo'
 import { Menu, X } from 'lucide-react'
@@ -18,6 +18,16 @@ const menuItems = [
 export const HeroHeader = () => {
   const { isSignedIn, isLoaded } = useUser()
   const [menuState, setMenuState] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const handleNavClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -31,18 +41,18 @@ export const HeroHeader = () => {
     }
   }
   return (
-    <header>
+    <header className="fixed inset-x-0 top-0 z-50 flex justify-center mt-2 px-4 pointer-events-none">
       <nav
         data-state={menuState && 'active'}
-        className="fixed z-20 w-full px-2"
+        className={cn(
+          "pointer-events-auto transition-all duration-300 ease-out",
+          scrolled
+            ? "w-[95%] sm:w-[85%] max-w-5xl rounded-full border border-border/40 bg-background/80 backdrop-blur-md shadow-lg py-2 px-6 mt-4"
+            : "w-full max-w-7xl bg-transparent py-4 px-6 border-b border-transparent"
+        )}
       >
-        <div
-          className={cn(
-            'mx-auto mt-2 max-w-6xl px-6 lg:px-12 transition-all duration-300 ease-in-out',
-            'lg:max-w-4xl lg:rounded-2xl lg:border lg:bg-background/50 lg:backdrop-blur-lg',
-          )}
-        >
-          <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
+        <div className="mx-auto w-full transition-all duration-300 ease-in-out">
+          <div className="relative flex flex-wrap items-center justify-between gap-6 lg:gap-0">
             <div className="flex w-full justify-between lg:w-auto">
               <Link
                 to="/"

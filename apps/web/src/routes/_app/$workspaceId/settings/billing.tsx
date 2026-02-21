@@ -1,13 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useUser } from '@clerk/clerk-react'
-import {
-  CreditCard,
-  Loader2,
-  Package,
-  Zap,
-  ArrowUpRight,
-  Check,
-} from 'lucide-react'
+import { Loader2, Package, Zap, ArrowUpRight, Check } from 'lucide-react'
 import {
   Card,
   CardContent,
@@ -18,101 +11,38 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { useCreatePaymeCheckout } from '@/features/payments/api'
-import { usePayme } from '@/features/payments/components/payme-provider'
+import { useCreateFreedompayCheckout } from '@/features/payments/api'
+import { useFreedompay } from '@/features/payments/components/freedompay-provider'
+import { PRICING_CONFIG, type PlanType } from '@repo/types'
 
-const planConfig: Record<
-  string,
-  {
-    name: string
-    color: string
-    bgColor: string
-    description: string
-    maxCalls: number
-    priceUzs: number
-    priceUsd: number
-    features: string[]
-  }
-> = {
-  free: {
-    name: 'Free',
-    color: 'text-gray-500',
-    bgColor: 'bg-gray-500',
-    description: 'Try it out with limited features',
-    maxCalls: 2,
-    priceUzs: 0,
-    priceUsd: 0,
-    features: ['2 calls/month', '1 AI agent', 'Basic analytics'],
-  },
-  starter: {
-    name: 'Starter',
-    color: 'text-blue-500',
-    bgColor: 'bg-blue-500',
-    description: 'For small teams',
-    maxCalls: 200,
-    priceUzs: 108000,
-    priceUsd: 9,
-    features: [
-      '200 calls/month',
-      '3 AI agents',
-      'All languages',
-      'Call transcripts',
-      'Email support',
-    ],
-  },
-  professional: {
-    name: 'Professional',
-    color: 'text-purple-500',
-    bgColor: 'bg-purple-500',
-    description: 'For growing businesses',
-    maxCalls: 1000,
-    priceUzs: 348000,
-    priceUsd: 29,
-    features: [
-      '1000 calls/month',
-      '40 super realistic calls',
-      '10 AI agents',
-      'Premium voices',
-      'CRM integrations',
-    ],
-  },
-  business: {
-    name: 'Business',
-    color: 'text-amber-500',
-    bgColor: 'bg-amber-500',
-    description: 'For large organizations',
-    maxCalls: 2000,
-    priceUzs: 948000,
-    priceUsd: 79,
-    features: [
-      '2000 calls/month',
-      '90 super realistic calls',
-      '25 AI agents',
-      'Custom integrations',
-      'Dedicated support',
-    ],
-  },
+const planOrder: PlanType[] = ['free', 'starter', 'professional', 'business']
+
+const planStyles: Record<string, { color: string; bgColor: string }> = {
+  free: { color: 'text-gray-500', bgColor: 'bg-gray-500' },
+  starter: { color: 'text-blue-500', bgColor: 'bg-blue-500' },
+  professional: { color: 'text-purple-500', bgColor: 'bg-purple-500' },
+  business: { color: 'text-amber-500', bgColor: 'bg-amber-500' },
 }
-
-const planOrder = ['free', 'starter', 'professional', 'business']
 
 function BillingSettingsPage() {
   const { user, isLoaded } = useUser()
-  const createCheckout = useCreatePaymeCheckout()
-  const { redirectToCheckout } = usePayme()
+  const createCheckout = useCreateFreedompayCheckout()
+  const { redirectToCheckout } = useFreedompay()
 
-  const userPlan = (user?.publicMetadata?.plan as string) || 'free'
+  const userPlan = ((user?.publicMetadata?.plan as string) ||
+    'free') as PlanType
   const userCredits = (user?.publicMetadata?.credits as number) || 2
 
-  const plan = planConfig[userPlan] || planConfig.free
-  const usagePercentage = Math.min(100, (userCredits / plan.maxCalls) * 100)
+  const plan = PRICING_CONFIG[userPlan] || PRICING_CONFIG.free
+  const styles = planStyles[userPlan] || planStyles.free
+  const usagePercentage = Math.min(100, (userCredits / plan.credits) * 100)
 
   const currentPlanIndex = planOrder.indexOf(userPlan)
   const upgradePlans = planOrder
     .slice(currentPlanIndex + 1)
-    .map((p) => ({ id: p, ...planConfig[p] }))
+    .map((p) => ({ id: p, ...PRICING_CONFIG[p], styles: planStyles[p] }))
 
-  const handleUpgrade = (planId: string) => {
+  const handleUpgrade = (planId: PlanType) => {
     if (!user) return
 
     createCheckout.mutate(
@@ -121,7 +51,6 @@ function BillingSettingsPage() {
         data: {
           yearly: false,
           userId: user.id,
-          recurring: false,
         },
       },
       {
@@ -166,7 +95,9 @@ function BillingSettingsPage() {
                 Manage your subscription and billing
               </CardDescription>
             </div>
-            <Badge className={`${plan.bgColor} text-white`}>{plan.name}</Badge>
+            <Badge className={`${styles.bgColor} text-white`}>
+              {plan.name}
+            </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -176,7 +107,6 @@ function BillingSettingsPage() {
             </span>
             <span className="text-muted-foreground">UZS/month</span>
           </div>
-          <p className="text-muted-foreground">{plan.description}</p>
 
           <ul className="space-y-2">
             {plan.features.map((feature) => (
@@ -214,7 +144,9 @@ function BillingSettingsPage() {
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className={`font-semibold ${upgradePlan.color}`}>
+                      <span
+                        className={`font-semibold ${upgradePlan.styles.color}`}
+                      >
                         {upgradePlan.name}
                       </span>
                       <span className="text-sm text-muted-foreground">
@@ -222,7 +154,7 @@ function BillingSettingsPage() {
                       </span>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {upgradePlan.maxCalls} calls/month
+                      {upgradePlan.credits} calls/month
                     </p>
                   </div>
                   <Button
@@ -266,7 +198,7 @@ function BillingSettingsPage() {
               {userCredits} calls remaining
             </span>
             <span className="text-muted-foreground">
-              {plan.maxCalls} calls / month
+              {plan.credits} calls / month
             </span>
           </div>
           <Progress value={usagePercentage} className="h-2" />

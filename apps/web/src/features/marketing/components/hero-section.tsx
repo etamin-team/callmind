@@ -1,7 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import {
   ArrowRight,
-  ChevronRight,
   Phone,
   Bot,
   MessageSquare,
@@ -22,7 +21,7 @@ const transitionVariants = {
       opacity: 1,
       y: 0,
       transition: {
-        type: 'spring',
+        type: 'spring' as const,
         bounce: 0.2,
         duration: 0.6,
       },
@@ -71,7 +70,7 @@ export default function HeroSection() {
             <div className="mx-auto max-w-7xl px-6">
               <div className="text-center sm:mx-auto lg:mr-auto lg:mt-0">
                 <AnimatedGroup variants={transitionVariants}>
-                  <Link
+                  <a
                     href="#link"
                     className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
                   >
@@ -90,7 +89,7 @@ export default function HeroSection() {
                         </span>
                       </div>
                     </div>
-                  </Link>
+                  </a>
                 </AnimatedGroup>
 
                 <TextEffect
@@ -127,57 +126,36 @@ export default function HeroSection() {
                     container: {
                       visible: {
                         transition: {
-                          staggerChildren: 0.05,
+                          staggerChildren: 0.1,
                           delayChildren: 0.1,
                         },
                       },
                     },
                     item: {
-                      hidden: {
-                        opacity: 0,
-                        y: 8,
-                      },
-                      visible: {
-                        opacity: 1,
-                        y: 0,
-                        transition: {
-                          type: 'spring',
-                          bounce: 0.2,
-                          duration: 0.5,
-                        },
-                      },
+                      hidden: { opacity: 0, y: 10 },
+                      visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
                     },
                   }}
-                  className="mt-12 flex flex-col items-center justify-center gap-2 md:flex-row"
+                  className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row relative z-10"
                 >
-                  <div
-                    key={1}
-                    className="bg-foreground/10 rounded-[calc(var(--radius-xl)+0.125rem)] border p-0.5"
-                  >
-                    <Button
-                      asChild
-                      size="lg"
-                      className="rounded-xl px-5 text-base"
-                    >
-                      <Link href="/sign-up">
-                        <span className="text-nowrap">Start Free Trial</span>
-                      </Link>
-                    </Button>
-                  </div>
                   <Button
-                    key={2}
+                    asChild
+                    size="lg"
+                    className="h-12 rounded-full px-8 text-base"
+                  >
+                    <Link to="/register">Start Free Trial</Link>
+                  </Button>
+                  <Button
                     asChild
                     size="lg"
                     variant="ghost"
-                    className="h-10.5 rounded-xl px-5"
+                    className="h-12 rounded-full px-8 text-base hover:bg-transparent hover:underline underline-offset-4"
                   >
-                    <Link href="#demo">
-                      <span className="text-nowrap">Watch Demo</span>
-                    </Link>
+                    <a href="#demo">Watch Demo</a>
                   </Button>
                 </AnimatedGroup>
 
-                {/* Feature Cards */}
+                {/* Minimalist Feature List */}
                 <AnimatedGroup
                   variants={{
                     container: {
@@ -189,35 +167,16 @@ export default function HeroSection() {
                       },
                     },
                     item: {
-                      hidden: {
-                        opacity: 0,
-                        y: 20,
-                      },
-                      visible: {
-                        opacity: 1,
-                        y: 0,
-                        transition: {
-                          type: 'spring',
-                          bounce: 0.2,
-                          duration: 0.6,
-                        },
-                      },
+                      hidden: { opacity: 0 },
+                      visible: { opacity: 1, transition: { duration: 0.5 } },
                     },
                   }}
-                  className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto"
+                  className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm font-medium text-muted-foreground relative z-10"
                 >
                   {features.map((feature, index) => (
-                    <div
-                      key={index}
-                      className="group relative rounded-xl border bg-muted/30 p-6 text-left transition-all hover:bg-muted/50 hover:border-primary/50"
-                    >
-                      <div className="mb-4 inline-flex rounded-lg bg-primary/10 p-3">
-                        <feature.icon className="h-6 w-6 text-primary" />
-                      </div>
-                      <h3 className="font-semibold text-lg">{feature.title}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {feature.description}
-                      </p>
+                    <div key={index} className="flex items-center gap-2">
+                      <feature.icon className="h-4 w-4" />
+                      <span>{feature.title}</span>
                     </div>
                   ))}
                 </AnimatedGroup>

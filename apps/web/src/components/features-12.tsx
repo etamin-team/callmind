@@ -1,285 +1,222 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { BorderBeam } from '@/components/ui/border-beam'
-import { ChartBarIncreasingIcon, Database, Fingerprint, IdCard, TrendingUp } from 'lucide-react'
+import { 
+    TrendingUp,
+    PhoneCall, 
+    Sparkles, 
+    MessageSquare, 
+    AudioWaveform, 
+    Smile, 
+    Meh, 
+    Frown, 
+    Activity, 
+    Users, 
+    BarChart3, 
+    ArrowUpRight, 
+    Zap
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 
 type FeatureKey = 'item-1' | 'item-2' | 'item-3' | 'item-4'
 
-// Animated icon components for each feature
-function DatabaseAnimation() {
+// Animated components for each feature
+function CallCoachingAnimation() {
     return (
-        <div className="relative flex h-full w-full items-center justify-center">
-            {/* Outer rotating ring */}
-            <motion.div
-                className="absolute inset-0 rounded-full border-2 border-dashed border-[var(--color-chart-1)]/30"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            />
-
-            {/* Middle pulsing ring */}
-            <motion.div
-                className="absolute inset-12 rounded-full border border-[var(--color-chart-2)]/40"
-                animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            />
-
-            {/* Center icon */}
-            <motion.div
-                className="relative"
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        <div className="relative flex h-full w-full flex-col items-center justify-center p-4">
+            <motion.div 
+                className="w-full max-w-[260px] rounded-xl border border-border bg-background p-4 shadow-2xl"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
             >
-                <motion.div
-                    className="relative"
-                    animate={{ rotate: [0, 5, -5, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                    <Database className="h-32 w-32 text-[var(--color-chart-1)]" strokeWidth={1.5} />
-                    {/* Glowing effect */}
-                    <motion.div
-                        className="absolute inset-0 blur-3xl bg-[var(--color-chart-1)]/20"
-                        animate={{ opacity: [0.3, 0.5, 0.3] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                    />
-                </motion.div>
-            </motion.div>
+                <div className="mb-4 flex items-center gap-3 border-b border-border pb-3">
+                    <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                        <PhoneCall className="h-5 w-5 text-primary" />
+                        <motion.div
+                            className="absolute inset-0 rounded-full border border-primary/50"
+                            animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                        />
+                    </div>
+                    <div>
+                        <div className="h-2 w-16 rounded-full bg-muted-foreground/20 mb-2" />
+                        <div className="h-2 w-24 rounded-full bg-muted-foreground/20" />
+                    </div>
+                </div>
 
-            {/* Floating data particles */}
-            {[...Array(6)].map((_, i) => (
-                <motion.div
-                    key={i}
-                    className="absolute h-2 w-2 rounded-full bg-[var(--color-chart-2)]/60"
-                    initial={{ rotate: i * 60, radius: 80 }}
-                    animate={{
-                        rotate: i * 60,
-                        radius: [80, 100, 80],
-                    }}
-                    transition={{
-                        duration: 2 + i * 0.2,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                        delay: i * 0.3,
-                    }}
-                    style={{
-                        transformOrigin: 'center',
-                    }}
-                />
-            ))}
+                <div className="space-y-3">
+                    <div className="rounded-lg bg-muted/50 p-3">
+                        <div className="mb-2 flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                            <MessageSquare className="h-3 w-3" /> Customer
+                        </div>
+                        <div className="h-2 w-full rounded-full bg-muted-foreground/20 mb-1.5" />
+                        <div className="h-2 w-4/5 rounded-full bg-muted-foreground/20" />
+                    </div>
+
+                    <motion.div 
+                        className="relative overflow-hidden rounded-lg border border-primary/30 bg-primary/5 p-3"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        transition={{ delay: 0.5, duration: 0.4 }}
+                    >
+                        <motion.div
+                            className="absolute left-0 top-0 h-full w-1 bg-primary"
+                        />
+                        <div className="mb-2 flex items-center gap-1.5 text-[10px] font-medium text-primary uppercase tracking-wider">
+                            <Sparkles className="h-3 w-3" /> AI Suggestion
+                        </div>
+                        <div className="h-2 w-[90%] rounded-full bg-primary/20 mb-1.5" />
+                        <div className="h-2 w-2/3 rounded-full bg-primary/20" />
+                    </motion.div>
+                </div>
+            </motion.div>
         </div>
     )
 }
 
 function SentimentAnimation() {
-    const emotions = ['😊', '🤔', '😐', '😟']
-    const [emotionIndex, setEmotionIndex] = useState(0)
+    const emojis = [<Smile className="text-emerald-500" />, <Meh className="text-amber-500" />, <Frown className="text-rose-500" />]
+    const [index, setIndex] = useState(0)
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setEmotionIndex((i) => (i + 1) % emotions.length)
-        }, 1500)
+            setIndex((i) => (i + 1) % emojis.length)
+        }, 2000)
         return () => clearInterval(interval)
     }, [])
 
     return (
-        <div className="relative flex h-full w-full items-center justify-center">
-            {/* Scanning line effect */}
-            <motion.div
-                className="absolute inset-0 overflow-hidden rounded-full"
-                style={{ background: 'radial-gradient(circle, var(--color-chart-3)/20 0%, transparent 70%)' }}
-            >
-                <motion.div
-                    className="absolute left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[var(--color-chart-3)] to-transparent"
-                    animate={{ top: ['0%', '50%', '100%', '50%', '0%'] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                />
-            </motion.div>
+        <div className="relative flex h-full w-full flex-col items-center justify-center p-4">
+            <div className="w-full max-w-[260px] space-y-4">
+                <motion.div className="flex items-center justify-between rounded-xl border border-border bg-background p-4 shadow-xl">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                            <AudioWaveform className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                            <div className="text-xs font-medium">Live Sentiment</div>
+                            <div className="text-[10px] text-muted-foreground">Analyzing voice...</div>
+                        </div>
+                    </div>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={index}
+                            initial={{ scale: 0.5, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.5, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="flex h-10 w-10 items-center justify-center [&>svg]:h-6 [&>svg]:w-6"
+                        >
+                            {emojis[index]}
+                        </motion.div>
+                    </AnimatePresence>
+                </motion.div>
 
-            {/* Central fingerprint */}
-            <motion.div
-                className="relative"
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            >
-                <Fingerprint className="h-32 w-32 text-[var(--color-chart-3)]" strokeWidth={1.5} />
-                <motion.div
-                    className="absolute inset-0 blur-3xl bg-[var(--color-chart-3)]/20"
-                    animate={{ opacity: [0.3, 0.5, 0.3] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                />
-            </motion.div>
-
-            {/* Floating emotion indicators */}
-            <div className="absolute inset-0">
-                {emotions.map((emotion, i) => (
-                    <motion.div
-                        key={i}
-                        className={cn(
-                            'absolute text-4xl',
-                            i === 0 && 'top-8 left-8',
-                            i === 1 && 'top-8 right-8',
-                            i === 2 && 'bottom-8 left-8',
-                            i === 3 && 'bottom-8 right-8'
-                        )}
-                        animate={{
-                            scale: i === emotionIndex ? [1, 1.3, 1] : 0.8,
-                            opacity: i === emotionIndex ? 1 : 0.4,
-                        }}
-                        transition={{ duration: 0.5 }}
-                    >
-                        {emotion}
-                    </motion.div>
-                ))}
+                <div className="rounded-xl border border-border bg-background p-4 shadow-xl">
+                    <div className="mb-3 flex justify-between text-xs">
+                        <span className="font-medium">Emotional Journey</span>
+                    </div>
+                    <div className="flex h-12 w-full items-end gap-1">
+                        {[...Array(15)].map((_, i) => (
+                            <motion.div
+                                key={i}
+                                className={cn(
+                                    "w-full rounded-t-sm",
+                                    i > 10 ? "bg-emerald-500/50" : i > 5 ? "bg-amber-500/50" : "bg-rose-500/50"
+                                )}
+                                animate={{
+                                    height: [`${20 + Math.random() * 40}%`, `${30 + Math.random() * 70}%`, `${20 + Math.random() * 40}%`],
+                                }}
+                                transition={{
+                                    duration: 1.5,
+                                    repeat: Infinity,
+                                    delay: i * 0.1,
+                                    ease: 'easeInOut',
+                                }}
+                            />
+                        ))}
+                    </div>
+                </div>
             </div>
-
-            {/* Pulse rings */}
-            {[...Array(3)].map((_, i) => (
-                <motion.div
-                    key={i}
-                    className="absolute inset-0 rounded-full border border-[var(--color-chart-3)]/30"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: [0.8, 1.2, 0.8], opacity: [0, 0.5, 0] }}
-                    transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        delay: i * 1,
-                        ease: 'easeOut',
-                    }}
-                />
-            ))}
         </div>
     )
 }
 
 function AnalyticsAnimation() {
     return (
-        <div className="relative flex h-full w-full items-center justify-center">
-            {/* Background grid */}
-            <div className="absolute inset-8 grid grid-cols-4 gap-2 opacity-20">
-                {[...Array(16)].map((_, i) => (
+        <div className="relative flex h-full w-full items-center justify-center p-4">
+            <div className="grid w-full max-w-[280px] grid-cols-2 gap-3">
+                {[
+                    { icon: <PhoneCall />, label: 'Active Calls', val: '142', up: true },
+                    { icon: <Zap />, label: 'Resolution', val: '89%', up: true },
+                    { icon: <Activity />, label: 'Avg Handle', val: '4m 12s', up: false },
+                    { icon: <Users />, label: 'Agents', val: '24', up: null },
+                ].map((stat, i) => (
                     <motion.div
                         key={i}
-                        className="rounded bg-[var(--color-chart-4)]"
-                        animate={{
-                            scaleY: [0.3, 0.8, 0.3],
-                        }}
-                        transition={{
-                            duration: 1.5,
-                            repeat: Infinity,
-                            delay: i * 0.1,
-                            ease: 'easeInOut',
-                        }}
-                    />
+                        className="flex flex-col rounded-xl border border-border bg-background p-3 shadow-sm"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.1 }}
+                    >
+                        <div className="mb-2 flex items-center justify-between">
+                            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/10 [&>svg]:h-3.5 [&>svg]:w-3.5 [&>svg]:text-primary">
+                                {stat.icon}
+                            </div>
+                            {stat.up !== null && (
+                                <ArrowUpRight className={cn("h-3 w-3", stat.up ? "text-emerald-500" : "text-rose-500 rotate-90")} />
+                            )}
+                        </div>
+                        <div className="text-xl font-bold">{stat.val}</div>
+                        <div className="text-[10px] text-muted-foreground">{stat.label}</div>
+                    </motion.div>
                 ))}
             </div>
-
-            {/* Central ID Card */}
-            <motion.div
-                className="relative"
-                animate={{ rotateY: [0, 10, -10, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                style={{ transformStyle: 'preserve-3d' }}
-            >
-                <IdCard className="h-32 w-32 text-[var(--color-chart-4)]" strokeWidth={1.5} />
-                <motion.div
-                    className="absolute inset-0 blur-3xl bg-[var(--color-chart-4)]/20"
-                    animate={{ opacity: [0.3, 0.5, 0.3] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                />
-            </motion.div>
-
-            {/* Orbiting stats */}
-            {[...Array(4)].map((_, i) => (
-                <motion.div
-                    key={i}
-                    className="absolute flex items-center gap-1 rounded-full bg-background/80 px-2 py-1 text-xs shadow-sm"
-                    style={{
-                        top: '50%',
-                        left: '50%',
-                    }}
-                    animate={{
-                        x: Math.cos((i * Math.PI) / 2) * 100,
-                        y: Math.sin((i * Math.PI) / 2) * 80,
-                    }}
-                    transition={{
-                        duration: 6,
-                        repeat: Infinity,
-                        delay: i * 0.5,
-                        ease: 'easeInOut',
-                    }}
-                >
-                    <div className="h-2 w-2 rounded-full bg-[var(--color-chart-4)]" />
-                    <span className="font-medium">+{10 + i * 5}%</span>
-                </motion.div>
-            ))}
         </div>
     )
 }
 
 function InsightsAnimation() {
     return (
-        <div className="relative flex h-full w-full items-center justify-center">
-            {/* Background chart lines */}
-            <svg className="absolute inset-0 h-full w-full" viewBox="0 0 200 200">
-                {[...Array(5)].map((_, i) => (
-                    <motion.path
-                        key={i}
-                        d={`M 0 ${150 - i * 25} Q 50 ${100 - i * 20}, 100 ${120 - i * 25} T 200 ${80 - i * 15}`}
-                        stroke="var(--color-chart-5)"
-                        strokeWidth="2"
-                        fill="none"
-                        opacity={0.1 + i * 0.05}
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 0.1 + i * 0.05 }}
-                        transition={{ duration: 2, delay: i * 0.2 }}
-                    />
-                ))}
-            </svg>
+        <div className="relative flex h-full w-full items-center justify-center p-4">
+            <div className="w-full max-w-[280px] rounded-xl border border-border bg-background p-4 shadow-xl">
+                <div className="mb-4 flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium">Team Performance</span>
+                </div>
+                
+                <div className="space-y-4">
+                    {[
+                        { name: 'Sarah J.', score: 98, width: '98%' },
+                        { name: 'Marcus T.', score: 92, width: '92%' },
+                        { name: 'Elena R.', score: 85, width: '85%' },
+                    ].map((agent, i) => (
+                        <div key={i}>
+                            <div className="mb-1.5 flex justify-between text-xs">
+                                <span className="font-medium text-muted-foreground">{agent.name}</span>
+                                <span className="font-mono text-primary">{agent.score}</span>
+                            </div>
+                            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                                <motion.div
+                                    className="h-full bg-gradient-to-r from-primary/50 to-primary"
+                                    initial={{ width: 0 }}
+                                    animate={{ width: agent.width }}
+                                    transition={{ duration: 1, delay: i * 0.2 }}
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
-            {/* Central trending icon */}
-            <motion.div
-                className="relative"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            >
-                <ChartBarIncreasingIcon className="h-32 w-32 text-[var(--color-chart-5)]" strokeWidth={1.5} />
-                <motion.div
-                    className="absolute inset-0 blur-3xl bg-[var(--color-chart-5)]/20"
-                    animate={{ opacity: [0.3, 0.5, 0.3] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                />
-            </motion.div>
-
-            {/* Growing bars animation */}
-            <div className="absolute bottom-8 left-8 right-8 flex items-end justify-center gap-2">
-                {[...Array(8)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="w-3 rounded-t bg-gradient-to-t from-[var(--color-chart-5)] to-transparent"
-                        animate={{
-                            height: [20, 40 + Math.random() * 40, 20],
-                        }}
-                        transition={{
-                            duration: 1.5,
-                            repeat: Infinity,
-                            delay: i * 0.15,
-                            ease: 'easeInOut',
-                        }}
-                    />
-                ))}
+                <div className="mt-5 rounded-lg border border-primary/20 bg-primary/5 p-3 flex items-start gap-2">
+                    <Zap className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+                    <p className="text-[10px] leading-relaxed text-muted-foreground">
+                        <span className="font-medium text-foreground">Insight:</span> Sarah's empathy scoring improved by 14% after recent coaching.
+                    </p>
+                </div>
             </div>
-
-            {/* Floating trend indicators */}
-            <motion.div
-                className="absolute top-8 right-8 flex items-center gap-2 rounded-full bg-background/80 px-3 py-1.5 shadow-sm"
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            >
-                <TrendingUp className="h-4 w-4 text-[var(--color-chart-5)]" />
-                <span className="text-sm font-semibold text-[var(--color-chart-5)]">+127%</span>
-            </motion.div>
         </div>
     )
 }
@@ -288,7 +225,7 @@ export default function Features() {
     const [activeItem, setActiveItem] = useState<FeatureKey>('item-1')
 
     const featureComponents = {
-        'item-1': DatabaseAnimation,
+        'item-1': CallCoachingAnimation,
         'item-2': SentimentAnimation,
         'item-3': AnalyticsAnimation,
         'item-4': InsightsAnimation,
@@ -312,7 +249,7 @@ export default function Features() {
                         <AccordionItem value="item-1">
                             <AccordionTrigger>
                                 <div className="flex items-center gap-2 text-base">
-                                    <Database className="size-4" />
+                                    <Sparkles className="size-4" />
                                     Real-Time Call Coaching
                                 </div>
                             </AccordionTrigger>
@@ -321,7 +258,7 @@ export default function Features() {
                         <AccordionItem value="item-2">
                             <AccordionTrigger>
                                 <div className="flex items-center gap-2 text-base">
-                                    <Fingerprint className="size-4" />
+                                    <AudioWaveform className="size-4" />
                                     Sentiment & Emotion Detection
                                 </div>
                             </AccordionTrigger>
@@ -330,7 +267,7 @@ export default function Features() {
                         <AccordionItem value="item-3">
                             <AccordionTrigger>
                                 <div className="flex items-center gap-2 text-base">
-                                    <IdCard className="size-4" />
+                                    <BarChart3 className="size-4" />
                                     Conversation Analytics
                                 </div>
                             </AccordionTrigger>
@@ -339,7 +276,7 @@ export default function Features() {
                         <AccordionItem value="item-4">
                             <AccordionTrigger>
                                 <div className="flex items-center gap-2 text-base">
-                                    <ChartBarIncreasingIcon className="size-4" />
+                                    <TrendingUp className="size-4" />
                                     Performance Insights
                                 </div>
                             </AccordionTrigger>
@@ -353,14 +290,11 @@ export default function Features() {
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={activeItem}
-                                    initial={{ opacity: 0, scale: 0.95, rotateY: -10 }}
-                                    animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-                                    exit={{ opacity: 0, scale: 0.95, rotateY: 10 }}
+                                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
                                     transition={{ duration: 0.4, ease: 'easeInOut' }}
-                                    className="size-full rounded-2xl border bg-gradient-to-br from-background to-muted/30"
-                                    style={{
-                                        transformStyle: 'preserve-3d',
-                                    }}
+                                    className="size-full rounded-2xl border bg-muted/20"
                                 >
                                     {(() => {
                                         const ActiveComponent = featureComponents[activeItem]
@@ -372,7 +306,7 @@ export default function Features() {
                         <BorderBeam
                             duration={6}
                             size={200}
-                            className="from-transparent via-[var(--color-chart-1)]/50 to-transparent dark:via-white/50"
+                            className="from-transparent via-primary/50 to-transparent dark:via-primary/30"
                         />
                     </div>
                 </div>

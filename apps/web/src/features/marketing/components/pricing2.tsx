@@ -17,7 +17,7 @@ const plans = [
     price: { monthly: 0, yearly: 0 },
     priceUzs: { monthly: 0, yearly: 0 },
     description: 'Try it out',
-    features: ['2 calls/month', '1 AI agent', 'Basic analytics'],
+    features: ['10 calls/month', '1 AI agent', 'Basic analytics'],
     cta: 'Get Started',
     href: '/sign-up',
   },
@@ -57,7 +57,7 @@ const plans = [
   {
     id: 'business',
     name: 'Business',
-    price: { monthly: 79, yearly: 758 },
+    price: { monthly: 345, yearly: 3450 },
     priceUzs: { monthly: 948000, yearly: 9096000 },
     description: 'For enterprises',
     features: [
@@ -134,7 +134,7 @@ const Pricing2 = ({ className }: Pricing2Props) => {
 
   const isLoading = (planId: string) => {
     const plan = plans.find((p) => p.id === planId)
-    return (
+    return !!(
       createPaymeCheckout.isPending &&
       plan?.paymePlan &&
       createPaymeCheckout.variables?.plan === plan.paymePlan

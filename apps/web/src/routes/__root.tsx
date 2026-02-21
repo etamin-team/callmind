@@ -11,7 +11,7 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/components/theme-provider'
-import { PaymeProvider } from '@/features/payments/components/payme-provider'
+import { PaddleProvider } from '@/features/payments/components/paddle-provider'
 
 export interface MyRouterContext {
   queryClient: QueryClient
@@ -105,7 +105,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body suppressHydrationWarning>
         <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-          <PaymeProvider>
+          <PaddleProvider>
             <ClerkProvider>
               <AuthWrapper>{children}</AuthWrapper>
               <TanStackDevtools
@@ -122,7 +122,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 ]}
               />
             </ClerkProvider>
-          </PaymeProvider>
+          </PaddleProvider>
           <Scripts />
         </ThemeProvider>
       </body>
