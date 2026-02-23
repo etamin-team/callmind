@@ -43,7 +43,7 @@ function PlaygroundPage() {
   const { currentAgent, updateAgent, fetchAgents } = useAgentStore()
   const { getToken, userId } = useAuth()
   const { agentId } = Route.useParams()
-  const { credits, fetchUserCredits, decrementCreditsOnServer } = useUserStore()
+  const { credits, fetchUserCredits, checkAndDecrementCredits, refundCredits } = useUserStore()
 
   // Call details state
   const [phoneNumberDisplay, setPhoneNumberDisplay] = useState('+998 ')
@@ -130,9 +130,9 @@ function PlaygroundPage() {
   const handleMakeCall = async () => {
     if (!isValidUzbekNumber || !currentAgent) return
 
-    // Check if user has enough credits
-    if (credits < 1) {
-      setCallError('Insufficient credits. Please upgrade your plan.')
+    const token = await getToken()
+    if (!token || !userId) {
+      setCallError('Authentication required')
       return
     }
 
@@ -141,13 +141,22 @@ function PlaygroundPage() {
     setActiveCallSid(null)
 
     try {
-      // Build prompt from agent's business description and notes
+      // Step 1: Atomically check and decrement credits BEFORE making the call
+      const creditResult = await checkAndDecrementCredits(userId, 1, token)
+
+      if (!creditResult.success) {
+        setCallError(creditResult.error || 'Insufficient credits. Please upgrade your plan.')
+        setIsCalling(false)
+        return
+      }
+
+      // Step 2: Build prompt from agent's business description and notes
       const prompt = currentAgent.businessDescription || 'You are a helpful AI assistant.'
       const enhancedPrompt = callDetails.notes
         ? `${prompt}\n\nAdditional context for this call: ${callDetails.notes}\n\nCustomer: ${callDetails.customerName || 'N/A'}\nPurpose: ${callDetails.purpose || 'General inquiry'}`
         : prompt
 
-      // Map voice name to voice ID
+      // Step 3: Map voice name to voice ID
       const voiceIdMap: Record<string, string> = {
         'Sarah Friendly': 'EXAVITQu4vr4xnSDxMaL', // Sarah
         'Mike Professional': 'TX3LPaxmHKxFdv7VOQHJ', // Liam
@@ -173,6 +182,7 @@ function PlaygroundPage() {
 
       console.log('Initiating call with payload:', JSON.stringify(requestBody, null, 2))
 
+      // Step 4: Make the call
       const response = await fetch('https://callmind.talabam.com/call', {
         method: 'POST',
         headers: {
@@ -186,20 +196,23 @@ function PlaygroundPage() {
       if (data.success && data.callSid) {
         setActiveCallSid(data.callSid)
         console.log('Call initiated successfully:', data.callSid)
-
-        // Decrement credits after successful call
-        const token = await getToken()
-        if (token && userId) {
-          const success = await decrementCreditsOnServer(userId, 1, token)
-          if (!success) {
-            console.error('Failed to decrement credits')
-          }
-        }
+        // Credits already decremented, no need to do anything else
       } else {
+        // Call failed - refund the credit
+        console.error('Call initiation failed, refunding credit')
+        await refundCredits(userId, 1, token, 'Call initiation failed')
         throw new Error('Failed to initiate call')
       }
     } catch (error) {
       console.error('Failed to make call:', error)
+
+      // Try to refund credits on error if they haven't been already
+      try {
+        await refundCredits(userId, 1, token || '', 'Call failed with error')
+      } catch (refundError) {
+        console.error('Failed to refund credits:', refundError)
+      }
+
       setCallError(error instanceof Error ? error.message : 'Failed to initiate call')
     } finally {
       setIsCalling(false)

@@ -10,6 +10,8 @@ interface UserStore {
   decrementCredits: (amount: number) => boolean
   fetchUserCredits: (userId: string, token: string) => Promise<void>
   decrementCreditsOnServer: (userId: string, amount: number, token: string) => Promise<boolean>
+  checkAndDecrementCredits: (userId: string, amount: number, token: string) => Promise<{ success: boolean; error?: string }>
+  refundCredits: (userId: string, amount: number, token: string, reason: string) => Promise<boolean>
 }
 
 export const useUserStore = create<UserStore>((set, get) => ({
@@ -78,6 +80,62 @@ export const useUserStore = create<UserStore>((set, get) => ({
       }
     } catch (error) {
       console.error('Failed to decrement credits:', error)
+      return false
+    }
+  },
+
+  checkAndDecrementCredits: async (userId: string, amount: number, token: string) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/users/${userId}/check-and-decrement-credits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ amount }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        set({
+          credits: data.credits,
+        })
+        return { success: true }
+      } else {
+        const error = await response.json()
+        console.error('Failed to check and decrement credits:', error.error)
+        return { success: false, error: error.error }
+      }
+    } catch (error) {
+      console.error('Failed to check and decrement credits:', error)
+      return { success: false, error: 'Network error' }
+    }
+  },
+
+  refundCredits: async (userId: string, amount: number, token: string, reason: string) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/users/${userId}/refund-credits`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ amount, reason }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        set({
+          credits: data.credits,
+        })
+        return true
+      } else {
+        const error = await response.json()
+        console.error('Failed to refund credits:', error.error)
+        return false
+      }
+    } catch (error) {
+      console.error('Failed to refund credits:', error)
       return false
     }
   },
