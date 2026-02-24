@@ -41,7 +41,20 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: false,
     },
-    // FreedomPay fields
+    // Payme fields
+    paymeCustomerId: {
+      type: String,
+      required: false,
+    },
+    paymeTransactionId: {
+      type: String,
+      required: false,
+    },
+    paymeSubscriptionPlan: {
+      type: String,
+      required: false,
+    },
+    // Legacy FreedomPay fields (kept for migration purposes, can be removed later)
     freedompayCustomerId: {
       type: String,
       required: false,

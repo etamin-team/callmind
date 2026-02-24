@@ -231,10 +231,16 @@ export function useChargeRecurringPayment() {
 }
 
 export interface PaymeCheckoutResponse {
-  checkoutUrl: string
+  merchantId: string
   orderId: string
+  merchantTransactionId: string
+  amount: number
+  amountDisplay: number
+  currency: string
   plan: string
   yearly: boolean
+  lang?: string
+  return_url: string
 }
 
 async function createPaymeCheckout(
@@ -243,6 +249,8 @@ async function createPaymeCheckout(
     yearly?: boolean
     userId?: string
     recurring?: boolean
+    phone?: string
+    lang?: string
   },
 ): Promise<PaymeCheckoutResponse> {
   const response = await fetch(`${API_URL}/api/payme/checkout/${plan}`, {
@@ -272,7 +280,27 @@ export function useCreatePaymeCheckout() {
         yearly?: boolean
         userId?: string
         recurring?: boolean
+        phone?: string
+        lang?: string
       }
     }) => createPaymeCheckout(plan, data),
+  })
+}
+
+export async function getPaymePrices() {
+  const response = await fetch(`${API_URL}/api/payme/prices`)
+
+  if (!response.ok) {
+    const error = await response.json()
+    throw new Error(error.error || 'Failed to fetch Payme prices')
+  }
+
+  return response.json()
+}
+
+export function useGetPaymePrices() {
+  return useQuery({
+    queryKey: ['payme-prices'],
+    queryFn: getPaymePrices,
   })
 }

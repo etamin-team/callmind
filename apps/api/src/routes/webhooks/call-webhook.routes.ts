@@ -4,7 +4,13 @@ import { CreateCallHistorySchema } from "@repo/types";
 import { TranscriptAnalysisService } from "../../services/transcript-analysis.service.js";
 
 const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.post("/calls/status", async (request, reply) => {
+  // Skip authentication for webhook endpoints (they will be called by external services)
+  fastify.post("/calls/status", {
+    onRequest: async (request, reply) => {
+      // Skip auth - allow external webhook calls
+      return;
+    }
+  }, async (request, reply) => {
     try {
       const webhookData = request.body as any;
 
@@ -98,7 +104,12 @@ const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  fastify.post("/calls/started", async (request, reply) => {
+  fastify.post("/calls/started", {
+    onRequest: async (request, reply) => {
+      // Skip auth - allow external webhook calls
+      return;
+    }
+  }, async (request, reply) => {
     try {
       const webhookData = request.body as any;
       const { callSid, agentId, direction, callerNumber, callerName } =
@@ -136,7 +147,12 @@ const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  fastify.post("/calls/completed", async (request, reply) => {
+  fastify.post("/calls/completed", {
+    onRequest: async (request, reply) => {
+      // Skip auth - allow external webhook calls
+      return;
+    }
+  }, async (request, reply) => {
     try {
       const webhookData = request.body as any;
       const {
@@ -252,7 +268,12 @@ const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  fastify.get("/calls/health", async () => {
+  fastify.get("/calls/health", {
+    onRequest: async (request, reply) => {
+      // Skip auth - allow health checks
+      return;
+    }
+  }, async () => {
     return {
       status: "ok",
       service: "call-webhooks",

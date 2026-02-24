@@ -43,7 +43,7 @@ export const config = {
   PADDLE_API_KEY: getOptionalEnv("PADDLE_API_KEY"),
   PADDLE_WEBHOOK_SECRET_KEY: getOptionalEnv("PADDLE_WEBHOOK_SECRET_KEY"),
 
-  // FreedomPay configuration (Uzbekistan)
+  // FreedomPay configuration (Uzbekistan) - DEPRECATED, use Payme instead
   FREEDOMPAY_MERCHANT_ID: getOptionalEnv("FREEDOMPAY_MERCHANT_ID"),
   FREEDOMPAY_SECRET_KEY: getOptionalEnv("FREEDOMPAY_SECRET_KEY"),
   FREEDOMPAY_CALLBACK_URL: getOptionalEnv("FREEDOMPAY_CALLBACK_URL", [
@@ -57,6 +57,24 @@ export const config = {
   FREEDOMPAY_PRO_YEARLY: getOptionalEnv("FREEDOMPAY_PRO_YEARLY"),
   FREEDOMPAY_BUSINESS_MONTHLY: getOptionalEnv("FREEDOMPAY_BUSINESS_MONTHLY"),
   FREEDOMPAY_BUSINESS_YEARLY: getOptionalEnv("FREEDOMPAY_BUSINESS_YEARLY"),
+
+  // Payme configuration (Uzbekistan)
+  PAYME_MERCHANT_ID: getOptionalEnv("PAYME_MERCHANT_ID"),
+  PAYME_KEY: getOptionalEnv("PAYME_KEY"), // Production key
+  PAYME_TEST_KEY: getOptionalEnv("PAYME_TEST_KEY"), // Test key
+  PAYME_LOGIN: getOptionalEnv("PAYME_LOGIN"), // Basic Auth login
+  PAYME_ENDPOINT_URL: getOptionalEnv("PAYME_ENDPOINT_URL"),
+  PAYME_CALLBACK_URL: getOptionalEnv("PAYME_CALLBACK_URL", [
+    "https://your-domain.com",
+  ]),
+
+  // Price overrides (in UZS, same as FreedomPay)
+  PAYME_STARTER_MONTHLY: getOptionalEnv("PAYME_STARTER_MONTHLY"),
+  PAYME_STARTER_YEARLY: getOptionalEnv("PAYME_STARTER_YEARLY"),
+  PAYME_PRO_MONTHLY: getOptionalEnv("PAYME_PRO_MONTHLY"),
+  PAYME_PRO_YEARLY: getOptionalEnv("PAYME_PRO_YEARLY"),
+  PAYME_BUSINESS_MONTHLY: getOptionalEnv("PAYME_BUSINESS_MONTHLY"),
+  PAYME_BUSINESS_YEARLY: getOptionalEnv("PAYME_BUSINESS_YEARLY"),
 
   GEMINI_API_KEY: getOptionalEnv("GEMINI_API_KEY"),
 };
@@ -134,5 +152,35 @@ if (config.GEMINI_API_KEY) {
 } else {
   console.warn(
     `[Config] Gemini API Key is MISSING. Transcript analysis will be disabled.`,
+  );
+}
+
+// Payme configuration validation
+if (config.PAYME_MERCHANT_ID) {
+  console.log(`[Config] Payme Merchant ID loaded`);
+} else {
+  console.warn(
+    `[Config] Payme Merchant ID is MISSING. Payme payment features will be disabled.`,
+  );
+}
+
+if (config.PAYME_KEY || config.PAYME_TEST_KEY) {
+  console.log(`[Config] Payme Key loaded`);
+} else {
+  console.warn(
+    `[Config] Payme Key is MISSING. Payme webhook verification will fail.`,
+  );
+}
+
+const hasPaymePrices = !!(
+  config.PAYME_STARTER_MONTHLY ||
+  config.PAYME_PRO_MONTHLY ||
+  config.PAYME_BUSINESS_MONTHLY
+);
+if (hasPaymePrices) {
+  console.log(`[Config] Payme prices configured`);
+} else {
+  console.warn(
+    `[Config] Payme prices are MISSING. Using default placeholder prices.`,
   );
 }

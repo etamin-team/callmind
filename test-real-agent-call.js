@@ -9,36 +9,13 @@ const API_URL = process.env.API_URL || 'http://localhost:3001';
 const AGENT_ID = '6981dfe508b28a652d46c3e5';
 const USER_ID = 'user_37NW4YrLX0dw6A99b4o6bz0TYHs';
 
-async function testRealAgentCall(TOKEN) {
+async function testRealAgentCall() {
   console.log('🧪 Testing Call History with Real Agent');
   console.log('========================================');
   console.log(`API URL: ${API_URL}`);
   console.log(`Agent ID: ${AGENT_ID}`);
   console.log(`User ID: ${USER_ID}`);
   console.log('');
-
-  if (!TOKEN) {
-    console.log('❌ ERROR: No token provided!');
-    console.log('');
-    console.log('📝 To get your Clerk token:');
-    console.log('');
-    console.log('Option 1: From Browser DevTools (Easiest)');
-    console.log('  1. Open your app in browser and log in');
-    console.log('  2. Open DevTools (F12) → Application/Storage → Cookies');
-    console.log('  3. Find the cookie starting with "__session"');
-    console.log('  4. Copy its value');
-    console.log('');
-    console.log('Option 2: From Browser Console');
-    console.log('  1. Open your app in browser and log in');
-    console.log('  2. Open DevTools Console (F12)');
-    console.log('  3. Run: await window.Clerk.session.getToken()');
-    console.log('  4. Copy the token');
-    console.log('');
-    console.log('Then run this script with:');
-    console.log(`  TOKEN="your-token-here" node test-real-agent-call.js`);
-    console.log('');
-    return;
-  }
 
   try {
     // Test 1: Start an outbound call
@@ -47,8 +24,7 @@ async function testRealAgentCall(TOKEN) {
     const startedRes = await fetch(`${API_URL}/api/webhooks/calls/started`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${TOKEN}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         callSid: callSid1,
@@ -79,8 +55,7 @@ async function testRealAgentCall(TOKEN) {
     const completedRes = await fetch(`${API_URL}/api/webhooks/calls/completed`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${TOKEN}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         callSid: callSid1,
@@ -138,8 +113,7 @@ Agent: You're welcome, John. Thank you for choosing cxcxc Insurance. Have a grea
     const missedRes = await fetch(`${API_URL}/api/webhooks/calls/started`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${TOKEN}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         callSid: callSid2,
@@ -164,8 +138,7 @@ Agent: You're welcome, John. Thank you for choosing cxcxc Insurance. Have a grea
     await fetch(`${API_URL}/api/webhooks/calls/started`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${TOKEN}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         callSid: callSid3,
@@ -182,8 +155,7 @@ Agent: You're welcome, John. Thank you for choosing cxcxc Insurance. Have a grea
     const salesRes = await fetch(`${API_URL}/api/webhooks/calls/completed`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${TOKEN}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         callSid: callSid3,
@@ -256,6 +228,5 @@ Agent: My pleasure, Sarah! Welcome to cxcxc Insurance. You'll receive a welcome 
   }
 }
 
-// Get token from environment variable
-const TOKEN = process.env.TOKEN;
-testRealAgentCall(TOKEN);
+// Run the test
+testRealAgentCall();

@@ -17,6 +17,7 @@ export const env = createEnv({
     VITE_API_URL: z.string().url().optional().default('http://localhost:3001'),
     VITE_PADDLE_CLIENT_TOKEN: z.string().min(1).optional(),
     VITE_FREEDOMPAY_MERCHANT_ID: z.string().min(1).optional(),
+    VITE_PAYME_MERCHANT_ID: z.string().min(1).optional(),
   },
 
   /**

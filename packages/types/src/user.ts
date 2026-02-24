@@ -16,7 +16,11 @@ export const UserSchema = z.object({
   credits: z.number().int().min(0).default(2),
   paddleCustomerId: z.string().optional(),
   paddleSubscriptionId: z.string().optional(),
-  // FreedomPay fields
+  // Payme fields
+  paymeCustomerId: z.string().optional(),
+  paymeTransactionId: z.string().optional(),
+  paymeSubscriptionPlan: z.string().optional(),
+  // Legacy FreedomPay fields
   freedompayCustomerId: z.string().optional(),
   freedompayRecurringProfile: z.string().optional(),
   freedompayRecurringExpiry: z.date().optional(),
