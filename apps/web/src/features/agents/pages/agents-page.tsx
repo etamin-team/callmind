@@ -39,35 +39,34 @@ const agentTypeConfig: Record<
   {
     color: string
     bgColor: string
+    dotColor: string
     icon: typeof Bot
   }
 > = {
   support: {
     color: 'text-violet-500',
     bgColor: 'bg-violet-500/10',
+    dotColor: 'bg-violet-500',
     icon: MessageSquare,
   },
   sales: {
     color: 'text-amber-500',
     bgColor: 'bg-amber-500/10',
+    dotColor: 'bg-amber-500',
     icon: Zap,
   },
   assistant: {
     color: 'text-cyan-500',
     bgColor: 'bg-cyan-500/10',
+    dotColor: 'bg-cyan-500',
     icon: Sparkles,
   },
   default: {
     color: 'text-blue-500',
     bgColor: 'bg-blue-500/10',
+    dotColor: 'bg-blue-500',
     icon: Bot,
   },
-}
-
-const languageLabels: Record<string, string> = {
-  en: 'English',
-  ru: 'Русский',
-  uz: "O'zbek",
 }
 
 function AgentCard({
@@ -80,57 +79,60 @@ function AgentCard({
   onDelete: (e: React.MouseEvent, id: string) => void
 }) {
   const config = agentTypeConfig[agent.type] || agentTypeConfig.default
-  const IconComponent = config.icon
 
   return (
-    <div className="group relative rounded-xl border border-border bg-card overflow-hidden">
+    <div className="group relative rounded-lg border border-border bg-card transition-all hover:border-primary/30 hover:shadow-sm">
       <Link
         to="/$workspaceId/agents/$agentId"
         params={{ workspaceId, agentId: agent.id }}
         className="absolute inset-0 z-10"
       />
 
-      <div className="p-5">
-        <div className="flex items-start gap-4 mb-4">
-          <div className={`p-2.5 rounded-lg ${config.bgColor}`}>
-            <IconComponent className={`h-5 w-5 ${config.color}`} />
+      <div className="flex flex-col h-full">
+        <div className="p-5 flex-1">
+          <div className="flex items-start justify-between gap-4 mb-3">
+            <div className="flex items-center gap-2.5">
+              <div className={`w-1.5 h-1.5 rounded-full ${config.dotColor}`} />
+              <h3 className="font-medium text-base">{agent.name}</h3>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="relative z-20 h-7 w-7 flex items-center justify-center rounded-md opacity-0 group-hover:opacity-100 transition-all hover:bg-muted"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreVertical className="h-3.5 w-3.5 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive cursor-pointer"
+                  onClick={(e) => onDelete(e, agent.id!)}
+                >
+                  <Trash className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-base truncate">{agent.name}</h3>
+
+          <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed mb-4">
+            {agent.businessDescription || 'No description'}
+          </p>
+        </div>
+
+        <div className="px-5 pb-5 pt-0">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span
-              className={`inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium ${config.bgColor} ${config.color}`}
+              className={`px-2 py-1 rounded-md ${config.bgColor} ${config.color} font-medium capitalize`}
             >
               {agent.type}
             </span>
+            <div className="flex items-center gap-1.5">
+              <Phone className="h-3 w-3" />
+              <span>{agent.language}</span>
+            </div>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className="relative z-20 h-8 w-8 flex items-center justify-center rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MoreVertical className="h-4 w-4 text-muted-foreground" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive cursor-pointer"
-                onClick={(e) => onDelete(e, agent.id!)}
-              >
-                <Trash className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-          {agent.businessDescription || 'No description'}
-        </p>
-
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Phone className="h-3 w-3" />
-          <span>{languageLabels[agent.language] || agent.language}</span>
         </div>
       </div>
     </div>

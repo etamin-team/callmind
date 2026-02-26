@@ -1,33 +1,26 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useUser } from '@clerk/clerk-react'
-import { Loader2, Package, Zap, ArrowUpRight, Check } from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Loader2, Check, Sparkles, Infinity } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { useCreateFreedompayCheckout } from '@/features/payments/api'
-import { useFreedompay } from '@/features/payments/components/freedompay-provider'
+import { useCreatePaymeCheckout } from '@/features/payments/api'
+import { usePayme } from '@/features/payments/components/payme-provider'
 import { PRICING_CONFIG, type PlanType } from '@repo/types'
 
 const planOrder: PlanType[] = ['free', 'starter', 'professional', 'business']
 
-const planStyles: Record<string, { color: string; bgColor: string }> = {
-  free: { color: 'text-gray-500', bgColor: 'bg-gray-500' },
-  starter: { color: 'text-blue-500', bgColor: 'bg-blue-500' },
-  professional: { color: 'text-purple-500', bgColor: 'bg-purple-500' },
-  business: { color: 'text-amber-500', bgColor: 'bg-amber-500' },
+const planStyles: Record<string, { bgColor: string; icon: typeof Sparkles }> = {
+  free: { bgColor: 'bg-zinc-500', icon: Sparkles },
+  starter: { bgColor: 'bg-blue-500', icon: Sparkles },
+  professional: { bgColor: 'bg-violet-500', icon: Sparkles },
+  business: { bgColor: 'bg-amber-500', icon: Infinity },
 }
 
 function BillingSettingsPage() {
   const { user, isLoaded } = useUser()
-  const createCheckout = useCreateFreedompayCheckout()
-  const { redirectToCheckout } = useFreedompay()
+  const createPaymeCheckout = useCreatePaymeCheckout()
+  const { openCheckout } = usePayme()
 
   const userPlan = ((user?.publicMetadata?.plan as string) ||
     'free') as PlanType
@@ -45,168 +38,146 @@ function BillingSettingsPage() {
   const handleUpgrade = (planId: PlanType) => {
     if (!user) return
 
-    createCheckout.mutate(
+    createPaymeCheckout.mutate(
       {
         plan: planId,
         data: {
           yearly: false,
           userId: user.id,
+          recurring: false,
         },
       },
       {
         onSuccess: (data) => {
-          if (data.checkoutUrl) {
-            redirectToCheckout(data.checkoutUrl)
-          }
+          openCheckout({
+            orderId: data.orderId,
+            amount: data.amount,
+            returnUrl: data.return_url,
+            lang: (data.lang || 'ru') as 'ru' | 'uz' | 'en',
+          })
         },
       },
     )
-  }
-
-  const handleGoToPricing = () => {
-    window.location.href = '/#pricing'
   }
 
   const formatPrice = (priceUzs: number) => {
     return new Intl.NumberFormat('uz-UZ').format(priceUzs)
   }
 
+  const PlanIcon = styles.icon
+
   if (!isLoaded) {
     return (
       <Card>
-        <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin" />
+        <CardContent className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="h-5 w-5" />
-                Current Plan
-              </CardTitle>
-              <CardDescription>
-                Manage your subscription and billing
-              </CardDescription>
+    <div className="max-w-2xl space-y-10">
+      {/* Current Plan */}
+      <section>
+        <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          Current Plan
+        </h2>
+        <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-md ${styles.bgColor} text-white`}>
+                <PlanIcon className="h-4 w-4" />
+              </div>
+              <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                {plan.name}
+              </span>
             </div>
-            <Badge className={`${styles.bgColor} text-white`}>
-              {plan.name}
-            </Badge>
+            <Badge variant="outline">{plan.credits} credits/mo</Badge>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold">
-              {formatPrice(plan.priceUzs)}
-            </span>
-            <span className="text-muted-foreground">UZS/month</span>
+          <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-3">
+            {formatPrice(plan.priceUzs)}
+            <span className="text-sm font-normal text-zinc-500">/month</span>
           </div>
-
-          <ul className="space-y-2">
+          <ul className="space-y-1">
             {plan.features.map((feature) => (
-              <li key={feature} className="flex items-center gap-2 text-sm">
-                <Check className="h-4 w-4 text-primary shrink-0" />
-                <span>{feature}</span>
+              <li
+                key={feature}
+                className="text-sm text-zinc-600 dark:text-zinc-400 flex items-center gap-2"
+              >
+                <Check className="h-3 w-3 text-emerald-500" />
+                {feature}
               </li>
             ))}
           </ul>
+        </div>
+      </section>
 
-          <Button onClick={handleGoToPricing}>
-            <Zap className="mr-2 h-4 w-4" />
-            Upgrade Plan
-          </Button>
-        </CardContent>
-      </Card>
+      {/* Usage */}
+      <section>
+        <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+          Usage
+        </h2>
+        <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg p-4">
+          <div className="flex justify-between text-sm mb-2">
+            <span className="text-zinc-500">{userCredits} remaining</span>
+            <span className="text-zinc-500">{plan.credits} total</span>
+          </div>
+          <div className="h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+            <div
+              className={`h-full ${usagePercentage > 80 ? 'bg-orange-500' : 'bg-zinc-900 dark:bg-zinc-100'}`}
+              style={{ width: `${usagePercentage}%` }}
+            />
+          </div>
+        </div>
+      </section>
 
+      {/* Upgrade */}
       {upgradePlans.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ArrowUpRight className="h-5 w-5" />
-              Upgrade Options
-            </CardTitle>
-            <CardDescription>
-              Choose a higher plan to get more features
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4">
-              {upgradePlans.map((upgradePlan) => (
-                <div
-                  key={upgradePlan.id}
-                  className="flex items-center justify-between p-4 rounded-lg border hover:border-primary transition-colors"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`font-semibold ${upgradePlan.styles.color}`}
-                      >
-                        {upgradePlan.name}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {formatPrice(upgradePlan.priceUzs)} UZS/mo
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {upgradePlan.credits} calls/month
-                    </p>
-                  </div>
+        <section>
+          <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-4">
+            Upgrade Plan
+          </h2>
+          <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
+            {upgradePlans.map((upgradePlan) => (
+              <div
+                key={upgradePlan.id}
+                className="flex items-center justify-between py-3"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                    {upgradePlan.name}
+                  </span>
+                  <span className="text-sm text-zinc-500">
+                    {upgradePlan.credits} credits
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                    {formatPrice(upgradePlan.priceUzs)}/mo
+                  </span>
                   <Button
                     onClick={() => handleUpgrade(upgradePlan.id)}
                     disabled={
-                      createCheckout.isPending &&
-                      createCheckout.variables?.plan === upgradePlan.id
+                      createPaymeCheckout.isPending &&
+                      createPaymeCheckout.variables?.plan === upgradePlan.id
                     }
+                    size="sm"
+                    variant="outline"
                   >
-                    {createCheckout.isPending &&
-                    createCheckout.variables?.plan === upgradePlan.id ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Loading...
-                      </>
+                    {createPaymeCheckout.isPending &&
+                    createPaymeCheckout.variables?.plan === upgradePlan.id ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
                     ) : (
-                      <>
-                        <Zap className="mr-2 h-4 w-4" />
-                        Upgrade
-                      </>
+                      'Upgrade'
                     )}
                   </Button>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5" />
-            Usage
-          </CardTitle>
-          <CardDescription>Your monthly call credits</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">
-              {userCredits} calls remaining
-            </span>
-            <span className="text-muted-foreground">
-              {plan.credits} calls / month
-            </span>
+              </div>
+            ))}
           </div>
-          <Progress value={usagePercentage} className="h-2" />
-          <p className="text-xs text-muted-foreground">
-            Credits reset at the beginning of each billing cycle
-          </p>
-        </CardContent>
-      </Card>
+        </section>
+      )}
     </div>
   )
 }

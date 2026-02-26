@@ -37,6 +37,8 @@ const callHistorySchema = new Schema<ICallHistory>(
 
     // Cost tracking
     cost: { type: Number, default: 0 },
+    creditsDeducted: { type: Boolean, default: false },
+    isSuperRealistic: { type: Boolean, default: false },
 
     // Timestamps
     startedAt: { type: Date },

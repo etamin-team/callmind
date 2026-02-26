@@ -1,12 +1,14 @@
 import { FastifyPluginAsync } from "fastify";
-import { CallHistoryModel, AgentModel } from "@repo/db";
+import { CallHistoryModel, AgentModel, UserModel } from "@repo/db";
 import {
   CreateAgentSchema,
   UpdateAgentSchema,
   CreateCallHistorySchema,
   UpdateCallHistorySchema,
+  CREDIT_COST,
 } from "@repo/types";
 import { requireAuth } from "../../middleware/auth.middleware.js";
+import { calculateCallCost, isPremiumVoice } from "@repo/types";
 
 const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.addHook("preHandler", requireAuth);
@@ -126,6 +128,31 @@ const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
     const { userId, orgId } = request.auth;
     const data = CreateCallHistorySchema.parse(request.body);
 
+    // Check if agent exists and get its voice settings
+    const agent = await AgentModel.findById(data.agentId);
+    if (!agent) {
+      return reply.status(404).send({ error: "Agent not found" });
+    }
+
+    // Verify user has at least minimum credits (1 minute)
+    const isPremium = isPremiumVoice(agent.voice);
+    const estimatedCost = isPremium
+      ? CREDIT_COST.superRealisticCall
+      : CREDIT_COST.callMinute;
+
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return reply.status(404).send({ error: "User not found" });
+    }
+
+    if ((user.credits || 0) < estimatedCost) {
+      return reply.status(400).send({
+        error: "Insufficient credits",
+        required: estimatedCost,
+        available: user.credits || 0,
+      });
+    }
+
     const call = await CallHistoryModel.create({
       ...data,
       userId: userId!,
@@ -220,6 +247,55 @@ const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
 
     if (!call) {
       return reply.status(404).send({ error: "Call not found" });
+    }
+
+    // Deduct credits when call completes and credits haven't been deducted yet
+    if (
+      status === "completed" &&
+      duration !== undefined &&
+      duration > 0 &&
+      !call.creditsDeducted
+    ) {
+      const agent = await AgentModel.findById(call.agentId);
+      if (agent) {
+        const isPremium = isPremiumVoice(agent.voice);
+        const callCost = calculateCallCost(duration, isPremium);
+
+        // Atomic credit deduction
+        const user = await UserModel.findOneAndUpdate(
+          { _id: userId, credits: { $gte: callCost } },
+          { $inc: { credits: -callCost } },
+          { new: true },
+        );
+
+        if (user) {
+          // Mark call as having credits deducted
+          await CallHistoryModel.findByIdAndUpdate(callId, {
+            cost: callCost,
+            creditsDeducted: true,
+          });
+          fastify.log.info(
+            {
+              callId,
+              userId,
+              duration,
+              isPremium,
+              cost: callCost,
+              remainingCredits: user.credits - callCost,
+            },
+            "Credits deducted for completed call",
+          );
+        } else {
+          fastify.log.warn(
+            {
+              callId,
+              userId,
+              requiredCredits: callCost,
+            },
+            "Insufficient credits to deduct - should have been checked earlier",
+          );
+        }
+      }
     }
 
     return call;

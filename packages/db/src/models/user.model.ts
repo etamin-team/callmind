@@ -33,6 +33,12 @@ const userSchema = new Schema<IUser>(
       min: 0,
       required: false,
     },
+    superRealisticCallsRemaining: {
+      type: Number,
+      default: 0,
+      min: 0,
+      required: false,
+    },
     paddleCustomerId: {
       type: String,
       required: false,

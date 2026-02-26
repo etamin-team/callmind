@@ -29,6 +29,8 @@ export const CallHistorySchema = z.object({
 
   // Cost tracking
   cost: z.number().optional(),
+  creditsDeducted: z.boolean().optional().default(false),
+  isSuperRealistic: z.boolean().optional().default(false),
 
   // Timestamps
   startedAt: z.date().optional(),

@@ -14,6 +14,7 @@ export const UserSchema = z.object({
   avatar: z.string().url().optional(),
   plan: PlanEnum.default("free"),
   credits: z.number().int().min(0).default(2),
+  superRealisticCallsRemaining: z.number().int().min(0).default(0),
   paddleCustomerId: z.string().optional(),
   paddleSubscriptionId: z.string().optional(),
   // Payme fields

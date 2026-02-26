@@ -8,6 +8,7 @@ export interface OnboardingState {
     type: string
     language: string
     voice: string
+    voiceMode: 'realistic' | 'superRealistic'
     greeting: string
 
     // Business context
@@ -35,6 +36,7 @@ export const initialOnboardingData = {
   type: '',
   language: 'English',
   voice: '',
+  voiceMode: 'realistic' as const,
   greeting: '',
   businessName: '',
   businessDescription: '',
@@ -45,38 +47,40 @@ export const initialOnboardingData = {
   systemPrompt: '',
   knowledgeText: '',
   objectionHandling: '',
-  collectFields: []
+  collectFields: [],
 }
 
 export const onboardingStore = new Store<OnboardingState>({
   step: 0,
-  data: initialOnboardingData
+  data: initialOnboardingData,
 })
 
-export const updateOnboardingData = (newData: Partial<OnboardingState['data']>) => {
+export const updateOnboardingData = (
+  newData: Partial<OnboardingState['data']>,
+) => {
   onboardingStore.setState((state) => ({
     ...state,
-    data: { ...state.data, ...newData }
+    data: { ...state.data, ...newData },
   }))
 }
 
 export const nextStep = () => {
   onboardingStore.setState((state) => ({
     ...state,
-    step: state.step + 1
+    step: state.step + 1,
   }))
 }
 
 export const prevStep = () => {
   onboardingStore.setState((state) => ({
     ...state,
-    step: Math.max(0, state.step - 1)
+    step: Math.max(0, state.step - 1),
   }))
 }
 
 export const resetOnboarding = () => {
   onboardingStore.setState(() => ({
     step: 0,
-    data: initialOnboardingData
+    data: initialOnboardingData,
   }))
 }

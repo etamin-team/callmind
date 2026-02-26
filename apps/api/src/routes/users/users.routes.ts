@@ -1,26 +1,26 @@
-import { FastifyPluginAsync } from 'fastify'
-import { UserModel } from '@repo/db'
-import { CreateUserSchema, UpdateUserSchema } from '@repo/types'
+import { FastifyPluginAsync } from "fastify";
+import { UserModel } from "@repo/db";
+import { CreateUserSchema, UpdateUserSchema } from "@repo/types";
 
 const usersRoutes: FastifyPluginAsync = async (fastify) => {
   // Get all users
   fastify.get(
-    '/users',
+    "/users",
     {
       schema: {
-        tags: ['users'],
+        tags: ["users"],
         response: {
           200: {
-            type: 'array',
+            type: "array",
             items: {
-              type: 'object',
+              type: "object",
               properties: {
-                id: { type: 'string' },
-                email: { type: 'string' },
-                name: { type: 'string' },
-                avatar: { type: 'string', nullable: true },
-                createdAt: { type: 'string' },
-                updatedAt: { type: 'string' },
+                id: { type: "string" },
+                email: { type: "string" },
+                name: { type: "string" },
+                avatar: { type: "string", nullable: true },
+                createdAt: { type: "string" },
+                updatedAt: { type: "string" },
               },
             },
           },
@@ -28,87 +28,87 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
       },
     },
     async () => {
-      const users = await UserModel.find()
-      return users
-    }
-  )
+      const users = await UserModel.find();
+      return users;
+    },
+  );
 
   // Get user by ID
   fastify.get(
-    '/users/:id',
+    "/users/:id",
     {
       schema: {
-        tags: ['users'],
+        tags: ["users"],
         params: {
-          type: 'object',
+          type: "object",
           properties: {
-            id: { type: 'string' },
+            id: { type: "string" },
           },
         },
         response: {
           200: {
-            type: 'object',
+            type: "object",
             properties: {
-              id: { type: 'string' },
-              email: { type: 'string' },
-              name: { type: 'string' },
-              avatar: { type: 'string', nullable: true },
-              createdAt: { type: 'string' },
-              updatedAt: { type: 'string' },
+              id: { type: "string" },
+              email: { type: "string" },
+              name: { type: "string" },
+              avatar: { type: "string", nullable: true },
+              createdAt: { type: "string" },
+              updatedAt: { type: "string" },
             },
           },
           404: {
-            type: 'object',
+            type: "object",
             properties: {
-              error: { type: 'string' },
+              error: { type: "string" },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { id } = request.params as { id: string }
-      const user = await UserModel.findById(id)
-      
+      const { id } = request.params as { id: string };
+      const user = await UserModel.findById(id);
+
       if (!user) {
-        return reply.status(404).send({ error: 'User not found' })
+        return reply.status(404).send({ error: "User not found" });
       }
-      
-      return user
-    }
-  )
+
+      return user;
+    },
+  );
 
   // Create user
   fastify.post(
-    '/users',
+    "/users",
     {
       schema: {
-        tags: ['users'],
+        tags: ["users"],
         body: {
-          type: 'object',
+          type: "object",
           properties: {
-            email: { type: 'string' },
-            name: { type: 'string' },
-            avatar: { type: 'string', nullable: true },
+            email: { type: "string" },
+            name: { type: "string" },
+            avatar: { type: "string", nullable: true },
           },
-          required: ['email', 'name'],
+          required: ["email", "name"],
         },
         response: {
           201: {
-            type: 'object',
+            type: "object",
             properties: {
-              id: { type: 'string' },
-              email: { type: 'string' },
-              name: { type: 'string' },
-              avatar: { type: 'string', nullable: true },
-              createdAt: { type: 'string' },
-              updatedAt: { type: 'string' },
+              id: { type: "string" },
+              email: { type: "string" },
+              name: { type: "string" },
+              avatar: { type: "string", nullable: true },
+              createdAt: { type: "string" },
+              updatedAt: { type: "string" },
             },
           },
           400: {
-            type: 'object',
+            type: "object",
             properties: {
-              error: { type: 'string' },
+              error: { type: "string" },
             },
           },
         },
@@ -116,242 +116,242 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
     },
     async (request, reply) => {
       try {
-        const data = CreateUserSchema.parse(request.body)
-        const user = await UserModel.create(data)
-        
-        return reply.status(201).send(user)
+        const data = CreateUserSchema.parse(request.body);
+        const user = await UserModel.create(data);
+
+        return reply.status(201).send(user);
       } catch (error) {
-        fastify.log.error(error)
-        return reply.status(400).send({ error: 'Invalid user data' })
+        fastify.log.error(error);
+        return reply.status(400).send({ error: "Invalid user data" });
       }
-    }
-  )
+    },
+  );
 
   // Update user
   fastify.put(
-    '/users/:id',
+    "/users/:id",
     {
       schema: {
-        tags: ['users'],
+        tags: ["users"],
         params: {
-          type: 'object',
+          type: "object",
           properties: {
-            id: { type: 'string' },
+            id: { type: "string" },
           },
         },
         body: {
-          type: 'object',
+          type: "object",
           properties: {
-            email: { type: 'string' },
-            name: { type: 'string' },
-            avatar: { type: 'string', nullable: true },
+            email: { type: "string" },
+            name: { type: "string" },
+            avatar: { type: "string", nullable: true },
           },
         },
         response: {
           200: {
-            type: 'object',
+            type: "object",
             properties: {
-              id: { type: 'string' },
-              email: { type: 'string' },
-              name: { type: 'string' },
-              avatar: { type: 'string', nullable: true },
-              createdAt: { type: 'string' },
-              updatedAt: { type: 'string' },
+              id: { type: "string" },
+              email: { type: "string" },
+              name: { type: "string" },
+              avatar: { type: "string", nullable: true },
+              createdAt: { type: "string" },
+              updatedAt: { type: "string" },
             },
           },
           404: {
-            type: 'object',
+            type: "object",
             properties: {
-              error: { type: 'string' },
+              error: { type: "string" },
             },
           },
           400: {
-            type: 'object',
+            type: "object",
             properties: {
-              error: { type: 'string' },
+              error: { type: "string" },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { id } = request.params as { id: string }
-      
+      const { id } = request.params as { id: string };
+
       try {
-        const data = UpdateUserSchema.parse(request.body)
-        const user = await UserModel.findByIdAndUpdate(id, data, { new: true })
-        
+        const data = UpdateUserSchema.parse(request.body);
+        const user = await UserModel.findByIdAndUpdate(id, data, { new: true });
+
         if (!user) {
-          return reply.status(404).send({ error: 'User not found' })
+          return reply.status(404).send({ error: "User not found" });
         }
-        
-        return user
+
+        return user;
       } catch (error) {
-        fastify.log.error(error)
-        return reply.status(400).send({ error: 'Invalid user data' })
+        fastify.log.error(error);
+        return reply.status(400).send({ error: "Invalid user data" });
       }
-    }
-  )
+    },
+  );
 
   // Delete user
   fastify.delete(
-    '/users/:id',
+    "/users/:id",
     {
       schema: {
-        tags: ['users'],
+        tags: ["users"],
         params: {
-          type: 'object',
+          type: "object",
           properties: {
-            id: { type: 'string' },
+            id: { type: "string" },
           },
         },
         response: {
           204: {
-            type: 'null',
+            type: "null",
           },
           404: {
-            type: 'object',
+            type: "object",
             properties: {
-              error: { type: 'string' },
+              error: { type: "string" },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { id } = request.params as { id: string }
-      const user = await UserModel.findByIdAndDelete(id)
+      const { id } = request.params as { id: string };
+      const user = await UserModel.findByIdAndDelete(id);
 
       if (!user) {
-        return reply.status(404).send({ error: 'User not found' })
+        return reply.status(404).send({ error: "User not found" });
       }
 
-      return reply.status(204).send()
-    }
-  )
+      return reply.status(204).send();
+    },
+  );
 
   // Decrement credits (legacy - use check-and-decrement for new code)
   fastify.post(
-    '/users/:id/decrement-credits',
+    "/users/:id/decrement-credits",
     {
       schema: {
-        tags: ['users'],
+        tags: ["users"],
         params: {
-          type: 'object',
+          type: "object",
           properties: {
-            id: { type: 'string' },
+            id: { type: "string" },
           },
         },
         body: {
-          type: 'object',
+          type: "object",
           properties: {
-            amount: { type: 'number', minimum: 1 },
+            amount: { type: "number", minimum: 1 },
           },
-          required: ['amount'],
+          required: ["amount"],
         },
         response: {
           200: {
-            type: 'object',
+            type: "object",
             properties: {
-              id: { type: 'string' },
-              email: { type: 'string' },
-              name: { type: 'string' },
-              plan: { type: 'string' },
-              credits: { type: 'number' },
+              id: { type: "string" },
+              email: { type: "string" },
+              name: { type: "string" },
+              plan: { type: "string" },
+              credits: { type: "number" },
             },
           },
           400: {
-            type: 'object',
+            type: "object",
             properties: {
-              error: { type: 'string' },
+              error: { type: "string" },
             },
           },
           404: {
-            type: 'object',
+            type: "object",
             properties: {
-              error: { type: 'string' },
+              error: { type: "string" },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { id } = request.params as { id: string }
-      const { amount } = request.body as { amount: number }
+      const { id } = request.params as { id: string };
+      const { amount } = request.body as { amount: number };
 
       try {
-        const user = await UserModel.findById(id)
+        const user = await UserModel.findById(id);
 
         if (!user) {
-          return reply.status(404).send({ error: 'User not found' })
+          return reply.status(404).send({ error: "User not found" });
         }
 
-        const currentCredits = (user as any).credits || 0
+        const currentCredits = (user as any).credits || 0;
 
         if (currentCredits < amount) {
-          return reply.status(400).send({ error: 'Insufficient credits' })
+          return reply.status(400).send({ error: "Insufficient credits" });
         }
 
         const updatedUser = await UserModel.findByIdAndUpdate(
           id,
           { $inc: { credits: -amount } },
-          { new: true }
-        )
+          { new: true },
+        );
 
-        return reply.status(200).send(updatedUser)
+        return reply.status(200).send(updatedUser);
       } catch (error) {
-        fastify.log.error(error)
-        return reply.status(400).send({ error: 'Failed to decrement credits' })
+        fastify.log.error(error);
+        return reply.status(400).send({ error: "Failed to decrement credits" });
       }
-    }
-  )
+    },
+  );
 
   // Atomic check-and-decrement - prevents race conditions
   fastify.post(
-    '/users/:id/check-and-decrement-credits',
+    "/users/:id/check-and-decrement-credits",
     {
       schema: {
-        tags: ['users'],
+        tags: ["users"],
         params: {
-          type: 'object',
+          type: "object",
           properties: {
-            id: { type: 'string' },
+            id: { type: "string" },
           },
         },
         body: {
-          type: 'object',
+          type: "object",
           properties: {
-            amount: { type: 'number', minimum: 1, default: 1 },
+            amount: { type: "number", minimum: 1, default: 1 },
           },
         },
         response: {
           200: {
-            type: 'object',
+            type: "object",
             properties: {
-              success: { type: 'boolean' },
-              credits: { type: 'number' },
-              creditsRemaining: { type: 'number' },
-              previousCredits: { type: 'number' },
+              success: { type: "boolean" },
+              credits: { type: "number" },
+              creditsRemaining: { type: "number" },
+              previousCredits: { type: "number" },
             },
           },
           400: {
-            type: 'object',
+            type: "object",
             properties: {
-              error: { type: 'string' },
+              error: { type: "string" },
             },
           },
           404: {
-            type: 'object',
+            type: "object",
             properties: {
-              error: { type: 'string' },
+              error: { type: "string" },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { id } = request.params as { id: string }
-      const { amount = 1 } = request.body as { amount?: number }
+      const { id } = request.params as { id: string };
+      const { amount = 1 } = request.body as { amount?: number };
 
       try {
         // Atomic operation: find user with sufficient credits and decrement in one go
@@ -363,109 +363,206 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
           {
             $inc: { credits: -amount }, // Decrement atomically
           },
-          { new: true } // Return the updated document
-        )
+          { new: true }, // Return the updated document
+        );
 
         if (!user) {
           // Check if user exists
-          const existingUser = await UserModel.findById(id)
+          const existingUser = await UserModel.findById(id);
           if (!existingUser) {
-            return reply.status(404).send({ error: 'User not found' })
+            return reply.status(404).send({ error: "User not found" });
           }
           // User exists but insufficient credits
-          return reply.status(400).send({ error: 'Insufficient credits' })
+          return reply.status(400).send({ error: "Insufficient credits" });
         }
 
-        const currentCredits = (user as any).credits || 0
+        const currentCredits = (user as any).credits || 0;
         return reply.status(200).send({
           success: true,
           credits: currentCredits,
           creditsRemaining: currentCredits,
           previousCredits: currentCredits + amount,
-        })
+        });
       } catch (error) {
-        fastify.log.error(error)
-        return reply.status(500).send({ error: 'Failed to check and decrement credits' })
+        fastify.log.error(error);
+        return reply
+          .status(500)
+          .send({ error: "Failed to check and decrement credits" });
       }
-    }
-  )
+    },
+  );
 
-  // Refund credits (for failed calls)
+  // Atomic check-and-decrement super realistic calls - prevents race conditions
   fastify.post(
-    '/users/:id/refund-credits',
+    "/users/:id/check-and-decrement-super-realistic",
     {
       schema: {
-        tags: ['users'],
+        tags: ["users"],
         params: {
-          type: 'object',
+          type: "object",
           properties: {
-            id: { type: 'string' },
+            id: { type: "string" },
           },
         },
         body: {
-          type: 'object',
+          type: "object",
           properties: {
-            amount: { type: 'number', minimum: 1, default: 1 },
-            reason: { type: 'string' },
+            amount: { type: "number", minimum: 1, default: 1 },
           },
-          required: ['reason'],
         },
         response: {
           200: {
-            type: 'object',
+            type: "object",
             properties: {
-              success: { type: 'boolean' },
-              credits: { type: 'number' },
-              refundedAmount: { type: 'number' },
+              success: { type: "boolean" },
+              superRealisticCallsRemaining: { type: "number" },
+              previousSuperRealisticCallsRemaining: { type: "number" },
             },
           },
           400: {
-            type: 'object',
+            type: "object",
             properties: {
-              error: { type: 'string' },
+              error: { type: "string" },
             },
           },
           404: {
-            type: 'object',
+            type: "object",
             properties: {
-              error: { type: 'string' },
+              error: { type: "string" },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { id } = request.params as { id: string }
-      const { amount = 1, reason } = request.body as { amount?: number; reason: string }
+      const { id } = request.params as { id: string };
+      const { amount = 1 } = request.body as { amount?: number };
 
       try {
-        const user = await UserModel.findById(id)
+        // Atomic operation: find user with sufficient super realistic calls and decrement in one go
+        const user = await UserModel.findOneAndUpdate(
+          {
+            _id: id,
+            superRealisticCallsRemaining: { $gte: amount }, // Only find if user has enough quota
+          },
+          {
+            $inc: { superRealisticCallsRemaining: -amount }, // Decrement atomically
+          },
+          { new: true }, // Return updated document
+        );
 
         if (!user) {
-          return reply.status(404).send({ error: 'User not found' })
+          // Check if user exists
+          const existingUser = await UserModel.findById(id);
+          if (!existingUser) {
+            return reply.status(404).send({ error: "User not found" });
+          }
+          // User exists but insufficient super realistic calls quota
+          const currentQuota =
+            (existingUser as any).superRealisticCallsRemaining || 0;
+          return reply.status(400).send({
+            error: `Insufficient super realistic calls quota. You have ${currentQuota} remaining.`,
+          });
+        }
+
+        const currentQuota = (user as any).superRealisticCallsRemaining || 0;
+        return reply.status(200).send({
+          success: true,
+          superRealisticCallsRemaining: currentQuota,
+          previousSuperRealisticCallsRemaining: currentQuota + amount,
+        });
+      } catch (error) {
+        fastify.log.error(error);
+        return reply
+          .status(500)
+          .send({
+            error: "Failed to check and decrement super realistic calls",
+          });
+      }
+    },
+  );
+
+  // Refund credits (for failed calls)
+  fastify.post(
+    "/users/:id/refund-credits",
+    {
+      schema: {
+        tags: ["users"],
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+          },
+        },
+        body: {
+          type: "object",
+          properties: {
+            amount: { type: "number", minimum: 1, default: 1 },
+            reason: { type: "string" },
+          },
+          required: ["reason"],
+        },
+        response: {
+          200: {
+            type: "object",
+            properties: {
+              success: { type: "boolean" },
+              credits: { type: "number" },
+              refundedAmount: { type: "number" },
+            },
+          },
+          400: {
+            type: "object",
+            properties: {
+              error: { type: "string" },
+            },
+          },
+          404: {
+            type: "object",
+            properties: {
+              error: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params as { id: string };
+      const { amount = 1, reason } = request.body as {
+        amount?: number;
+        reason: string;
+      };
+
+      try {
+        const user = await UserModel.findById(id);
+
+        if (!user) {
+          return reply.status(404).send({ error: "User not found" });
         }
 
         const updatedUser = await UserModel.findByIdAndUpdate(
           id,
           { $inc: { credits: amount } },
-          { new: true }
-        )
+          { new: true },
+        );
 
-        const currentCredits = (updatedUser as any).credits || 0
+        const currentCredits = (updatedUser as any).credits || 0;
 
-        fastify.log.info(`Refunded ${amount} credits to user ${id}. Reason: ${reason}`)
+        fastify.log.info(
+          `Refunded ${amount} credits to user ${id}. Reason: ${reason}`,
+        );
 
         return reply.status(200).send({
           success: true,
           credits: currentCredits,
           refundedAmount: amount,
-        })
+        });
       } catch (error) {
-        fastify.log.error(error)
-        return reply.status(500).send({ error: 'Failed to refund credits' })
+        fastify.log.error(error);
+        return reply.status(500).send({ error: "Failed to refund credits" });
       }
-    }
-  )
-}
+    },
+  );
+};
 
-export default usersRoutes
+export default usersRoutes;

@@ -11,7 +11,7 @@ const agentsRoutes: FastifyPluginAsync = async (fastify) => {
     const { userId, orgId } = request.auth
     const agents = await AgentModel.find({ userId, orgId: orgId || null }).sort({ createdAt: -1 })
     return agents
-  })
+})
 
   // Get single agent
   fastify.get('/:id', async (request, reply) => {
