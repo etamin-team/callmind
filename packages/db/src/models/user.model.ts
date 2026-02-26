@@ -60,6 +60,14 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: false,
     },
+    paymeSubscriptionExpiry: {
+      type: Date,
+      required: false,
+    },
+    paymeSubscriptionActive: {
+      type: Boolean,
+      default: false,
+    },
     // Legacy FreedomPay fields (kept for migration purposes, can be removed later)
     freedompayCustomerId: {
       type: String,

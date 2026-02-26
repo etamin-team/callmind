@@ -21,6 +21,8 @@ export const UserSchema = z.object({
   paymeCustomerId: z.string().optional(),
   paymeTransactionId: z.string().optional(),
   paymeSubscriptionPlan: z.string().optional(),
+  paymeSubscriptionExpiry: z.date().optional(),
+  paymeSubscriptionActive: z.boolean().optional(),
   // Legacy FreedomPay fields
   freedompayCustomerId: z.string().optional(),
   freedompayRecurringProfile: z.string().optional(),
