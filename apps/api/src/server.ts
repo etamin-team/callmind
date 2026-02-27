@@ -1,154 +1,115 @@
-import Fastify from "fastify";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-import autoLoad from "@fastify/autoload";
-import rawBody from "fastify-raw-body";
-import cors from "@fastify/cors";
-import helmet from "@fastify/helmet";
-import swagger from "@fastify/swagger";
-import swaggerUI from "@fastify/swagger-ui";
-import rateLimit from "@fastify/rate-limit";
+import { Elysia } from "elysia";
+import { cors } from "@elysiajs/cors";
+import { swagger } from "@elysiajs/swagger";
 import { config } from "./config/environment.js";
-import { db } from "@repo/db";
-import { clerkPlugin, getAuth } from "@clerk/fastify";
-import authPlugin from "./middleware/auth.middleware.js";
+import { authMiddleware } from "./middleware/auth.middleware.js";
+import agentsRoutes from "./routes/agents/agents.routes.js";
+import callHistoryRoutes from "./routes/call-history/call-history.routes.js";
+import usersRoutes from "./routes/users/users.routes.js";
+import todosRoutes from "./routes/todos/todos.routes.js";
+import paymentsRoutes from "./routes/payments/payments.routes.js";
+import paymeRoutes from "./routes/payme/payme.routes.js";
+import freedompayRoutes from "./routes/freedompay/freedompay.routes.js";
+import webhookRoutes from "./routes/webhooks/index.js";
+import healthRoutes from "./routes/health/health.routes.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const app = new Elysia()
+  // CORS configuration
+  .use(
+    cors({
+      origin: (request: Request) => {
+        const origin = request.headers.get("origin");
+        if (!origin) return true;
 
-const fastify = Fastify({
-  logger: {
-    level: config.NODE_ENV === "production" ? "info" : "debug",
-    transport:
-      config.NODE_ENV !== "production"
-        ? {
-            target: "pino-pretty",
-            options: {
-              translateTime: "HH:MM:ss Z",
-              ignore: "pid,hostname",
-            },
-          }
-        : undefined,
-  },
-});
+        const allowedOrigins = [
+          ...config.CORS_ORIGINS.split(","),
+          /https:\/\/.*\.ngrok-free\.app$/,
+          /https:\/\/.*\.ngrok\.io$/,
+        ];
 
-// Register raw body parser (needed for webhooks verification)
-await fastify.register(rawBody, {
-  field: "rawBody", // attach raw body to request.rawBody
-  global: false, // only for routes that request it
-  encoding: "utf8", // default encoding
-  runFirst: true, // ensure it runs before body parser
-});
+        const isAllowed = allowedOrigins.some((allowed) => {
+          if (allowed instanceof RegExp) return allowed.test(origin);
+          return origin === allowed;
+        });
 
-// Register plugins
-await fastify.register(helmet, {
-  contentSecurityPolicy: config.NODE_ENV === "production",
-});
-
-await fastify.register(cors, {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, etc)
-    if (!origin) return callback(null, true);
-
-    const allowedOrigins = [
-      ...config.CORS_ORIGINS.split(","),
-      // Allow ngrok URLs for testing
-      /https:\/\/.*\.ngrok-free\.app$/,
-      /https:\/\/.*\.ngrok\.io$/,
-    ];
-
-    // Check if origin matches any allowed pattern
-    const isAllowed = allowedOrigins.some((allowed) => {
-      if (allowed instanceof RegExp) return allowed.test(origin);
-      return origin === allowed;
-    });
-
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
+        return isAllowed;
+      },
+      credentials: true,
+    }),
+  )
+  // Swagger/OpenAPI documentation
+  .use(
+    swagger({
+      documentation: {
+        info: {
+          title: "Callmind API",
+          version: "1.0.0",
+        },
+        tags: [
+          { name: "health", description: "Health check endpoints" },
+          { name: "users", description: "User management" },
+          { name: "agents", description: "AI agents" },
+          { name: "todos", description: "Todo management" },
+          { name: "call-history", description: "Call history" },
+          { name: "payments", description: "Payment processing" },
+          { name: "webhooks", description: "Webhook handlers" },
+        ],
+      },
+    }),
+  )
+  // Auth middleware - sets auth context on all requests
+  .use(authMiddleware)
+  // Health check (public)
+  .use(healthRoutes)
+  // API routes
+  .use(agentsRoutes)
+  .use(callHistoryRoutes)
+  .use(usersRoutes)
+  .use(todosRoutes)
+  .use(paymentsRoutes)
+  .use(paymeRoutes)
+  .use(freedompayRoutes)
+  .use(webhookRoutes)
+  // Current user endpoint
+  .get("/api/me", ({ auth, set }) => {
+    if (!auth?.userId) {
+      set.status = 401;
+      return { error: "Unauthorized", message: "User not authenticated" };
     }
-  },
-  credentials: true,
+    return {
+      userId: auth.userId,
+      isAuthenticated: true,
+    };
+  })
+  // 404 handler
+  .onError(({ code, error, set }) => {
+    console.error(`Error [${code}]:`, error);
+
+    if (code === "NOT_FOUND") {
+      set.status = 404;
+      return { error: "Not found" };
+    }
+
+    if (code === "VALIDATION") {
+      set.status = 400;
+      return { error: "Validation error", message: error.message };
+    }
+
+    set.status = 500;
+    return { error: "Internal server error" };
+  });
+
+// Start server
+const port = config.PORT;
+console.log(`Database configured (Drizzle + Neon)`);
+
+app.listen(port, () => {
+  console.log(
+    `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
+  );
+  console.log(
+    `📚 API documentation available at http://localhost:${port}/swagger`,
+  );
 });
 
-await fastify.register(rateLimit, {
-  max: 100,
-  timeWindow: "1 minute",
-});
-
-// Swagger documentation
-await fastify.register(swagger, {
-  openapi: {
-    info: {
-      title: "Callmind API",
-      version: "1.0.0",
-    },
-  },
-});
-
-await fastify.register(swaggerUI, {
-  routePrefix: "/docs",
-  uiConfig: {
-    docExpansion: "full",
-    deepLinking: false,
-  },
-});
-
-// Register Clerk plugin
-await fastify.register(clerkPlugin, {
-  secretKey: config.CLERK_SECRET_KEY,
-  publishableKey: config.CLERK_PUBLISHABLE_KEY,
-});
-
-// Register auth middleware
-await fastify.register(authPlugin);
-
-// Auto-load all routes
-await fastify.register(autoLoad, {
-  dir: join(__dirname, "routes"),
-  options: { prefix: "/api" },
-  routeParams: true,
-});
-
-// Current user endpoint - requires authentication
-fastify.get("/api/me", async (request, reply) => {
-  const { userId } = getAuth(request);
-  if (!userId) {
-    return reply
-      .code(401)
-      .send({ error: "Unauthorized", message: "User not authenticated" });
-  }
-
-  return {
-    userId,
-    isAuthenticated: true,
-    // You can fetch additional user data from your database here
-  };
-});
-
-// Public health check endpoint
-fastify.get("/health", async () => {
-  return { status: "ok", timestamp: new Date().toISOString() };
-});
-
-// Database is automatically connected via Drizzle + Neon
-// Connection is lazily established on first query
-console.log("Database configured (Drizzle + Neon)");
-
-const start = async () => {
-  try {
-    await fastify.listen({ port: config.PORT, host: "0.0.0.0" });
-    fastify.log.info(`Server listening on port ${config.PORT}`);
-    fastify.log.info(
-      `API documentation available at http://localhost:${config.PORT}/docs`,
-    );
-  } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
-  }
-};
-
-start();
-
-export default fastify;
+export type App = typeof app;

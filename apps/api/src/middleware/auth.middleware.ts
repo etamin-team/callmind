@@ -1,63 +1,67 @@
-import { FastifyPluginAsync } from 'fastify'
-import fp from 'fastify-plugin'
-import { getAuth } from '@clerk/fastify'
-
-export interface AuthPluginOptions {
-  // Add any plugin options here if needed
-}
+import { Elysia } from "elysia";
+import { verifyToken } from "@clerk/backend";
+import { config } from "../config/environment.js";
 
 export interface AuthContext {
-  userId: string | null
-  sessionId: string | null
-  orgId: string | null
-  user: any | null
+  userId: string | null;
+  sessionId: string | null;
+  orgId: string | null;
+  user: any | null;
 }
 
-declare module 'fastify' {
-  interface FastifyRequest {
-    auth: AuthContext
+// Extend Elysia context to include auth
+declare module "elysia" {
+  interface Context {
+    auth: AuthContext;
   }
 }
 
-const authMiddleware: FastifyPluginAsync<AuthPluginOptions> = async (
-  fastify,
-  options
-) => {
-  fastify.addHook('onRequest', async (request, reply) => {
-    try {
-      const { userId, sessionId, orgId } = getAuth(request)
-      
-      request.auth = {
-        userId,
-        sessionId,
-        orgId: orgId || null,
-        user: null, // You can fetch user data from your database here if needed
-      }
-    } catch (error) {
-      request.auth = {
-        userId: null,
-        sessionId: null,
-        orgId: null,
-        user: null,
+export const authMiddleware = new Elysia({ name: "auth-middleware" }).derive(
+  { as: "scoped" },
+  async ({ request, set }) => {
+    const authHeader = request.headers.get("authorization");
+
+    const authContext: AuthContext = {
+      userId: null,
+      sessionId: null,
+      orgId: null,
+      user: null,
+    };
+
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.slice(7);
+
+      try {
+        // Verify the JWT token with Clerk
+        const payload = await verifyToken(token, {
+          secretKey: config.CLERK_SECRET_KEY,
+        });
+
+        authContext.userId = payload.sub || null;
+        authContext.sessionId = payload.sid || null;
+        authContext.orgId = payload.org_id || null;
+      } catch (error) {
+        // Token verification failed - auth context remains null
+        console.log("Token verification failed:", error);
       }
     }
-  })
-}
 
-export const requireAuth = async (request: any, reply: any) => {
-  if (!request.auth?.userId) {
-    reply.code(401).send({
-      error: 'Unauthorized',
-      message: 'Authentication required',
-    })
+    return { auth: authContext };
+  },
+);
+
+export const requireAuth = (context: { auth: AuthContext; set: any }) => {
+  if (!context.auth?.userId) {
+    context.set.status = 401;
+    return {
+      error: "Unauthorized",
+      message: "Authentication required",
+    };
   }
-}
+  return undefined;
+};
 
-export const optionalAuth = async (request: any, reply: any) => {
-  // This is a no-op for optional auth - just let the request pass through
-  // The auth context will be available if the user is authenticated
-}
-
-export default fp(authMiddleware, {
-  name: 'auth-middleware',
-})
+export const optionalAuth = () => {
+  // No-op for optional auth
+  return undefined;
+};
