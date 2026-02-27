@@ -1,0 +1,37 @@
+import { Button } from '@/components/ui/button'
+import { Link } from '@tanstack/react-router'
+
+export default function CallToAction() {
+  return (
+          <section className="py-16 md:py-32">
+              <div className="mx-auto max-w-5xl px-6">
+                  <div className="rounded-3xl bg-[#387DCD] dark:bg-[#262626] px-8 py-20 text-center shadow-xl">
+                      <h2 className="text-balance text-5xl font-bold text-white lg:text-6xl">
+                          Deploy AI Agents That Speak Your Customers Language
+                          <br />
+                          <span className="text-4xl lg:text-5xl">Start with 100 free minutes across all three languages.</span>
+                      </h2>
+                      <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+                          <Button
+                              asChild
+                              size="lg"
+                              className="bg-white text-black hover:bg-gray-100 text-base px-8 py-6 rounded-full">
+                              <Link to="/register">
+                                  <span>Start Free Trial</span>
+                              </Link>
+                          </Button>
+                          <Button
+                              asChild
+                              size="lg"
+                              variant="ghost"
+                              className="text-white hover:text-white hover:bg-white/10 text-base px-8 py-6 rounded-full border border-white/30">
+                              <a href="mailto:sales@callmind.uz">
+                                  <span>Contact Sales</span>
+                              </a>
+                          </Button>
+                      </div>
+                  </div>
+              </div>
+          </section>
+      )
+}

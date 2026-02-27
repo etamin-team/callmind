@@ -1,0 +1,158 @@
+import { Link } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
+import { useUser } from '@clerk/clerk-react'
+import { Logo } from '@/components/logo'
+import { Menu, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+
+import { cn } from '@/lib/utils'
+import { AnimatedThemeToggler } from './animated-theme-toggler'
+
+const menuItems = [
+  { name: 'Features', href: '#features' },
+  { name: 'How it works', href: '#how-it-works' },
+  { name: 'Pricing', href: '#pricing' },
+  { name: 'Testimonials', href: '#testimonials' },
+]
+
+export const HeroHeader = () => {
+  const { isSignedIn, isLoaded } = useUser()
+  const [menuState, setMenuState] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20)
+    }
+    
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    e.preventDefault()
+    const element = document.querySelector(href)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+      setMenuState(false)
+    }
+  }
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 flex justify-center mt-2 px-4 pointer-events-none">
+      <nav
+        data-state={menuState && 'active'}
+        className={cn(
+          "pointer-events-auto transition-all duration-300 ease-out",
+          scrolled
+            ? "w-[95%] sm:w-[85%] max-w-5xl rounded-full border border-border/40 bg-background/80 backdrop-blur-md shadow-lg py-2 px-6 mt-4"
+            : "w-full max-w-7xl bg-transparent py-4 px-6 border-b border-transparent"
+        )}
+      >
+        <div className="mx-auto w-full transition-all duration-300 ease-in-out">
+          <div className="relative flex flex-wrap items-center justify-between gap-6 lg:gap-0">
+            <div className="flex w-full justify-between lg:w-auto">
+              <Link
+                to="/"
+                aria-label="home"
+                className="flex items-center space-x-2"
+              >
+                <Logo />
+              </Link>
+
+              <button
+                onClick={() => setMenuState(!menuState)}
+                aria-label={menuState == true ? 'Close Menu' : 'Open Menu'}
+                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
+              >
+                <Menu className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
+                <X className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
+              </button>
+            </div>
+
+            <div className="absolute inset-0 m-auto hidden size-fit lg:block">
+              <ul className="flex gap-8 text-sm">
+                {menuItems.map((item, index) => (
+                  <li key={index}>
+                    {item.href.startsWith('#') ? (
+                      <a
+                        href={item.href}
+                        onClick={(e) => handleNavClick(e, item.href)}
+                        className="text-muted-foreground hover:text-accent-foreground block duration-150 cursor-pointer"
+                      >
+                        <span>{item.name}</span>
+                      </a>
+                    ) : (
+                      <Link
+                        to={item.href}
+                        className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                      >
+                        <span>{item.name}</span>
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-background in-data-[state=active]:block lg:in-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
+              <div className="lg:hidden">
+                <ul className="space-y-6 text-base">
+                  {menuItems.map((item, index) => (
+                    <li key={index}>
+                      {item.href.startsWith('#') ? (
+                        <a
+                          href={item.href}
+                          onClick={(e) => handleNavClick(e, item.href)}
+                          className="text-muted-foreground hover:text-accent-foreground block duration-150 cursor-pointer"
+                        >
+                          <span>{item.name}</span>
+                        </a>
+                      ) : (
+                        <Link
+                          to={item.href}
+                          className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                        >
+                          <span>{item.name}</span>
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+                <AnimatedThemeToggler />
+                {!isLoaded ? (
+                  <div className="h-9 w-[88px] animate-pulse rounded-md bg-muted/50" />
+                ) : isSignedIn ? (
+                  <Button
+                    asChild
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                  >
+                    <Link to="/agents">
+                      <span>Dashboard</span>
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="font-medium"
+                  >
+                    <Link to="/login">
+                      <span>Login</span>
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+  )
+}
