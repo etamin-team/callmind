@@ -1,81 +1,65 @@
-import { Settings, Zap, BarChart3 } from 'lucide-react'
-
 const steps = [
   {
-    step: '01',
-    icon: Settings,
-    title: 'Configure Your Agent',
-    description:
-      'Set up your AI agent in minutes. Define its personality, language preferences, call scripts, and business context — no coding required.',
+    number: '01',
+    title: 'Connect your tools',
+    description: 'Integrate with Zoom, Google Meet, Teams in minutes. No engineering required.',
   },
   {
-    step: '02',
-    icon: Zap,
-    title: 'Deploy & Go Live',
-    description:
-      'Connect your phone number and go live instantly. Your AI agent starts handling calls in Uzbek, English, and Russian around the clock.',
+    number: '02',
+    title: 'AI analyzes calls',
+    description: 'Our AI listens, transcribes, and extracts insights from every conversation.',
   },
   {
-    step: '03',
-    icon: BarChart3,
-    title: 'Analyze & Optimize',
-    description:
-      'Review call transcripts, sentiment analysis, and lead data in your dashboard. Continuously improve your agent based on real insights.',
+    number: '03',
+    title: 'Coach and improve',
+    description: 'Get personalized feedback. Track progress. Watch win rates climb.',
   },
 ]
 
-export default function HowItWorksSection() {
+export function HowItWorks() {
   return (
-    <section className="py-16 md:py-24" id="how-it-works">
-      <div className="mx-auto max-w-5xl px-6">
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl font-semibold md:text-4xl">
-            Up and Running in Minutes
+    <section className="section-padding section-border relative overflow-hidden">
+      {/* Subtle accent glow */}
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[var(--color-accent)]/5 rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="page-wrap relative z-10">
+        <div className="text-center mb-20">
+          <h2 className="mb-4">
+            Three steps to better calls
           </h2>
-          <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-            From setup to your first AI-handled call — it's simpler than you think.
+          <p className="max-w-lg mx-auto">
+            Setup takes minutes. Results start day one.
           </p>
         </div>
 
-        <div className="relative">
-          {/* Connector line */}
-          <div className="absolute left-1/2 top-0 hidden h-full w-px -translate-x-1/2 bg-border md:block" />
-
-          <div className="space-y-12 md:space-y-0">
-            {steps.map((step, index) => (
-              <div
-                key={index}
-                className={`relative flex flex-col md:flex-row items-center gap-8 md:gap-12 ${
-                  index % 2 === 1 ? 'md:flex-row-reverse' : ''
-                }`}
-              >
-                {/* Content */}
-                <div className="flex-1 text-center md:text-left">
-                  <div
-                    className={`${
-                      index % 2 === 1 ? 'md:text-right' : 'md:text-left'
-                    }`}
-                  >
-                    <span className="text-6xl font-bold text-muted-foreground/20 leading-none">
-                      {step.step}
-                    </span>
-                    <h3 className="mt-2 text-xl font-semibold">{step.title}</h3>
-                    <p className="mt-3 text-muted-foreground max-w-sm mx-auto md:mx-0">
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Center icon */}
-                <div className="relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-background shadow-lg">
-                  <step.icon className="h-7 w-7 text-primary" />
-                </div>
-
-                {/* Spacer for alternating layout */}
-                <div className="flex-1 hidden md:block" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+          {steps.map((step, index) => (
+            <div
+              key={step.number}
+              className="relative"
+              style={{ animation: `reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${index * 0.12}s both` }}
+            >
+              {/* Large background number */}
+              <div className="text-9xl font-bold absolute -top-4 -left-2 text-[var(--color-accent)]/5 leading-none select-none">
+                {step.number}
               </div>
-            ))}
-          </div>
+
+              {/* Content */}
+              <div className="relative z-10">
+                <h3 className="text-xl mb-3 font-semibold">
+                  {step.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-[var(--color-text-muted)]">
+                  {step.description}
+                </p>
+              </div>
+
+              {/* Connector */}
+              {index < steps.length - 1 && (
+                <div className="hidden md:block absolute top-8 -right-6 w-12 h-px bg-gradient-to-r from-[var(--color-accent)]/20 to-transparent" />
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </section>
