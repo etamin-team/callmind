@@ -47,3 +47,15 @@ export async function register(input: RegisterInput) {
 export async function logout() {
   await authClient.signOut()
 }
+
+// Google OAuth
+export async function signInWithGoogle() {
+  const data = await authClient.signIn.social({
+	provider: 'google',
+	callbackURL: '/dashboard',
+  })
+  if (data.error) {
+	return { error: data.error.message || 'Google sign-in failed' }
+  }
+  return { data: data.data }
+}
