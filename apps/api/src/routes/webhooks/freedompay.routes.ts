@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
 import { config } from "../../config/environment.js";
-import { UserModel } from "@repo/db";
+import { db, users, eq } from "@repo/db";
 import { getCreditsForPlan } from "@repo/types";
 import crypto from "crypto";
 
@@ -107,12 +107,8 @@ const freedompayWebhookRoutes: FastifyPluginAsync = async (fastify) => {
           return reply.status(200).send({ received: true });
         }
 
-        let user = null;
-        try {
-          user = await UserModel.findById(userId);
-        } catch (e) {
-          fastify.log.warn({ userId }, "Invalid userId format");
-        }
+        const userResult = await db.select().from(users).where(eq(users.id, userId));
+        const user = userResult[0];
 
         if (!user) {
           fastify.log.warn({ userId }, "User not found for FreedomPay payment");
@@ -124,20 +120,24 @@ const freedompayWebhookRoutes: FastifyPluginAsync = async (fastify) => {
         const totalCredits = credits * yearlyMultiplier;
 
         if (totalCredits > 0) {
-          user.credits = (user.credits || 0) + totalCredits;
-          user.freedompayCustomerId = paymentId;
-          if (recurringProfileId) {
-            user.freedompayRecurringProfile = recurringProfileId;
-            user.freedompaySubscriptionPlan = plan;
-          }
-          if (recurringExpiry) {
-            user.freedompayRecurringExpiry = new Date(recurringExpiry);
-          }
-          await user.save();
+          const newCredits = (user.credits || 0) + totalCredits;
+          const freedompayRecurringExpiry = recurringExpiry ? new Date(recurringExpiry) : user.freedompayRecurringExpiry;
+          
+          await db
+            .update(users)
+            .set({
+              credits: newCredits,
+              freedompayCustomerId: paymentId || user.freedompayCustomerId,
+              freedompayRecurringProfile: recurringProfileId || user.freedompayRecurringProfile,
+              freedompaySubscriptionPlan: recurringProfileId ? plan : user.freedompaySubscriptionPlan,
+              freedompayRecurringExpiry,
+              updatedAt: new Date(),
+            })
+            .where(eq(users.id, userId));
 
           fastify.log.info(
             {
-              userId: user.id,
+              userId,
               creditsAdded: totalCredits,
               plan,
               recurringProfileId,

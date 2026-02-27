@@ -1,19 +1,21 @@
 import { createFileRoute, Outlet, useParams } from '@tanstack/react-router'
 import { AgentSidebar } from '@/features/agents/components/agent-sidebar'
 import { useAgentStore } from '@/features/agents/store'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import { Loader2 } from 'lucide-react'
 
 function AgentDashboardLayout() {
-  const { workspaceId, agentId } = useParams({ from: '/_app/$workspaceId/agents/$agentId' })
+  const { agentId } = useParams({ from: '/_app/$workspaceId/agents/$agentId' })
   const { agents, fetchAgents, isLoading, setCurrentAgent } = useAgentStore()
   const { getToken, isLoaded } = useAuth()
+  const hasFetched = useRef(false)
 
   const currentAgent = agents.find(a => a.id === agentId)
 
   useEffect(() => {
-    if (isLoaded && !currentAgent && !isLoading) {
+    if (isLoaded && !currentAgent && !isLoading && !hasFetched.current) {
+      hasFetched.current = true
       const load = async () => {
         const token = await getToken()
         if (token) fetchAgents(token)

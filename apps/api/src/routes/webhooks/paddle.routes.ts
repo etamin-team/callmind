@@ -1,7 +1,7 @@
 import { FastifyPluginAsync } from 'fastify'
 import { Paddle, EventName, Environment } from '@paddle/paddle-node-sdk'
 import { config } from '../../config/environment.js'
-import { UserModel } from '@repo/db'
+import { db, users, eq, or } from '@repo/db'
 
 // Initialize Paddle with proper error handling
 let paddle: Paddle
@@ -106,12 +106,14 @@ const paddleRoutes: FastifyPluginAsync = async (fastify) => {
 
     let user = null
     if (userId) {
-      user = await UserModel.findById(userId)
+      const userResult = await db.select().from(users).where(eq(users.id, userId))
+      user = userResult[0] || null
     }
 
     // Fallback to email search if not found by ID
     if (!user && customerEmail) {
-      user = await UserModel.findOne({ email: customerEmail })
+      const userResult = await db.select().from(users).where(eq(users.email, customerEmail))
+      user = userResult[0] || null
     }
 
     if (!user) {
@@ -120,8 +122,9 @@ const paddleRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     // Save Paddle customer ID if not set
-    if (!user.paddleCustomerId && transaction.customerId) {
-      user.paddleCustomerId = transaction.customerId
+    let paddleCustomerId = user.paddleCustomerId
+    if (!paddleCustomerId && transaction.customerId) {
+      paddleCustomerId = transaction.customerId
     }
 
     // Determine plan and grant credits based on customData or priceId
@@ -156,8 +159,15 @@ const paddleRoutes: FastifyPluginAsync = async (fastify) => {
     else if (planType === 'business') creditsToAdd = 2000
 
     if (creditsToAdd > 0) {
-      user.credits = (user.credits || 0) + creditsToAdd
-      await user.save()
+      const newCredits = (user.credits || 0) + creditsToAdd
+      await db
+        .update(users)
+        .set({ 
+          credits: newCredits,
+          paddleCustomerId: paddleCustomerId || user.paddleCustomerId,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, user.id))
       fastify.log.info({ userId: user.id, creditsAdded: creditsToAdd }, 'Credits granted from transaction')
     }
   }
@@ -174,12 +184,14 @@ const paddleRoutes: FastifyPluginAsync = async (fastify) => {
 
     let user = null
     if (userId) {
-      user = await UserModel.findById(userId)
+      const userResult = await db.select().from(users).where(eq(users.id, userId))
+      user = userResult[0] || null
     }
 
     // Fallback to email search if not found by ID
     if (!user && customerEmail) {
-      user = await UserModel.findOne({ email: customerEmail })
+      const userResult = await db.select().from(users).where(eq(users.email, customerEmail))
+      user = userResult[0] || null
     }
 
     if (!user) {
@@ -188,12 +200,10 @@ const paddleRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     // Save Paddle customer and subscription IDs
-    if (!user.paddleCustomerId && subscription.customerId) {
-      user.paddleCustomerId = subscription.customerId
+    let paddleCustomerId = user.paddleCustomerId
+    if (!paddleCustomerId && subscription.customerId) {
+      paddleCustomerId = subscription.customerId
     }
-
-    user.subscriptionId = subscription.id
-    user.paddleSubscriptionId = subscription.id
 
     // Determine plan from customData or priceId
     const PRICE_IDS = {
@@ -221,26 +231,36 @@ const paddleRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     // Update user plan
+    let newPlan = user.plan
     if (planType === 'starter' || planType === 'professional' || planType === 'business') {
-      user.plan = planType
+      newPlan = planType
     }
 
-    await user.save()
-    fastify.log.info({ userId: user.id, plan: user.plan, subscriptionId: subscription.id }, 'Subscription created')
+    await db
+      .update(users)
+      .set({
+        plan: newPlan,
+        paddleCustomerId: paddleCustomerId || user.paddleCustomerId,
+        subscriptionId: subscription.id,
+        paddleSubscriptionId: subscription.id,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, user.id))
+    fastify.log.info({ userId: user.id, plan: newPlan, subscriptionId: subscription.id }, 'Subscription created')
   }
 
   async function handleSubscriptionUpdated(subscription: any) {
-    const user = await UserModel.findOne({ subscriptionId: subscription.id })
+    const userResult = await db.select().from(users).where(eq(users.subscriptionId, subscription.id))
+    let user = userResult[0]
+    
     if (!user) {
       // Try to find by email if customer info is available
       const customerEmail = subscription.customer?.email
       if (!customerEmail) return
 
-      const userByEmail = await UserModel.findOne({ email: customerEmail })
+      const userByEmailResult = await db.select().from(users).where(eq(users.email, customerEmail))
+      const userByEmail = userByEmailResult[0]
       if (!userByEmail) return
-
-      userByEmail.subscriptionId = subscription.id
-      userByEmail.paddleSubscriptionId = subscription.id
 
       // Determine plan from priceId
       const PRICE_IDS = {
@@ -252,17 +272,26 @@ const paddleRoutes: FastifyPluginAsync = async (fastify) => {
         business_yearly: process.env.PADDLE_BUSINESS_YEARLY_PRICE_ID,
       }
 
+      let newPlan = userByEmail.plan
       const priceId = subscription.items?.[0]?.priceId
       if (priceId === PRICE_IDS.starter_monthly || priceId === PRICE_IDS.starter_yearly) {
-        userByEmail.plan = 'starter'
+        newPlan = 'starter'
       } else if (priceId === PRICE_IDS.pro_monthly || priceId === PRICE_IDS.pro_yearly) {
-        userByEmail.plan = 'professional'
+        newPlan = 'professional'
       } else if (priceId === PRICE_IDS.business_monthly || priceId === PRICE_IDS.business_yearly) {
-        userByEmail.plan = 'business'
+        newPlan = 'business'
       }
 
-      await userByEmail.save()
-      fastify.log.info({ userId: userByEmail.id, plan: userByEmail.plan }, 'Subscription updated (found by email)')
+      await db
+        .update(users)
+        .set({
+          plan: newPlan,
+          subscriptionId: subscription.id,
+          paddleSubscriptionId: subscription.id,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, userByEmail.id))
+      fastify.log.info({ userId: userByEmail.id, plan: newPlan }, 'Subscription updated (found by email)')
       return
     }
 
@@ -276,31 +305,44 @@ const paddleRoutes: FastifyPluginAsync = async (fastify) => {
       business_yearly: process.env.PADDLE_BUSINESS_YEARLY_PRICE_ID,
     }
 
+    let newPlan = user.plan
     const priceId = subscription.items?.[0]?.priceId
     if (priceId === PRICE_IDS.starter_monthly || priceId === PRICE_IDS.starter_yearly) {
-      user.plan = 'starter'
+      newPlan = 'starter'
     } else if (priceId === PRICE_IDS.pro_monthly || priceId === PRICE_IDS.pro_yearly) {
-      user.plan = 'professional'
+      newPlan = 'professional'
     } else if (priceId === PRICE_IDS.business_monthly || priceId === PRICE_IDS.business_yearly) {
-      user.plan = 'business'
+      newPlan = 'business'
     }
 
-    await user.save()
-    fastify.log.info({ userId: user.id, plan: user.plan }, 'Subscription updated')
+    await db
+      .update(users)
+      .set({
+        plan: newPlan,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, user.id))
+    fastify.log.info({ userId: user.id, plan: newPlan }, 'Subscription updated')
   }
 
   async function handleSubscriptionCanceled(subscription: any) {
-    const user = await UserModel.findOne({ subscriptionId: subscription.id })
+    const userResult = await db.select().from(users).where(eq(users.subscriptionId, subscription.id))
+    const user = userResult[0]
+    
     if (!user) {
       fastify.log.warn({ subscriptionId: subscription.id }, 'User not found for subscription cancellation')
       return
     }
 
-    user.plan = 'free'
-    user.subscriptionId = undefined
-    user.paddleSubscriptionId = undefined
-
-    await user.save()
+    await db
+      .update(users)
+      .set({
+        plan: 'free',
+        subscriptionId: null,
+        paddleSubscriptionId: null,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, user.id))
     fastify.log.info({ userId: user.id }, 'Subscription canceled, user downgraded to free plan')
   }
 }

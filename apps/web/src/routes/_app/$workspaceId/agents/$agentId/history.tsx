@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Phone, Clock, Calendar, User, Play, Search, Filter, Loader2 } from 'lucide-react'
+import { Phone, Clock, Calendar, Play, Search, Filter, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -58,7 +58,7 @@ function HistoryPage() {
     }
 
     fetchData()
-  }, [agentId, getToken])
+  }, [agentId])
 
   const filteredCalls = calls.filter((call) => {
     const matchesSearch =
@@ -84,17 +84,6 @@ function HistoryPage() {
 
   const getDirectionIcon = (direction: string) => {
     return direction === 'inbound' ? '↓ Inbound' : '↑ Outbound'
-  }
-
-  const getSentimentColor = (sentiment: string) => {
-    switch (sentiment) {
-      case 'positive':
-        return 'text-green-600'
-      case 'negative':
-        return 'text-red-600'
-      default:
-        return 'text-gray-600'
-    }
   }
 
   return (

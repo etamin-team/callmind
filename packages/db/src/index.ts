@@ -1,24 +1,28 @@
-import mongoose from 'mongoose'
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 
-export const connectDB = async (uri?: string) => {
-  const mongoUri = uri || process.env.MONGODB_URI
-  
-  if (!mongoUri) {
-    throw new Error('MONGODB_URI is not defined')
-  }
+const DATABASE_URL = process.env.DATABASE_URL;
 
-  try {
-    await mongoose.connect(mongoUri)
-    console.log('✅ MongoDB connected successfully')
-  } catch (error) {
-    console.error('❌ MongoDB connection error:', error)
-    throw error
-  }
+if (!DATABASE_URL) {
+  throw new Error("DATABASE_URL is not defined");
 }
 
-export const disconnectDB = async () => {
-  await mongoose.connection.close()
-}
+const sql = neon(DATABASE_URL);
+export const db = drizzle(sql);
 
-export * from './models/index.js'
-export * from './utils/index.js'
+export * from "./schema/index.js";
+
+export {
+  eq,
+  and,
+  or,
+  not,
+  gt,
+  gte,
+  lt,
+  lte,
+  desc,
+  asc,
+  sql,
+  count,
+} from "drizzle-orm";

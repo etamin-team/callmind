@@ -1,8 +1,17 @@
 import { FastifyPluginAsync } from "fastify";
-import { CallHistoryModel, AgentModel, UserModel } from "@repo/db";
 import {
-  CreateAgentSchema,
-  UpdateAgentSchema,
+  db,
+  callHistory,
+  agents,
+  users,
+  eq,
+  and,
+  desc,
+  asc,
+  sql,
+  count,
+} from "@repo/db";
+import {
   CreateCallHistorySchema,
   UpdateCallHistorySchema,
   CREDIT_COST,
@@ -30,28 +39,48 @@ const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
     };
 
     // Verify the agent belongs to the user
-    const agent = await AgentModel.findOne({
-      _id: agentId,
-      userId,
-      orgId: orgId || null,
-    });
-    if (!agent) {
+    const agentResult = await db
+      .select()
+      .from(agents)
+      .where(
+        and(
+          eq(agents.id, agentId),
+          eq(agents.userId, userId),
+          eq(agents.orgId, orgId || null),
+        ),
+      );
+
+    if (agentResult.length === 0) {
       return reply.status(404).send({ error: "Agent not found" });
     }
 
-    // Get all calls for this agent (regardless of userId to include webhook-created calls)
-    const filter: any = { agentId };
-    if (status) filter.status = status;
-    if (direction) filter.direction = direction;
+    // Build filter
+    let filter = and(eq(callHistory.agentId, agentId));
+    if (status) {
+      filter = and(filter, eq(callHistory.status, status as any));
+    }
+    if (direction) {
+      filter = and(filter, eq(callHistory.direction, direction as any));
+    }
 
-    const calls = await CallHistoryModel.find(filter)
-      .sort({ startedAt: -1 })
-      .limit(parseInt(limit))
-      .skip(parseInt(skip));
+    const limitNum = parseInt(limit);
+    const skipNum = parseInt(skip);
 
-    const total = await CallHistoryModel.countDocuments(filter);
+    const calls = await db
+      .select()
+      .from(callHistory)
+      .where(filter)
+      .orderBy(desc(callHistory.startedAt))
+      .limit(limitNum)
+      .offset(skipNum);
 
-    return { calls, total, limit: parseInt(limit), skip: parseInt(skip) };
+    const totalResult = await db
+      .select({ count: count() })
+      .from(callHistory)
+      .where(filter);
+    const total = totalResult[0]?.count || 0;
+
+    return { calls, total, limit: limitNum, skip: skipNum };
   });
 
   // Get call statistics for an agent
@@ -60,44 +89,41 @@ const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
     const { agentId } = request.params as { agentId: string };
 
     // Verify the agent belongs to the user
-    const agent = await AgentModel.findOne({
-      _id: agentId,
-      userId,
-      orgId: orgId || null,
-    });
-    if (!agent) {
+    const agentResult = await db
+      .select()
+      .from(agents)
+      .where(
+        and(
+          eq(agents.id, agentId),
+          eq(agents.userId, userId),
+          eq(agents.orgId, orgId || null),
+        ),
+      );
+
+    if (agentResult.length === 0) {
       return reply.status(404).send({ error: "Agent not found" });
     }
 
-    const stats = await CallHistoryModel.aggregate([
-      { $match: { agentId } },
-      {
-        $group: {
-          _id: null,
-          totalCalls: { $sum: 1 },
-          completedCalls: {
-            $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] },
-          },
-          missedCalls: {
-            $sum: { $cond: [{ $eq: ["$status", "missed"] }, 1, 0] },
-          },
-          totalDuration: { $sum: "$duration" },
-          averageDuration: { $avg: "$duration" },
-          totalCost: { $sum: "$cost" },
-        },
-      },
-    ]);
+    // Calculate stats in memory since Drizzle doesn't have full aggregation
+    const allCalls = await db
+      .select()
+      .from(callHistory)
+      .where(eq(callHistory.agentId, agentId));
 
-    return (
-      stats[0] || {
-        totalCalls: 0,
-        completedCalls: 0,
-        missedCalls: 0,
-        totalDuration: 0,
-        averageDuration: 0,
-        totalCost: 0,
-      }
-    );
+    const stats = {
+      totalCalls: allCalls.length,
+      completedCalls: allCalls.filter((c) => c.status === "completed").length,
+      missedCalls: allCalls.filter((c) => c.status === "missed").length,
+      totalDuration: allCalls.reduce((sum, c) => sum + (c.duration || 0), 0),
+      averageDuration:
+        allCalls.length > 0
+          ? allCalls.reduce((sum, c) => sum + (c.duration || 0), 0) /
+            allCalls.length
+          : 0,
+      totalCost: allCalls.reduce((sum, c) => sum + (c.cost || 0), 0),
+    };
+
+    return stats;
   });
 
   // Get single call record
@@ -105,18 +131,30 @@ const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
     const { userId, orgId } = request.auth;
     const { callId } = request.params as { callId: string };
 
-    const call = await CallHistoryModel.findById(callId);
-    if (!call) {
+    const callResult = await db
+      .select()
+      .from(callHistory)
+      .where(eq(callHistory.id, callId));
+
+    if (callResult.length === 0) {
       return reply.status(404).send({ error: "Call not found" });
     }
 
+    const call = callResult[0];
+
     // Verify the agent belongs to the user
-    const agent = await AgentModel.findOne({
-      _id: call.agentId,
-      userId,
-      orgId: orgId || null,
-    });
-    if (!agent) {
+    const agentResult = await db
+      .select()
+      .from(agents)
+      .where(
+        and(
+          eq(agents.id, call.agentId),
+          eq(agents.userId, userId),
+          eq(agents.orgId, orgId || null),
+        ),
+      );
+
+    if (agentResult.length === 0) {
       return reply.status(404).send({ error: "Call not found" });
     }
 
@@ -129,22 +167,29 @@ const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
     const data = CreateCallHistorySchema.parse(request.body);
 
     // Check if agent exists and get its voice settings
-    const agent = await AgentModel.findById(data.agentId);
-    if (!agent) {
+    const agentResult = await db
+      .select()
+      .from(agents)
+      .where(eq(agents.id, data.agentId));
+    if (agentResult.length === 0) {
       return reply.status(404).send({ error: "Agent not found" });
     }
 
-    // Verify user has at least minimum credits (1 minute)
+    const agent = agentResult[0];
     const isPremium = isPremiumVoice(agent.voice);
     const estimatedCost = isPremium
       ? CREDIT_COST.superRealisticCall
       : CREDIT_COST.callMinute;
 
-    const user = await UserModel.findById(userId);
-    if (!user) {
+    const userResult = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId));
+    if (userResult.length === 0) {
       return reply.status(404).send({ error: "User not found" });
     }
 
+    const user = userResult[0];
     if ((user.credits || 0) < estimatedCost) {
       return reply.status(400).send({
         error: "Insufficient credits",
@@ -153,13 +198,16 @@ const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
       });
     }
 
-    const call = await CallHistoryModel.create({
-      ...data,
-      userId: userId!,
-      orgId: orgId || null,
-    });
+    const result = await db
+      .insert(callHistory)
+      .values({
+        ...data,
+        userId: userId!,
+        orgId: orgId || null,
+      })
+      .returning();
 
-    return reply.status(201).send(call);
+    return reply.status(201).send(result[0]);
   });
 
   // Update call record (for updating status, transcript, etc.)
@@ -168,17 +216,23 @@ const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
     const { callId } = request.params as { callId: string };
     const data = UpdateCallHistorySchema.parse(request.body);
 
-    const call = await CallHistoryModel.findOneAndUpdate(
-      { _id: callId, userId, orgId: orgId || null },
-      data,
-      { new: true },
-    );
+    const result = await db
+      .update(callHistory)
+      .set({ ...data, updatedAt: new Date() })
+      .where(
+        and(
+          eq(callHistory.id, callId),
+          eq(callHistory.userId, userId),
+          eq(callHistory.orgId, orgId || null),
+        ),
+      )
+      .returning();
 
-    if (!call) {
+    if (result.length === 0) {
       return reply.status(404).send({ error: "Call not found" });
     }
 
-    return call;
+    return result[0];
   });
 
   // Delete call record
@@ -186,13 +240,18 @@ const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
     const { userId, orgId } = request.auth;
     const { callId } = request.params as { callId: string };
 
-    const call = await CallHistoryModel.findOneAndDelete({
-      _id: callId,
-      userId,
-      orgId: orgId || null,
-    });
+    const result = await db
+      .delete(callHistory)
+      .where(
+        and(
+          eq(callHistory.id, callId),
+          eq(callHistory.userId, userId),
+          eq(callHistory.orgId, orgId || null),
+        ),
+      )
+      .returning();
 
-    if (!call) {
+    if (result.length === 0) {
       return reply.status(404).send({ error: "Call not found" });
     }
 
@@ -238,16 +297,25 @@ const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
     if (status === "completed" || status === "missed" || status === "failed") {
       updateData.endedAt = new Date();
     }
+    updateData.updatedAt = new Date();
 
-    const call = await CallHistoryModel.findOneAndUpdate(
-      { _id: callId, userId, orgId: orgId || null },
-      updateData,
-      { new: true },
-    );
+    const result = await db
+      .update(callHistory)
+      .set(updateData)
+      .where(
+        and(
+          eq(callHistory.id, callId),
+          eq(callHistory.userId, userId),
+          eq(callHistory.orgId, orgId || null),
+        ),
+      )
+      .returning();
 
-    if (!call) {
+    if (result.length === 0) {
       return reply.status(404).send({ error: "Call not found" });
     }
+
+    const call = result[0];
 
     // Deduct credits when call completes and credits haven't been deducted yet
     if (
@@ -256,44 +324,65 @@ const callHistoryRoutes: FastifyPluginAsync = async (fastify) => {
       duration > 0 &&
       !call.creditsDeducted
     ) {
-      const agent = await AgentModel.findById(call.agentId);
-      if (agent) {
+      const agentResult = await db
+        .select()
+        .from(agents)
+        .where(eq(agents.id, call.agentId));
+      if (agentResult.length > 0) {
+        const agent = agentResult[0];
         const isPremium = isPremiumVoice(agent.voice);
         const callCost = calculateCallCost(duration, isPremium);
 
-        // Atomic credit deduction
-        const user = await UserModel.findOneAndUpdate(
-          { _id: userId, credits: { $gte: callCost } },
-          { $inc: { credits: -callCost } },
-          { new: true },
-        );
+        // Get current user credits
+        const userResult = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, userId));
+        if (userResult.length > 0) {
+          const currentUser = userResult[0];
+          const currentCredits = currentUser.credits || 0;
 
-        if (user) {
-          // Mark call as having credits deducted
-          await CallHistoryModel.findByIdAndUpdate(callId, {
-            cost: callCost,
-            creditsDeducted: true,
-          });
-          fastify.log.info(
-            {
-              callId,
-              userId,
-              duration,
-              isPremium,
-              cost: callCost,
-              remainingCredits: user.credits - callCost,
-            },
-            "Credits deducted for completed call",
-          );
-        } else {
-          fastify.log.warn(
-            {
-              callId,
-              userId,
-              requiredCredits: callCost,
-            },
-            "Insufficient credits to deduct - should have been checked earlier",
-          );
+          if (currentCredits >= callCost) {
+            // Deduct credits
+            await db
+              .update(users)
+              .set({
+                credits: currentCredits - callCost,
+                updatedAt: new Date(),
+              })
+              .where(eq(users.id, userId));
+
+            // Mark call as having credits deducted
+            await db
+              .update(callHistory)
+              .set({
+                cost: callCost,
+                creditsDeducted: true,
+                updatedAt: new Date(),
+              })
+              .where(eq(callHistory.id, callId));
+
+            fastify.log.info(
+              {
+                callId,
+                userId,
+                duration,
+                isPremium,
+                cost: callCost,
+                remainingCredits: currentCredits - callCost,
+              },
+              "Credits deducted for completed call",
+            );
+          } else {
+            fastify.log.warn(
+              {
+                callId,
+                userId,
+                requiredCredits: callCost,
+              },
+              "Insufficient credits to deduct - should have been checked earlier",
+            );
+          }
         }
       }
     }

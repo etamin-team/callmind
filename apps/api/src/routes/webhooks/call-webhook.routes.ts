@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from "fastify";
-import { CallHistoryModel, AgentModel, UserModel } from "@repo/db";
+import { db, users, agents, callHistory, eq, and, gte } from "@repo/db";
 import { CreateCallHistorySchema, CREDIT_COST } from "@repo/types";
 import { TranscriptAnalysisService } from "../../services/transcript-analysis.service.js";
 import { calculateCallCost, isPremiumVoice } from "@repo/types";
@@ -43,7 +43,11 @@ const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
             .send({ error: "Missing required fields: callSid, agentId" });
         }
 
-        const existingCall = await CallHistoryModel.findOne({ callSid });
+        const existingCallResult = await db
+          .select()
+          .from(callHistory)
+          .where(eq(callHistory.callSid, callSid));
+        const existingCall = existingCallResult[0];
 
         if (existingCall) {
           const updateData: any = {};
@@ -65,13 +69,13 @@ const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
             updateData.endedAt = new Date();
           }
 
-          const updatedCall = await CallHistoryModel.findOneAndUpdate(
-            { callSid },
-            updateData,
-            { new: true },
-          );
+          const updatedCallResult = await db
+            .update(callHistory)
+            .set({ ...updateData, updatedAt: new Date() })
+            .where(eq(callHistory.callSid, callSid))
+            .returning();
 
-          return reply.status(200).send(updatedCall);
+          return reply.status(200).send(updatedCallResult[0]);
         } else {
           const callData = {
             agentId,
@@ -96,8 +100,11 @@ const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
 
           const validatedData = CreateCallHistorySchema.parse(callData);
 
-          const newCall = await CallHistoryModel.create(validatedData);
-          return reply.status(201).send(newCall);
+          const newCallResult = await db
+            .insert(callHistory)
+            .values(validatedData as any)
+            .returning();
+          return reply.status(201).send(newCallResult[0]);
         }
       } catch (error: any) {
         console.error("Error processing call webhook:", error);
@@ -143,9 +150,12 @@ const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
         };
 
         const validatedData = CreateCallHistorySchema.parse(callData);
-        const newCall = await CallHistoryModel.create(validatedData);
+        const newCallResult = await db
+          .insert(callHistory)
+          .values(validatedData as any)
+          .returning();
 
-        return reply.status(201).send(newCall);
+        return reply.status(201).send(newCallResult[0]);
       } catch (error: any) {
         console.error("Error processing call started webhook:", error);
         return reply.status(500).send({
@@ -195,7 +205,11 @@ const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
         if (direction) updateData.direction = direction;
 
         // Get the existing call to check if credits were already deducted
-        const existingCall = await CallHistoryModel.findOne({ callSid });
+        const existingCallResult = await db
+          .select()
+          .from(callHistory)
+          .where(eq(callHistory.callSid, callSid));
+        const existingCall = existingCallResult[0];
         let shouldDeductCredits = false;
         let userIdForDeduction: string | null = null;
 
@@ -214,8 +228,11 @@ const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
             let agentName: string | undefined;
             if (agentId) {
               try {
-                const agent = await AgentModel.findById(agentId);
-                agentName = agent?.name;
+                const agentResult = await db
+                  .select()
+                  .from(agents)
+                  .where(eq(agents.id, agentId));
+                agentName = agentResult[0]?.name;
               } catch (e) {
                 // Invalid agentId format, continue without agent name
               }
@@ -246,51 +263,61 @@ const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
           }
         }
 
-        const updatedCall = await CallHistoryModel.findOneAndUpdate(
-          { callSid },
-          updateData,
-          {
-            new: true,
-          },
-        );
+        const updatedCallResult = await db
+          .update(callHistory)
+          .set({ ...updateData, updatedAt: new Date() })
+          .where(eq(callHistory.callSid, callSid))
+          .returning();
+        const updatedCall = updatedCallResult[0];
 
         // Deduct credits for completed call
         if (updatedCall && shouldDeductCredits && userIdForDeduction) {
           try {
-            const agent = await AgentModel.findById(updatedCall.agentId);
+            const agentResult = await db
+              .select()
+              .from(agents)
+              .where(eq(agents.id, updatedCall.agentId));
+            const agent = agentResult[0];
             if (agent && duration) {
               const isPremium = isPremiumVoice(agent.voice);
               const callCost = calculateCallCost(duration, isPremium);
               const isSuperRealistic = agent.voiceMode === "superRealistic";
 
-              // Prepare updates
-              const userUpdates: any = { $inc: { credits: -callCost } };
-              const callUpdates: any = {
-                cost: callCost,
-                creditsDeducted: true,
-                isSuperRealistic,
-              };
+              // Get current user credits
+              const userResult = await db
+                .select()
+                .from(users)
+                .where(eq(users.id, userIdForDeduction));
+              const user = userResult[0];
 
-              // Also decrement super realistic quota if applicable
-              if (isSuperRealistic) {
-                userUpdates.$inc.superRealisticCallsRemaining = -1;
-              }
+              if (user && user.credits >= callCost) {
+                const newCredits = user.credits - callCost;
+                const newSuperRealisticCalls = isSuperRealistic
+                  ? (user.superRealisticCallsRemaining || 0) - 1
+                  : user.superRealisticCallsRemaining;
 
-              // Atomic credit deduction
-              const user = await UserModel.findOneAndUpdate(
-                { _id: userIdForDeduction, credits: { $gte: callCost } },
-                userUpdates,
-                { new: true },
-              );
+                await db
+                  .update(users)
+                  .set({
+                    credits: newCredits,
+                    superRealisticCallsRemaining: newSuperRealisticCalls,
+                    updatedAt: new Date(),
+                  })
+                  .where(eq(users.id, userIdForDeduction));
 
-              if (user) {
                 // Mark call as having credits deducted
-                await CallHistoryModel.findByIdAndUpdate(
-                  updatedCall.id,
-                  callUpdates,
-                );
+                await db
+                  .update(callHistory)
+                  .set({
+                    cost: callCost,
+                    creditsDeducted: true,
+                    isSuperRealistic,
+                    updatedAt: new Date(),
+                  })
+                  .where(eq(callHistory.id, updatedCall.id));
+
                 console.log(
-                  `[Credits] Deducted ${callCost} credits for call ${callSid} (user: ${userIdForDeduction}, remaining: ${user.credits - callCost}, superRealistic: ${isSuperRealistic}, remainingSuperRealistic: ${user.superRealisticCallsRemaining - (isSuperRealistic ? 1 : 0)})`,
+                  `[Credits] Deducted ${callCost} credits for call ${callSid} (user: ${userIdForDeduction}, remaining: ${newCredits}, superRealistic: ${isSuperRealistic}, remainingSuperRealistic: ${newSuperRealisticCalls})`,
                 );
               } else {
                 console.warn(
@@ -325,8 +352,11 @@ const callWebhookRoutes: FastifyPluginAsync = async (fastify) => {
             };
 
             const validatedData = CreateCallHistorySchema.parse(newCallData);
-            const newCall = await CallHistoryModel.create(validatedData);
-            return reply.status(201).send(newCall);
+            const newCallResult = await db
+              .insert(callHistory)
+              .values(validatedData as any)
+              .returning();
+            return reply.status(201).send(newCallResult[0]);
           }
 
           return reply

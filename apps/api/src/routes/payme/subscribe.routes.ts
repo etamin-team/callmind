@@ -1,7 +1,7 @@
 import { FastifyPluginAsync } from "fastify";
 import crypto from "crypto";
 import { config } from "../../config/environment.js";
-import { UserModel, PaymeCardTokenModel } from "@repo/db";
+import { db, users, paymeCardTokens, eq, and, desc } from "@repo/db";
 import { getCreditsForPlan } from "@repo/types";
 
 const PAYME_API_BASE_URL =
@@ -235,7 +235,7 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
 
       await cardsRemove(token);
 
-      await PaymeCardTokenModel.deleteOne({ token });
+      await db.delete(paymeCardTokens).where(eq(paymeCardTokens.token, token));
 
       fastify.log.info({ token }, "Payme card token removed");
 
@@ -263,32 +263,38 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
         });
       }
 
-      const user = await UserModel.findById(userId);
-      if (!user) {
+      const userResult = await db.select().from(users).where(eq(users.id, userId));
+      if (userResult.length === 0) {
         return reply.status(404).send({ error: "User not found" });
       }
+      const user = userResult[0];
 
-      const existingCard = await PaymeCardTokenModel.findOne({
-        userId,
-        token,
-      });
-      if (existingCard) {
+      const existingCardResult = await db
+        .select()
+        .from(paymeCardTokens)
+        .where(and(eq(paymeCardTokens.userId, userId), eq(paymeCardTokens.token, token)));
+      if (existingCardResult.length > 0) {
         return reply.status(400).send({
           error: "Card token already saved for this user",
         });
       }
 
-      const cardToken = new PaymeCardTokenModel({
-        userId,
-        token,
-        cardNumber,
-        cardExpire,
-        verify: true,
-        recurrent: true,
-        isDefault: false,
-      });
-
-      await cardToken.save();
+      const cardTokenResult = await db
+        .insert(paymeCardTokens)
+        .values({
+          userId,
+          token,
+          cardNumber,
+          cardExpire,
+          verify: true,
+          recurrent: true,
+          isDefault: false,
+        })
+        .returning();
+      const cardToken = cardTokenResult[0];
+      if (!cardToken) {
+        return reply.status(500).send({ error: "Failed to save card token" });
+      }
 
       fastify.log.info({ userId, token }, "Payme card token saved");
 
@@ -313,11 +319,13 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const { userId } = request.params as { userId: string };
 
-      const cards = await PaymeCardTokenModel.find({ userId }).sort({
-        createdAt: -1,
-      });
+      const cards = await db
+        .select()
+        .from(paymeCardTokens)
+        .where(eq(paymeCardTokens.userId, userId))
+        .orderBy(desc(paymeCardTokens.createdAt));
 
-      const formattedCards = cards.map((card) => ({
+      const formattedCards = cards.map((card: any) => ({
         id: card.id,
         cardNumber: card.cardNumber,
         cardExpire: card.cardExpire,
@@ -352,15 +360,17 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
           .send({ error: "Missing required fields: userId, plan" });
       }
 
-      const user = await UserModel.findById(userId);
-      if (!user) {
+      const userResult = await db.select().from(users).where(eq(users.id, userId));
+      if (userResult.length === 0) {
         return reply.status(404).send({ error: "User not found" });
       }
+      const user = userResult[0]!;
 
-      const defaultCard = await PaymeCardTokenModel.findOne({
-        userId,
-        isDefault: true,
-      });
+      const defaultCardResult = await db
+        .select()
+        .from(paymeCardTokens)
+        .where(and(eq(paymeCardTokens.userId, userId), eq(paymeCardTokens.isDefault, true)));
+      const defaultCard = defaultCardResult[0];
 
       if (!defaultCard) {
         return reply.status(400).send({
@@ -391,22 +401,32 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
         },
       );
 
-      user.credits = (user.credits || 0) + totalCredits;
-      user.paymeSubscriptionPlan = plan;
-      user.paymeSubscriptionActive = true;
-      user.paymeSubscriptionExpiry = yearly
+      const newCredits = (user.credits || 0) + totalCredits;
+      const paymeSubscriptionExpiry = yearly
         ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
         : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-      await user.save();
+      await db
+        .update(users)
+        .set({
+          credits: newCredits,
+          paymeSubscriptionPlan: plan,
+          paymeSubscriptionActive: true,
+          paymeSubscriptionExpiry,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId));
+
+      const updatedUserResult = await db.select().from(users).where(eq(users.id, userId));
+      const updatedUser = updatedUserResult[0];
 
       fastify.log.info(
         {
-          userId: user.id,
+          userId,
           plan,
           yearly,
           creditsAdded: totalCredits,
-          expiry: user.paymeSubscriptionExpiry,
+          expiry: updatedUser?.paymeSubscriptionExpiry,
         },
         "Payme subscription created",
       );
@@ -417,7 +437,7 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
           plan,
           yearly,
           credits: totalCredits,
-          expiry: user.paymeSubscriptionExpiry,
+          expiry: updatedUser?.paymeSubscriptionExpiry,
           receiptId: paidReceipt.receipt._id,
         },
       });
@@ -433,10 +453,11 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const { userId } = request.body as { userId: string };
 
-      const user = await UserModel.findById(userId);
-      if (!user) {
+      const userResult = await db.select().from(users).where(eq(users.id, userId));
+      if (userResult.length === 0) {
         return reply.status(404).send({ error: "User not found" });
       }
+      const user = userResult[0]!;
 
       if (!user.paymeSubscriptionActive || !user.paymeSubscriptionPlan) {
         return reply.status(400).send({
@@ -444,10 +465,11 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
         });
       }
 
-      const defaultCard = await PaymeCardTokenModel.findOne({
-        userId,
-        isDefault: true,
-      });
+      const defaultCardResult = await db
+        .select()
+        .from(paymeCardTokens)
+        .where(and(eq(paymeCardTokens.userId, userId), eq(paymeCardTokens.isDefault, true)));
+      const defaultCard = defaultCardResult[0];
 
       if (!defaultCard) {
         return reply.status(400).send({
@@ -480,8 +502,8 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
         },
       );
 
-      user.credits = (user.credits || 0) + totalCredits;
-      user.paymeSubscriptionExpiry =
+      const newCredits = (user.credits || 0) + totalCredits;
+      const paymeSubscriptionExpiry =
         isYearly && user.paymeSubscriptionExpiry
           ? new Date(
               user.paymeSubscriptionExpiry.getTime() +
@@ -489,14 +511,21 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
             )
           : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
-      await user.save();
+      await db
+        .update(users)
+        .set({
+          credits: newCredits,
+          paymeSubscriptionExpiry,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId));
 
       fastify.log.info(
         {
-          userId: user.id,
+          userId,
           plan,
           creditsAdded: totalCredits,
-          expiry: user.paymeSubscriptionExpiry,
+          expiry: paymeSubscriptionExpiry,
         },
         "Payme subscription renewed",
       );
@@ -506,7 +535,7 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
         subscription: {
           plan,
           credits: totalCredits,
-          expiry: user.paymeSubscriptionExpiry,
+          expiry: paymeSubscriptionExpiry,
           receiptId: paidReceipt.receipt._id,
         },
       });
@@ -522,13 +551,18 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const { userId } = request.body as { userId: string };
 
-      const user = await UserModel.findById(userId);
-      if (!user) {
+      const userResult = await db.select().from(users).where(eq(users.id, userId));
+      if (userResult.length === 0) {
         return reply.status(404).send({ error: "User not found" });
       }
 
-      user.paymeSubscriptionActive = false;
-      await user.save();
+      await db
+        .update(users)
+        .set({
+          paymeSubscriptionActive: false,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId));
 
       fastify.log.info({ userId }, "Payme subscription cancelled");
 
@@ -545,10 +579,11 @@ const paymeSubscribeRoutes: FastifyPluginAsync = async (fastify) => {
     try {
       const { userId } = request.params as { userId: string };
 
-      const user = await UserModel.findById(userId);
-      if (!user) {
+      const userResult = await db.select().from(users).where(eq(users.id, userId));
+      if (userResult.length === 0) {
         return reply.status(404).send({ error: "User not found" });
       }
+      const user = userResult[0]!;
 
       return reply.send({
         success: true,

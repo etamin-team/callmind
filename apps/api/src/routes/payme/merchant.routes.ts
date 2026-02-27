@@ -1,16 +1,13 @@
 import { FastifyPluginAsync } from "fastify";
 import { config } from "../../config/environment.js";
-import { UserModel } from "@repo/db";
-import { PaymeTransactionModel } from "@repo/db";
+import { db, users, paymeTransactions, eq, and, gte, lte, asc } from "@repo/db";
 import { getCreditsForPlan } from "@repo/types";
 import { randomUUID } from "crypto";
 
-// Payme Merchant API transaction states
-const TRANSACTION_STATE_CREATED = 1;
-const TRANSACTION_STATE_PERFORMED = 2;
-const TRANSACTION_STATE_CANCELLED = -1;
+const TRANSACTION_STATE_CREATED = "1";
+const TRANSACTION_STATE_PERFORMED = "2";
+const TRANSACTION_STATE_CANCELLED = "-1";
 
-// Payme error codes
 const ERROR_CODES = {
   INVALID_AMOUNT: -31001,
   TRANSACTION_NOT_FOUND: -31003,
@@ -19,16 +16,16 @@ const ERROR_CODES = {
 };
 
 interface PaymeRequest {
-  id: string; // Request ID from Payme
+  id: string;
   method: string;
   params: {
-    id?: string; // Payme transaction ID
+    id?: string;
     account?: Record<string, string>;
     amount?: number;
     time?: number;
     from?: number;
     to?: number;
-    reason?: string | number; // Cancellation reason
+    reason?: string | number;
   };
 }
 
@@ -43,10 +40,8 @@ interface PaymeResponse {
   };
 }
 
-// Verify Basic Auth
 function verifyAuth(authHeader: string | undefined): boolean {
   if (!config.PAYME_LOGIN || !config.PAYME_KEY) {
-    // Allow in test mode if credentials not set
     if (config.NODE_ENV !== "production") {
       return true;
     }
@@ -80,7 +75,6 @@ function verifyAuth(authHeader: string | undefined): boolean {
   return login === config.PAYME_LOGIN && password === expectedKey;
 }
 
-// Parse order_id to extract components
 function parseOrderId(orderId: string): {
   userId: string;
   plan: string;
@@ -94,7 +88,6 @@ function parseOrderId(orderId: string): {
   };
 }
 
-// CreateTransaction - Called when user initiates payment
 async function createTransaction(
   fastify: any,
   params: PaymeRequest["params"],
@@ -119,37 +112,34 @@ async function createTransaction(
   const orderId = account.order_id;
   const { userId, plan, yearly } = parseOrderId(orderId);
 
-  // Check if transaction already exists
-  let existingTransaction = await PaymeTransactionModel.findOne({
-    paymeTransactionId: id,
-  });
+  const existingResult = await db
+    .select()
+    .from(paymeTransactions)
+    .where(eq(paymeTransactions.paymeTransactionId, id as string));
 
-  if (existingTransaction) {
-    // Return existing transaction
+  if (existingResult.length > 0) {
+    const existingTransaction = existingResult[0];
     return {
-      create_time: existingTransaction.createTime.getTime(),
+      create_time: existingTransaction.createTime?.getTime() || Date.now(),
       transaction: existingTransaction.merchantTransactionId,
       state: existingTransaction.state,
     };
   }
 
-  // Create new transaction
   const merchantTransactionId = randomUUID();
   const now = new Date();
 
-  const transaction = new PaymeTransactionModel({
-    paymeTransactionId: id,
+  await db.insert(paymeTransactions).values({
+    paymeTransactionId: id as string,
     merchantTransactionId,
     orderId,
     amount,
     state: TRANSACTION_STATE_CREATED,
     createTime: time ? new Date(time) : now,
     userId,
-    plan,
+    plan: plan as any,
     yearly,
   });
-
-  await transaction.save();
 
   fastify.log.info(
     {
@@ -170,25 +160,26 @@ async function createTransaction(
   };
 }
 
-// PerformTransaction - Called after payment is successful
 async function performTransaction(
   fastify: any,
   params: PaymeRequest["params"],
 ): Promise<any> {
   const { id } = params;
 
-  const transaction = await PaymeTransactionModel.findOne({
-    paymeTransactionId: id,
-  });
+  const result = await db
+    .select()
+    .from(paymeTransactions)
+    .where(eq(paymeTransactions.paymeTransactionId, id as string));
 
-  if (!transaction) {
+  if (result.length === 0) {
     throw {
       code: ERROR_CODES.TRANSACTION_NOT_FOUND,
       message: "Transaction not found",
     };
   }
 
-  // If already performed, return current state
+  const transaction = result[0];
+
   if (transaction.state === TRANSACTION_STATE_PERFORMED) {
     return {
       transaction: transaction.merchantTransactionId,
@@ -197,7 +188,6 @@ async function performTransaction(
     };
   }
 
-  // If cancelled, cannot perform
   if (transaction.state === TRANSACTION_STATE_CANCELLED) {
     throw {
       code: ERROR_CODES.ERROR_OCCURRED,
@@ -207,10 +197,9 @@ async function performTransaction(
 
   const { userId, plan, yearly } = parseOrderId(transaction.orderId);
 
-  // Find and update user
-  const user = await UserModel.findById(userId);
+  const userResult = await db.select().from(users).where(eq(users.id, userId));
 
-  if (!user) {
+  if (userResult.length === 0) {
     fastify.log.warn({ userId }, "User not found for Payme transaction");
     throw {
       code: ERROR_CODES.INVALID_ACCOUNT,
@@ -219,23 +208,30 @@ async function performTransaction(
     };
   }
 
-  // Calculate credits
+  const user = userResult[0];
   const credits = getCreditsForPlan(plan);
   const yearlyMultiplier = yearly ? 12 : 1;
   const totalCredits = credits * yearlyMultiplier;
 
-  // Update user credits and Payme info
-  user.credits = (user.credits || 0) + totalCredits;
-  user.paymeCustomerId = id;
-  user.paymeTransactionId = transaction.merchantTransactionId;
-  user.paymeSubscriptionPlan = plan;
+  await db
+    .update(users)
+    .set({
+      credits: (user.credits || 0) + totalCredits,
+      paymeCustomerId: id as string,
+      paymeTransactionId: transaction.merchantTransactionId,
+      paymeSubscriptionPlan: plan,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
 
-  await user.save();
-
-  // Update transaction state
-  transaction.state = TRANSACTION_STATE_PERFORMED;
-  transaction.performTime = new Date();
-  await transaction.save();
+  await db
+    .update(paymeTransactions)
+    .set({
+      state: TRANSACTION_STATE_PERFORMED,
+      performTime: new Date(),
+      updatedAt: new Date(),
+    })
+    .where(eq(paymeTransactions.paymeTransactionId, id as string));
 
   fastify.log.info(
     {
@@ -249,65 +245,68 @@ async function performTransaction(
 
   return {
     transaction: transaction.merchantTransactionId,
-    perform_time: transaction.performTime.getTime(),
+    perform_time: Date.now(),
     state: TRANSACTION_STATE_PERFORMED,
   };
 }
 
-// CheckTransaction - Check payment status
 async function checkTransaction(
   fastify: any,
   params: PaymeRequest["params"],
 ): Promise<any> {
   const { id } = params;
 
-  const transaction = await PaymeTransactionModel.findOne({
-    paymeTransactionId: id,
-  });
+  const result = await db
+    .select()
+    .from(paymeTransactions)
+    .where(eq(paymeTransactions.paymeTransactionId, id as string));
 
-  if (!transaction) {
+  if (result.length === 0) {
     throw {
       code: ERROR_CODES.TRANSACTION_NOT_FOUND,
       message: "Transaction not found",
     };
   }
 
-  const result: any = {
+  const transaction = result[0];
+
+  const res: any = {
     transaction: transaction.merchantTransactionId,
     state: transaction.state,
-    create_time: transaction.createTime.getTime(),
+    create_time: transaction.createTime?.getTime() || 0,
   };
 
   if (transaction.performTime) {
-    result.perform_time = transaction.performTime.getTime();
+    res.perform_time = transaction.performTime.getTime();
   }
 
   if (transaction.cancelTime) {
-    result.cancel_time = transaction.cancelTime.getTime();
+    res.cancel_time = transaction.cancelTime.getTime();
   }
 
-  return result;
+  return res;
 }
 
-// CancelTransaction - Cancel payment
 async function cancelTransaction(
   fastify: any,
   params: PaymeRequest["params"],
 ): Promise<any> {
   const { id, reason } = params;
 
-  const transaction = await PaymeTransactionModel.findOne({
-    paymeTransactionId: id,
-  });
+  const result = await db
+    .select()
+    .from(paymeTransactions)
+    .where(eq(paymeTransactions.paymeTransactionId, id as string));
 
-  if (!transaction) {
+  if (result.length === 0) {
     throw {
       code: ERROR_CODES.TRANSACTION_NOT_FOUND,
       message: "Transaction not found",
     };
   }
 
-  // If already cancelled, return current state
+  const transaction = result[0];
+
   if (transaction.state === TRANSACTION_STATE_CANCELLED) {
     return {
       transaction: transaction.merchantTransactionId,
@@ -316,13 +315,15 @@ async function cancelTransaction(
     };
   }
 
-  // Cancel the transaction
-  transaction.state = TRANSACTION_STATE_CANCELLED;
-  transaction.cancelTime = new Date();
-  if (reason) {
-    transaction.reason = String(reason);
-  }
-  await transaction.save();
+  await db
+    .update(paymeTransactions)
+    .set({
+      state: TRANSACTION_STATE_CANCELLED,
+      cancelTime: new Date(),
+      reason: reason ? String(reason) : null,
+      updatedAt: new Date(),
+    })
+    .where(eq(paymeTransactions.paymeTransactionId, id as string));
 
   fastify.log.info(
     { paymeTransactionId: id, reason },
@@ -331,12 +332,11 @@ async function cancelTransaction(
 
   return {
     transaction: transaction.merchantTransactionId,
-    cancel_time: transaction.cancelTime.getTime(),
+    cancel_time: Date.now(),
     state: TRANSACTION_STATE_CANCELLED,
   };
 }
 
-// GetStatement - Get transaction history
 async function getStatement(
   fastify: any,
   params: PaymeRequest["params"],
@@ -353,24 +353,30 @@ async function getStatement(
   const startTime = new Date(from);
   const endTime = new Date(to);
 
-  const transactions = await PaymeTransactionModel.find({
-    createTime: {
-      $gte: startTime,
-      $lte: endTime,
-    },
-  }).sort({ createTime: 1 });
+  const transactions = await db
+    .select()
+    .from(paymeTransactions)
+    .where(
+      and(
+        gte(paymeTransactions.createTime, startTime),
+        lte(paymeTransactions.createTime, endTime),
+      ),
+    )
+    .orderBy(asc(paymeTransactions.createTime));
 
-  const result = transactions.map((t) => ({
-    id: t.paymeTransactionId,
-    time: t.createTime.getTime(),
-    amount: t.amount,
-    account: { order_id: t.orderId },
-    create_time: t.createTime.getTime(),
-    perform_time: t.performTime?.getTime() || 0,
-    cancel_time: t.cancelTime?.getTime() || 0,
-    state: t.state,
-    reason: t.reason,
-  }));
+  const result = transactions.map(
+    (t: typeof paymeTransactions.$inferSelect) => ({
+      id: t.paymeTransactionId,
+      time: t.createTime?.getTime() || 0,
+      amount: t.amount,
+      account: { order_id: t.orderId },
+      create_time: t.createTime?.getTime() || 0,
+      perform_time: t.performTime?.getTime() || 0,
+      cancel_time: t.cancelTime?.getTime() || 0,
+      state: t.state,
+      reason: t.reason,
+    }),
+  );
 
   return {
     transactions: result,
@@ -378,10 +384,8 @@ async function getStatement(
 }
 
 const paymeMerchantRoutes: FastifyPluginAsync = async (fastify) => {
-  // Merchant API endpoint
   fastify.post("/merchant", async (request, reply) => {
     try {
-      // Verify Basic Auth
       const authHeader = request.headers["authorization"];
       if (!verifyAuth(authHeader)) {
         fastify.log.warn(
@@ -397,7 +401,6 @@ const paymeMerchantRoutes: FastifyPluginAsync = async (fastify) => {
         });
       }
 
-      // Check IP whitelist in production
       if (config.NODE_ENV === "production") {
         const ip = request.ip;
         const paymeIps = Array.from(
@@ -474,7 +477,6 @@ const paymeMerchantRoutes: FastifyPluginAsync = async (fastify) => {
         id: (request.body as PaymeRequest).id,
       };
 
-      // If error has Payme error code, use it
       if (error.code && error.message) {
         response.error = {
           code: error.code,
@@ -492,7 +494,6 @@ const paymeMerchantRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // Health check endpoint
   fastify.get("/merchant", async (request, reply) => {
     return reply.send({
       status: "ok",

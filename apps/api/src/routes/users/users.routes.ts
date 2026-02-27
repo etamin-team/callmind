@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from "fastify";
-import { UserModel } from "@repo/db";
+import { db, users, eq, asc } from "@repo/db";
 import { CreateUserSchema, UpdateUserSchema } from "@repo/types";
 
 const usersRoutes: FastifyPluginAsync = async (fastify) => {
@@ -28,8 +28,11 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
       },
     },
     async () => {
-      const users = await UserModel.find();
-      return users;
+      const result = await db
+        .select()
+        .from(users)
+        .orderBy(asc(users.createdAt));
+      return result;
     },
   );
 
@@ -68,13 +71,13 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
     },
     async (request, reply) => {
       const { id } = request.params as { id: string };
-      const user = await UserModel.findById(id);
+      const result = await db.select().from(users).where(eq(users.id, id));
 
-      if (!user) {
+      if (result.length === 0) {
         return reply.status(404).send({ error: "User not found" });
       }
 
-      return user;
+      return result[0];
     },
   );
 
@@ -87,6 +90,7 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
         body: {
           type: "object",
           properties: {
+            id: { type: "string" },
             email: { type: "string" },
             name: { type: "string" },
             avatar: { type: "string", nullable: true },
@@ -117,9 +121,8 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
     async (request, reply) => {
       try {
         const data = CreateUserSchema.parse(request.body);
-        const user = await UserModel.create(data);
-
-        return reply.status(201).send(user);
+        const result = await db.insert(users).values(data).returning();
+        return reply.status(201).send(result[0]);
       } catch (error) {
         fastify.log.error(error);
         return reply.status(400).send({ error: "Invalid user data" });
@@ -179,13 +182,17 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
 
       try {
         const data = UpdateUserSchema.parse(request.body);
-        const user = await UserModel.findByIdAndUpdate(id, data, { new: true });
+        const result = await db
+          .update(users)
+          .set({ ...data, updatedAt: new Date() })
+          .where(eq(users.id, id))
+          .returning();
 
-        if (!user) {
+        if (result.length === 0) {
           return reply.status(404).send({ error: "User not found" });
         }
 
-        return user;
+        return result[0];
       } catch (error) {
         fastify.log.error(error);
         return reply.status(400).send({ error: "Invalid user data" });
@@ -220,9 +227,9 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
     },
     async (request, reply) => {
       const { id } = request.params as { id: string };
-      const user = await UserModel.findByIdAndDelete(id);
+      const result = await db.delete(users).where(eq(users.id, id)).returning();
 
-      if (!user) {
+      if (result.length === 0) {
         return reply.status(404).send({ error: "User not found" });
       }
 
@@ -280,25 +287,26 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
       const { amount } = request.body as { amount: number };
 
       try {
-        const user = await UserModel.findById(id);
+        const result = await db.select().from(users).where(eq(users.id, id));
 
-        if (!user) {
+        if (result.length === 0) {
           return reply.status(404).send({ error: "User not found" });
         }
 
-        const currentCredits = (user as any).credits || 0;
+        const user = result[0];
+        const currentCredits = user.credits || 0;
 
         if (currentCredits < amount) {
           return reply.status(400).send({ error: "Insufficient credits" });
         }
 
-        const updatedUser = await UserModel.findByIdAndUpdate(
-          id,
-          { $inc: { credits: -amount } },
-          { new: true },
-        );
+        const updated = await db
+          .update(users)
+          .set({ credits: currentCredits - amount, updatedAt: new Date() })
+          .where(eq(users.id, id))
+          .returning();
 
-        return reply.status(200).send(updatedUser);
+        return reply.status(200).send(updated[0]);
       } catch (error) {
         fastify.log.error(error);
         return reply.status(400).send({ error: "Failed to decrement credits" });
@@ -354,39 +362,36 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
       const { amount = 1 } = request.body as { amount?: number };
 
       try {
-        // Atomic operation: find user with sufficient credits and decrement in one go
-        const user = await UserModel.findOneAndUpdate(
-          {
-            _id: id,
-            credits: { $gte: amount }, // Only find if user has enough credits
-          },
-          {
-            $inc: { credits: -amount }, // Decrement atomically
-          },
-          { new: true }, // Return the updated document
-        );
+        const result = await db.select().from(users).where(eq(users.id, id));
 
-        if (!user) {
-          // Check if user exists
-          const existingUser = await UserModel.findById(id);
-          if (!existingUser) {
-            return reply.status(404).send({ error: "User not found" });
-          }
-          // User exists but insufficient credits
+        if (result.length === 0) {
+          return reply.status(404).send({ error: "User not found" });
+        }
+
+        const user = result[0];
+        const currentCredits = user.credits || 0;
+
+        if (currentCredits < amount) {
           return reply.status(400).send({ error: "Insufficient credits" });
         }
 
-        const currentCredits = (user as any).credits || 0;
+        const updated = await db
+          .update(users)
+          .set({ credits: currentCredits - amount, updatedAt: new Date() })
+          .where(eq(users.id, id))
+          .returning();
+
+        const newCredits = updated[0].credits || 0;
         return reply.status(200).send({
           success: true,
-          credits: currentCredits,
-          creditsRemaining: currentCredits,
-          previousCredits: currentCredits + amount,
+          credits: newCredits,
+          creditsRemaining: newCredits,
+          previousCredits: currentCredits,
         });
       } catch (error) {
         fastify.log.error(error);
         return reply
-          .status(500)
+          .status(400)
           .send({ error: "Failed to check and decrement credits" });
       }
     },
@@ -439,45 +444,41 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
       const { amount = 1 } = request.body as { amount?: number };
 
       try {
-        // Atomic operation: find user with sufficient super realistic calls and decrement in one go
-        const user = await UserModel.findOneAndUpdate(
-          {
-            _id: id,
-            superRealisticCallsRemaining: { $gte: amount }, // Only find if user has enough quota
-          },
-          {
-            $inc: { superRealisticCallsRemaining: -amount }, // Decrement atomically
-          },
-          { new: true }, // Return updated document
-        );
+        const result = await db.select().from(users).where(eq(users.id, id));
 
-        if (!user) {
-          // Check if user exists
-          const existingUser = await UserModel.findById(id);
-          if (!existingUser) {
-            return reply.status(404).send({ error: "User not found" });
-          }
-          // User exists but insufficient super realistic calls quota
-          const currentQuota =
-            (existingUser as any).superRealisticCallsRemaining || 0;
+        if (result.length === 0) {
+          return reply.status(404).send({ error: "User not found" });
+        }
+
+        const user = result[0];
+        const currentQuota = user.superRealisticCallsRemaining || 0;
+
+        if (currentQuota < amount) {
           return reply.status(400).send({
             error: `Insufficient super realistic calls quota. You have ${currentQuota} remaining.`,
           });
         }
 
-        const currentQuota = (user as any).superRealisticCallsRemaining || 0;
+        const updated = await db
+          .update(users)
+          .set({
+            superRealisticCallsRemaining: currentQuota - amount,
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, id))
+          .returning();
+
+        const newQuota = updated[0].superRealisticCallsRemaining || 0;
         return reply.status(200).send({
           success: true,
-          superRealisticCallsRemaining: currentQuota,
-          previousSuperRealisticCallsRemaining: currentQuota + amount,
+          superRealisticCallsRemaining: newQuota,
+          previousSuperRealisticCallsRemaining: currentQuota,
         });
       } catch (error) {
         fastify.log.error(error);
-        return reply
-          .status(500)
-          .send({
-            error: "Failed to check and decrement super realistic calls",
-          });
+        return reply.status(400).send({
+          error: "Failed to check and decrement super realistic calls",
+        });
       }
     },
   );
@@ -534,19 +535,21 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
       };
 
       try {
-        const user = await UserModel.findById(id);
+        const result = await db.select().from(users).where(eq(users.id, id));
 
-        if (!user) {
+        if (result.length === 0) {
           return reply.status(404).send({ error: "User not found" });
         }
 
-        const updatedUser = await UserModel.findByIdAndUpdate(
-          id,
-          { $inc: { credits: amount } },
-          { new: true },
-        );
+        const user = result[0];
+        const currentCredits = user.credits || 0;
+        const newCredits = currentCredits + amount;
 
-        const currentCredits = (updatedUser as any).credits || 0;
+        const updated = await db
+          .update(users)
+          .set({ credits: newCredits, updatedAt: new Date() })
+          .where(eq(users.id, id))
+          .returning();
 
         fastify.log.info(
           `Refunded ${amount} credits to user ${id}. Reason: ${reason}`,
@@ -554,12 +557,12 @@ const usersRoutes: FastifyPluginAsync = async (fastify) => {
 
         return reply.status(200).send({
           success: true,
-          credits: currentCredits,
+          credits: newCredits,
           refundedAmount: amount,
         });
       } catch (error) {
         fastify.log.error(error);
-        return reply.status(500).send({ error: "Failed to refund credits" });
+        return reply.status(400).send({ error: "Failed to refund credits" });
       }
     },
   );
