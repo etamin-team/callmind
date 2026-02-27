@@ -10,7 +10,7 @@ import { AnimatedThemeToggler } from './animated-theme-toggler'
 
 const menuItems = [
   { name: 'Features', href: '#features' },
-  { name: 'Solutions', href: '#solutions' },
+  { name: 'How it works', href: '#how-it-works' },
   { name: 'Pricing', href: '#pricing' },
   { name: 'Testimonials', href: '#testimonials' },
 ]

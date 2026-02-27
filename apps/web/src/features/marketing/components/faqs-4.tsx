@@ -1,7 +1,6 @@
 'use client'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import {Link} from '@tanstack/react-router'
 
 export default function FAQsFour() {
     const faqItems = [
@@ -64,11 +63,11 @@ export default function FAQsFour() {
 
                     <p className="text-muted-foreground mt-6 px-8">
                         Can't find what you're looking for? Contact our{' '}
-                        <Link
-                            href="#"
+                        <a
+                            href="mailto:support@callmind.uz"
                             className="text-primary font-medium hover:underline">
                             customer support team
-                        </Link>
+                        </a>
                     </p>
                 </div>
             </div>
