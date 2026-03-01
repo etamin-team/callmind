@@ -20,6 +20,8 @@ export const UserSchema = z.object({
   paymeCustomerId: z.string().optional(),
   paymeTransactionId: z.string().optional(),
   paymeSubscriptionPlan: z.string().optional(),
+  // Clerk auth user ID
+  clerkUserId: z.string().optional(),
   // Legacy FreedomPay fields
   freedompayCustomerId: z.string().optional(),
   freedompayRecurringProfile: z.string().optional(),

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from 'recharts'
+import { Loader2 } from 'lucide-react'
 
 interface UsageData {
   date: string
@@ -12,9 +13,10 @@ interface UsageData {
 
 interface UsageChartProps {
   data: UsageData[]
+  isLoading?: boolean
 }
 
-export function UsageChart({ data }: UsageChartProps) {
+export function UsageChart({ data, isLoading = false }: UsageChartProps) {
   const [chartType, setChartType] = useState<'calls' | 'minutes' | 'cost'>('calls')
 
   const chartConfig = {
@@ -37,6 +39,21 @@ export function UsageChart({ data }: UsageChartProps) {
 
   const currentConfig = chartConfig[chartType]
 
+  if (isLoading) {
+    return (
+      <Card className="col-span-3">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Usage Trends</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-[350px]">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card className="col-span-3">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -53,34 +70,40 @@ export function UsageChart({ data }: UsageChartProps) {
         </Select>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={350}>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis 
-              dataKey="date" 
-              tickLine={false}
-              axisLine={false}
-            />
-            <YAxis 
-              tickLine={false}
-              axisLine={false}
-            />
-            <Tooltip 
-              contentStyle={{
-                borderRadius: '8px',
-                border: '1px solid hsl(var(--border))',
-              }}
-            />
-            <Line
-              type="monotone"
-              dataKey={currentConfig.dataKey}
-              stroke={currentConfig.color}
-              strokeWidth={2}
-              dot={{ fill: currentConfig.color, r: 4 }}
-              activeDot={{ r: 6 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        {data.length === 0 ? (
+          <div className="flex items-center justify-center h-[350px] text-muted-foreground">
+            No data available for the selected period
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={350}>
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+              />
+              <Tooltip
+                contentStyle={{
+                  borderRadius: '8px',
+                  border: '1px solid hsl(var(--border))',
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey={currentConfig.dataKey}
+                stroke={currentConfig.color}
+                strokeWidth={2}
+                dot={{ fill: currentConfig.color, r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   )

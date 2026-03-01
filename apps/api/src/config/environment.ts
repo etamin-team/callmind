@@ -60,9 +60,8 @@ export const config = {
 
   // Payme configuration (Uzbekistan)
   PAYME_MERCHANT_ID: getOptionalEnv("PAYME_MERCHANT_ID"),
-  PAYME_KEY: getOptionalEnv("PAYME_KEY"), // Production key
-  PAYME_TEST_KEY: getOptionalEnv("PAYME_TEST_KEY"), // Test key
-  PAYME_LOGIN: getOptionalEnv("PAYME_LOGIN"), // Basic Auth login
+  PAYME_LOGIN: getOptionalEnv("PAYME_LOGIN") || "Paycom", // Basic Auth login - "Paycom" in test mode
+  PAYME_PASSWORD: getOptionalEnv("PAYME_PASSWORD"), // Basic Auth password - your secret key
   PAYME_ENDPOINT_URL: getOptionalEnv("PAYME_ENDPOINT_URL"),
   PAYME_CALLBACK_URL: getOptionalEnv("PAYME_CALLBACK_URL", [
     "https://your-domain.com",
@@ -164,11 +163,11 @@ if (config.PAYME_MERCHANT_ID) {
   );
 }
 
-if (config.PAYME_KEY || config.PAYME_TEST_KEY) {
-  console.log(`[Config] Payme Key loaded`);
+if (config.PAYME_PASSWORD) {
+  console.log(`[Config] Payme Password loaded`);
 } else {
   console.warn(
-    `[Config] Payme Key is MISSING. Payme webhook verification will fail.`,
+    `[Config] Payme Password is MISSING. Payme webhook verification will fail.`,
   );
 }
 

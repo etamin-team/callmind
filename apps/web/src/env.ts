@@ -18,6 +18,7 @@ export const env = createEnv({
     VITE_PADDLE_CLIENT_TOKEN: z.string().min(1).optional(),
     VITE_FREEDOMPAY_MERCHANT_ID: z.string().min(1).optional(),
     VITE_PAYME_MERCHANT_ID: z.string().min(1).optional(),
+    VITE_PAYME_TEST_MODE: z.string().optional(),
   },
 
   /**

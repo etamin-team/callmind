@@ -59,37 +59,37 @@ const paymeRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.status(400).send({ error: `Invalid plan: ${plan}` });
       }
 
-      const amountInTiyins = amount * 100;
       const orderId = `${userId || "guest"}_${plan}_${yearly ? "yearly" : "monthly"}_${Date.now()}`;
-
-      // Generate merchant transaction ID
-      const merchantTransactionId = crypto.randomUUID();
 
       fastify.log.info(
         {
           plan,
           yearly,
-          amount: amountInTiyins,
+          amount,
           orderId,
-          merchantTransactionId,
           userId,
         },
         "Payme checkout initiated",
       );
 
-      // Return payment parameters for frontend to create Payme checkout
+      // Generate Payme checkout link
+      // Format: m={merchant_id};l={lang};ac.order_id={order_id};a={amount_in_tiyins};c={callback_url}
+      const amountInTiyins = amount * 100;
+      const callbackUrl =
+        config.PAYME_CALLBACK_URL || "https://your-domain.com";
+      const data = `m=${config.PAYME_MERCHANT_ID};l=${lang};ac.order_id=${orderId};a=${amountInTiyins};c=${callbackUrl}`;
+      const encoded = Buffer.from(data).toString("base64");
+      const paymeLink = `https://checkout.paycom.uz/${encoded}`;
+
       return reply.send({
-        merchantId: config.PAYME_MERCHANT_ID,
+        paymeLink,
         orderId,
-        merchantTransactionId,
-        amount: amountInTiyins,
-        amountDisplay: amount,
+        amount,
+        amountInTiyins,
         currency: "UZS",
         plan,
         yearly,
         lang,
-        // Return URL for redirect after payment
-        return_url: `${config.PAYME_CALLBACK_URL || ""}/payments/success`,
       });
     } catch (error) {
       fastify.log.error(error, "Failed to create Payme checkout");

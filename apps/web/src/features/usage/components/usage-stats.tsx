@@ -1,59 +1,93 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Phone, Clock, DollarSign, TrendingUp } from 'lucide-react'
+import { Phone, Clock, DollarSign, TrendingUp, Loader2 } from 'lucide-react'
 
 interface UsageStatsProps {
   totalCalls: number
   totalMinutes: number
   totalCost: number
   avgCostPerCall: number
+  isLoading?: boolean
 }
 
-export function UsageStats({ totalCalls, totalMinutes, totalCost, avgCostPerCall }: UsageStatsProps) {
+function StatCard({
+  title,
+  value,
+  icon: Icon,
+  suffix = '',
+  isLoading = false,
+}: {
+  title: string
+  value: number | string
+  icon: typeof Phone
+  suffix?: string
+  isLoading?: boolean
+}) {
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          <Icon className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const displayValue = typeof value === 'number' ? value.toLocaleString() : value
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <Icon className="h-4 w-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">
+          {displayValue}
+          {suffix}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+export function UsageStats({
+  totalCalls,
+  totalMinutes,
+  totalCost,
+  avgCostPerCall,
+  isLoading = false,
+}: UsageStatsProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Calls</CardTitle>
-          <Phone className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{totalCalls.toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground">+12% from last month</p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Minutes Used</CardTitle>
-          <Clock className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{totalMinutes.toLocaleString()}</div>
-          <p className="text-xs text-muted-foreground">+8% from last month</p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Cost</CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">${totalCost.toFixed(2)}</div>
-          <p className="text-xs text-muted-foreground">+15% from last month</p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Avg Cost/Call</CardTitle>
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">${avgCostPerCall.toFixed(2)}</div>
-          <p className="text-xs text-muted-foreground">+3% from last month</p>
-        </CardContent>
-      </Card>
+      <StatCard
+        title="Total Calls"
+        value={totalCalls}
+        icon={Phone}
+        isLoading={isLoading}
+      />
+      <StatCard
+        title="Minutes Used"
+        value={totalMinutes}
+        icon={Clock}
+        isLoading={isLoading}
+      />
+      <StatCard
+        title="Total Cost"
+        value={totalCost}
+        suffix=""
+        icon={DollarSign}
+        isLoading={isLoading}
+      />
+      <StatCard
+        title="Avg Cost/Call"
+        value={`$${avgCostPerCall.toFixed(2)}`}
+        icon={TrendingUp}
+        isLoading={isLoading}
+      />
     </div>
   )
 }

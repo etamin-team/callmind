@@ -1,23 +1,24 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IPaymeTransaction extends Document {
-  paymeTransactionId: string; // Payme's transaction ID
+  transactionId: string; // Payme's transaction ID
   merchantTransactionId: string; // Our transaction ID
   orderId: string; // Our order ID (userId_plan_type_timestamp)
-  amount: number; // Amount in tiyins
-  state: number; // 1=created, 2=performed, -1=cancelled
+  amount: number; // Amount in UZS
+  state: number; // Payme transaction state (1=created, 2=performed, -1=cancelled, -2=cancelled after paid)
   createTime: Date;
   performTime?: Date;
   cancelTime?: Date;
   userId: string;
   plan: string;
   yearly: boolean;
-  reason?: string; // Cancellation reason
+  reason?: number; // Payme cancel reason (1-10)
+  provider: string; // "PAYME"
 }
 
 const paymeTransactionSchema = new Schema<IPaymeTransaction>(
   {
-    paymeTransactionId: {
+    transactionId: {
       type: String,
       required: true,
       unique: true,
@@ -38,7 +39,7 @@ const paymeTransactionSchema = new Schema<IPaymeTransaction>(
     state: {
       type: Number,
       required: true,
-      enum: [-1, 1, 2], // -1=cancelled, 1=created, 2=performed
+      enum: [-2, -1, 1, 2], // -2=cancelled after paid, -1=cancelled before paid, 1=created, 2=performed
       default: 1,
     },
     createTime: {
@@ -68,14 +69,19 @@ const paymeTransactionSchema = new Schema<IPaymeTransaction>(
       required: true,
     },
     reason: {
-      type: String,
+      type: Number,
       required: false,
+    },
+    provider: {
+      type: String,
+      required: true,
+      default: "PAYME",
     },
   },
   {
     timestamps: true,
     toJSON: {
-      transform: (doc, ret) => {
+      transform: (_doc, ret) => {
         ret.id = ret._id;
         delete (ret as any)._id;
         delete (ret as any).__v;
@@ -85,8 +91,7 @@ const paymeTransactionSchema = new Schema<IPaymeTransaction>(
   },
 );
 
-// Index for quick lookups
-paymeTransactionSchema.index({ paymeTransactionId: 1 });
+paymeTransactionSchema.index({ transactionId: 1 });
 paymeTransactionSchema.index({ merchantTransactionId: 1 });
 paymeTransactionSchema.index({ orderId: 1 });
 paymeTransactionSchema.index({ userId: 1 });

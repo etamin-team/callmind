@@ -11,8 +11,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { useCreateFreedompayCheckout } from '@/features/payments/api'
-import { useFreedompay } from '@/features/payments/components/freedompay-provider'
+import { useCreatePaymeCheckout } from '@/features/payments/api'
+import { usePayme } from '@/features/payments/components/payme-provider'
 import { PRICING_CONFIG, type PlanType } from '@repo/types'
 
 const planOrder: PlanType[] = ['free', 'starter', 'professional', 'business']
@@ -26,8 +26,8 @@ const planStyles: Record<string, { color: string; bgColor: string }> = {
 
 function BillingSettingsPage() {
   const { user, isLoaded } = useUser()
-  const createCheckout = useCreateFreedompayCheckout()
-  const { redirectToCheckout } = useFreedompay()
+  const createCheckout = useCreatePaymeCheckout()
+  const { openCheckout } = usePayme()
 
   const userPlan = ((user?.publicMetadata?.plan as string) ||
     'free') as PlanType
@@ -51,13 +51,18 @@ function BillingSettingsPage() {
         data: {
           yearly: false,
           userId: user.id,
+          lang: 'ru',
         },
       },
       {
         onSuccess: (data) => {
-          if (data.checkoutUrl) {
-            redirectToCheckout(data.checkoutUrl)
-          }
+          // Open Payme checkout with returned parameters
+          openCheckout({
+            orderId: data.orderId,
+            amount: data.amount,
+            returnUrl: data.return_url || `${window.location.origin}/payments/success`,
+            lang: data.lang || 'ru',
+          })
         },
       },
     )

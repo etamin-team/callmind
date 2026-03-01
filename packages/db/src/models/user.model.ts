@@ -54,6 +54,13 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: false,
     },
+    // Clerk auth user ID
+    clerkUserId: {
+      type: String,
+      required: false,
+      unique: true,
+      sparse: true,
+    },
     // Legacy FreedomPay fields (kept for migration purposes, can be removed later)
     freedompayCustomerId: {
       type: String,
@@ -79,7 +86,7 @@ const userSchema = new Schema<IUser>(
   {
     timestamps: true,
     toJSON: {
-      transform: (doc, ret) => {
+      transform: (_doc, ret) => {
         ret.id = ret._id;
         delete (ret as any)._id;
         delete (ret as any).__v;
