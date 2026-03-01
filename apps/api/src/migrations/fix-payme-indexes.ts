@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { PaymeTransactionModel } from "@repo/db";
+import { config } from "../config/environment.js";
 
 /**
  * Migration to drop old Payme transaction indexes
@@ -10,8 +11,15 @@ async function migratePaymeIndexes() {
   try {
     console.log("🔄 Starting Payme indexes migration...");
 
+    // Connect to MongoDB
+    await mongoose.connect(config.MONGODB_URI);
+    console.log("✅ Connected to MongoDB");
+
     // Get the collection
-    const collection = mongoose.connection.db.collection("paymetransactions");
+    const collection = mongoose.connection.db?.collection("paymetransactions");
+    if (!collection) {
+      throw new Error("Collection not found");
+    }
 
     // List all indexes
     const indexes = await collection.indexes();

@@ -21,12 +21,10 @@ const paymeTransactionSchema = new Schema<IPaymeTransaction>(
     transactionId: {
       type: String,
       required: true,
-      unique: true,
     },
     merchantTransactionId: {
       type: String,
       required: true,
-      unique: true,
     },
     orderId: {
       type: String,
