@@ -1,74 +1,106 @@
-import { UserButton, useUser } from "@clerk/clerk-react"
+import { useUser, useClerk } from "@clerk/clerk-react"
 import {
   SidebarMenu,
   SidebarMenuItem,
+  SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { Moon, Sun, Monitor, ChevronsUpDown } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
+import { Moon, Sun, Monitor, ChevronsUpDown, LogOut, Settings } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
 
 export function NavUser() {
-  const { state, isMobile } = useSidebar()
+  const { isMobile } = useSidebar()
   const { user } = useUser()
+  const { signOut, openUserProfile } = useClerk()
   const { theme, setTheme } = useTheme()
 
   if (!user) return null
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem className="px-2 py-1 relative group">
-        {/* Custom display for Name/Email behind/next to UserButton to maintain Shadcn Look */}
-        <div className="flex items-center gap-3 w-full p-2 py-2.5 rounded-lg transition-all">
-          <div className="relative size-8 shrink-0 overflow-hidden rounded-lg">
-             {/* We let Clerk's UserButton handle the avatar and trigger */}
-            <UserButton 
-              appearance={{
-                elements: {
-                  rootBox: "absolute inset-0 size-8",
-                  userButtonBox: "size-8",
-                  userButtonTrigger: "size-8 rounded-lg outline-none ring-0 focus:ring-0 focus:outline-none",
-                  userButtonAvatarBox: "size-8 rounded-lg",
-                  userButtonAvatarImage: "rounded-lg",
-                  userButtonPopoverCard: "border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xl ml-2",
-                  userButtonPopoverFooter: "hidden",
-                },
-              }}
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <UserButton.MenuItems>
-                <UserButton.Action label="manageAccount" />
-                <UserButton.Action 
-                  label={theme === "light" ? "Dark Mode" : "Light Mode"}
-                  labelIcon={theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
-                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                />
-                <UserButton.Action 
-                  label="System Theme"
-                  labelIcon={<Monitor className="size-4" />}
-                  onClick={() => setTheme("system")}
-                />
-              </UserButton.MenuItems>
-            </UserButton>
-          </div>
-
-          {state === "expanded" && (
-            <div className="grid flex-1 text-left text-sm leading-tight min-w-0 pr-4">
-              <span className="truncate font-semibold text-slate-900 dark:text-zinc-100">
-                {user.fullName || user.username}
-              </span>
-              <span className="truncate text-xs text-slate-500 dark:text-zinc-400">
-                {user.primaryEmailAddress?.emailAddress}
-              </span>
-            </div>
-          )}
-          
-          {state === "expanded" && (
-            <ChevronsUpDown className="ml-auto size-4 text-slate-400 shrink-0" />
-          )}
-        </div>
-
-        {/* This invisible overlay makes the whole area feel clickable, though Clerk only opens via its button */}
-        {/* Note: UserButton doesn't support a custom trigger easily, so we keep it on the avatar */}
-        {/* However, we positioned the avatar on the left to match the sidebar design */}
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage src={user.imageUrl} alt={user.fullName || user.username || ""} />
+                <AvatarFallback className="rounded-lg">{user.firstName?.charAt(0) || "U"}</AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold text-slate-900 dark:text-zinc-100">
+                  {user.fullName || user.username}
+                </span>
+                <span className="truncate text-xs text-slate-500 dark:text-zinc-400">
+                  {user.primaryEmailAddress?.emailAddress}
+                </span>
+              </div>
+              <ChevronsUpDown className="ml-auto size-4" />
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            side={isMobile ? "bottom" : "top"}
+            align="end"
+            sideOffset={4}
+          >
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage src={user.imageUrl} alt={user.fullName || user.username || ""} />
+                  <AvatarFallback className="rounded-lg">{user.firstName?.charAt(0) || "U"}</AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">
+                    {user.fullName || user.username}
+                  </span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {user.primaryEmailAddress?.emailAddress}
+                  </span>
+                </div>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => openUserProfile()}>
+                <Settings className="mr-2 h-4 w-4" />
+                Manage Account
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
+                {theme === "light" ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
+                {theme === "light" ? "Dark Mode" : "Light Mode"}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                <Monitor className="mr-2 h-4 w-4" />
+                System Theme
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => signOut()}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
   )

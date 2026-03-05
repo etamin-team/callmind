@@ -89,7 +89,7 @@ const paymeTransactionSchema = new Schema<IPaymeTransaction>(
   },
 );
 
-paymeTransactionSchema.index({ transactionId: 1 });
+paymeTransactionSchema.index({ transactionId: 1 }, { unique: true });
 paymeTransactionSchema.index({ merchantTransactionId: 1 });
 paymeTransactionSchema.index({ orderId: 1 });
 paymeTransactionSchema.index({ userId: 1 });

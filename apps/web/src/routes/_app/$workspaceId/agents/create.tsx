@@ -417,7 +417,7 @@ function RouteComponent() {
             <div className="p-1 bg-primary/10 rounded-md">
               <Bot className="h-4 w-4 text-primary" />
             </div>
-            Callmind Agents
+            Aqllli Aloqa Agents
           </div>
         </div>
 

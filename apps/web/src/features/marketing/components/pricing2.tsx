@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, Loader2 } from 'lucide-react'
+import { Check, Loader2, ChevronDown, Building2, Landmark } from 'lucide-react'
 import { useState } from 'react'
 import { useUser } from '@clerk/clerk-react'
 
@@ -96,6 +96,7 @@ interface Pricing2Props {
 
 const Pricing2 = ({ className }: Pricing2Props) => {
   const [yearly, setYearly] = useState<boolean>(false)
+  const [enterpriseExpanded, setEnterpriseExpanded] = useState(false)
   const { user, isSignedIn } = useUser()
   const createPaymeCheckout = useCreatePaymeCheckout()
   const { redirectToCheckout } = usePayme()
@@ -214,37 +215,166 @@ const Pricing2 = ({ className }: Pricing2Props) => {
           ))}
         </div>
 
-        <div className="relative rounded-xl border-2 border-primary bg-gradient-to-r from-primary/5 to-primary/10 p-8 md:p-12">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <h3 className="text-3xl font-bold">{enterprisePlan.name}</h3>
+        <button
+          onClick={() => setEnterpriseExpanded(!enterpriseExpanded)}
+          className="relative w-full rounded-xl border-2 border-primary bg-gradient-to-r from-primary/5 to-primary/10 p-6 md:p-8 text-left transition-all hover:shadow-lg"
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="text-2xl font-bold">{enterprisePlan.name}</h3>
                 <span className="bg-primary text-primary-foreground text-sm px-3 py-1 rounded-full">
                   Premium
                 </span>
               </div>
-              <p className="text-lg text-muted-foreground mb-8">
+              <p className="text-muted-foreground mb-4">
                 {enterprisePlan.description}
               </p>
-              <Button size="lg" className="w-full md:w-auto" asChild>
+
+              <div
+                className={cn(
+                  'grid gap-2 transition-all duration-300 ease-in-out',
+                  enterpriseExpanded
+                    ? 'grid-rows-[1fr] opacity-100'
+                    : 'grid-rows-[1fr] opacity-100',
+                )}
+              >
+                <ul
+                  className={cn(
+                    'grid grid-cols-1 sm:grid-cols-2 gap-2',
+                    'transition-all duration-300 ease-in-out',
+                    enterpriseExpanded
+                      ? 'opacity-0 h-0 overflow-hidden'
+                      : 'opacity-100',
+                  )}
+                >
+                  {enterprisePlan.features.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-center gap-2 text-sm"
+                    >
+                      <Check className="h-4 w-4 text-primary shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div className="shrink-0">
+              <ChevronDown
+                className={cn(
+                  'w-5 h-5 text-muted-foreground transition-transform duration-300',
+                  enterpriseExpanded && 'rotate-180',
+                )}
+              />
+            </div>
+          </div>
+
+          <div
+            className={cn(
+              'overflow-hidden transition-all duration-500 ease-in-out',
+              enterpriseExpanded
+                ? 'max-h-[800px] mt-8 pt-6 border-t border-primary/20 opacity-100'
+                : 'max-h-0 mt-0 pt-0 border-t-0 border-transparent opacity-0',
+            )}
+          >
+            <div className="grid md:grid-cols-2 gap-8">
+              <div
+                className={cn(
+                  'transition-all duration-500 delay-100',
+                  enterpriseExpanded
+                    ? 'translate-y-0 opacity-100'
+                    : 'translate-y-4 opacity-0',
+                )}
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  <h4 className="font-semibold">B2B Solutions</h4>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>Unlimited API calls with custom rate limits</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>Dedicated infrastructure with 99.9% SLA</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>Custom voice models & branding</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>CRM integrations (Salesforce, HubSpot, etc.)</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>Advanced analytics dashboard</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>Team management & role-based access</span>
+                  </li>
+                </ul>
+              </div>
+              <div
+                className={cn(
+                  'transition-all duration-500 delay-200',
+                  enterpriseExpanded
+                    ? 'translate-y-0 opacity-100'
+                    : 'translate-y-4 opacity-0',
+                )}
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <Landmark className="w-5 h-5 text-primary" />
+                  <h4 className="font-semibold">B2G Solutions</h4>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>On-premise deployment option</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>Data residency & security compliance</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>Government-grade encryption (AES-256)</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>Custom procurement & billing</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>Priority 24/7 support with dedicated CSM</span>
+                  </li>
+                  <li className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0" />
+                    <span>Integration with government systems</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div
+              className={cn(
+                'mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between transition-all duration-500 delay-300',
+                enterpriseExpanded
+                  ? 'translate-y-0 opacity-100'
+                  : 'translate-y-4 opacity-0',
+              )}
+            >
+              <p className="text-lg text-muted-foreground">
+                Tailored solutions for your organization's unique needs
+              </p>
+              <Button size="lg" asChild>
                 <a href={enterprisePlan.href}>{enterprisePlan.cta}</a>
               </Button>
             </div>
-            <div>
-              <ul className="space-y-4">
-                {enterprisePlan.features.map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-center gap-3 text-base"
-                  >
-                    <Check className="h-5 w-5 text-primary shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
-        </div>
+        </button>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
           Need more?{' '}

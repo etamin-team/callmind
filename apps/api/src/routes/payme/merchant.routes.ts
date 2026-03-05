@@ -2,58 +2,124 @@ import { FastifyPluginAsync } from "fastify";
 import { config } from "../../config/environment.js";
 import { UserModel } from "@repo/db";
 import { PaymeTransactionModel } from "@repo/db";
-import { getCreditsForPlan } from "@repo/types";
+import { getCreditsForPlan, getPriceForPlan } from "@repo/types";
 import { randomUUID } from "crypto";
 
-// Payme Merchant API transaction states (from official docs)
-// 1=created, 2=performed, -1=cancelled before perform, -2=cancelled after perform
-const TRANSACTION_STATE_CREATED = 1;
-const TRANSACTION_STATE_PERFORMED = 2;
-const TRANSACTION_STATE_CANCELLED_BEFORE_PERFORM = -1;
-const TRANSACTION_STATE_CANCELLED_AFTER_PERFORM = -2;
+// ─── Payme Transaction States (from official docs) ───
+// 1 = created (pending), 2 = performed (paid)
+// -1 = cancelled before perform, -2 = cancelled after perform
+const STATE = {
+  CREATED: 1,
+  PERFORMED: 2,
+  CANCELLED_BEFORE: -1,
+  CANCELLED_AFTER: -2,
+} as const;
 
-// Payme error codes
-const ERROR_CODES = {
-  INVALID_AMOUNT: -31001,
-  TRANSACTION_NOT_FOUND: -31003,
-  INVALID_ACCOUNT: -31050,
-  CANT_DO_OPERATION: -31008,
-  ERROR_OCCURRED: -32400,
-  INSUFFICIENT_PRIVILEGES: -32504, // Authorization error
+// Transaction timeout: 12 hours in milliseconds (per Payme docs)
+const TRANSACTION_TIMEOUT_MS = 43_200_000;
+
+// ─── Payme Error Definitions ───
+// Per docs: `message` MUST be a multi-language object { uz, ru, en }
+const PaymeError = {
+  InvalidAmount: {
+    code: -31001,
+    message: {
+      uz: "Noto'g'ri summa",
+      ru: "Недопустимая сумма",
+      en: "Invalid amount",
+    },
+  },
+  TransactionNotFound: {
+    code: -31003,
+    message: {
+      uz: "Tranzaksiya topilmadi",
+      ru: "Транзакция не найдена",
+      en: "Transaction not found",
+    },
+  },
+  CantDoOperation: {
+    code: -31008,
+    message: {
+      uz: "Operatsiyani bajarib bo'lmaydi",
+      ru: "Невозможно выполнить данную операцию",
+      en: "Unable to perform operation",
+    },
+  },
+  AccountNotFound: {
+    code: -31050,
+    message: {
+      uz: "Hisob topilmadi",
+      ru: "Счёт не найден",
+      en: "Account not found",
+    },
+  },
+  InvalidAuthorization: {
+    code: -32504,
+    message: {
+      uz: "Avtorizatsiya xatosi",
+      ru: "Ошибка авторизации",
+      en: "Authorization error",
+    },
+  },
+  MethodNotFound: {
+    code: -32601,
+    message: {
+      uz: "Metod topilmadi",
+      ru: "Метод не найден",
+      en: "Method not found",
+    },
+  },
+  InternalError: {
+    code: -32400,
+    message: {
+      uz: "Ichki xatolik",
+      ru: "Внутренняя ошибка",
+      en: "Internal error",
+    },
+  },
 };
 
+// ─── Payme Request/Response Types ───
 interface PaymeRequest {
-  id: string; // Request ID from Payme
+  id: number; // JSON-RPC id — must be returned in response
   method: string;
   params: {
     id?: string; // Payme transaction ID
     account?: Record<string, string>;
-    amount?: number;
-    time?: number;
-    from?: number;
-    to?: number;
-    reason?: string | number; // Cancellation reason
+    amount?: number; // in tiyins (1 UZS = 100 tiyin)
+    time?: number; // ms timestamp
+    from?: number; // ms timestamp
+    to?: number; // ms timestamp
+    reason?: number; // cancellation reason (1-10)
   };
 }
 
-interface PaymeResponse {
-  jsonrpc: string;
-  id: string;
-  result?: any;
-  error?: {
-    code: number;
-    message: string;
-    data?: string;
-  };
-}
-
-// Verify Basic Auth
-// Disabled for development/sandbox testing - always return true
+// ─── Basic Auth Verification ───
+// Payme sends: Authorization: Basic base64("Paycom:SECRET_KEY")
+// In test mode: login = "Paycom", password = test key from merchant dashboard
 function verifyAuth(authHeader: string | undefined): boolean {
-  return true;
+  if (!authHeader) return false;
+
+  const [type, token] = authHeader.split(" ");
+  if (type !== "Basic" || !token) return false;
+
+  let decoded: string;
+  try {
+    decoded = Buffer.from(token, "base64").toString("utf-8");
+  } catch {
+    return false;
+  }
+
+  const colonIndex = decoded.indexOf(":");
+  if (colonIndex === -1) return false;
+
+  const login = decoded.substring(0, colonIndex);
+  const password = decoded.substring(colonIndex + 1);
+
+  return login === config.PAYME_LOGIN && password === config.PAYME_PASSWORD;
 }
 
-// Parse order_id to extract components
+// ─── Parse order_id to extract components ───
 function parseOrderId(orderId: string): {
   userId: string;
   plan: string;
@@ -67,296 +133,261 @@ function parseOrderId(orderId: string): {
   };
 }
 
-// Helper function to find user by either MongoDB _id or clerkUserId
+// ─── Find user by either MongoDB _id or clerkUserId ───
 async function findUserByIdentifier(identifier: string) {
-  // First try as MongoDB ObjectId (for existing users)
   try {
     const user = await UserModel.findById(identifier);
     if (user) return user;
   } catch {
-    // Not a valid ObjectId, continue to clerkUserId lookup
+    // Not a valid ObjectId, try clerkUserId
   }
 
-  // Then try as clerkUserId (for Clerk auth users)
-  const user = await UserModel.findOne({ clerkUserId: identifier });
-  if (user) return user;
-
-  return null;
+  return UserModel.findOne({ clerkUserId: identifier });
 }
 
-// CheckPerformTransaction - Checks if transaction can be performed
-// Called by Payme before CreateTransaction to verify payment is possible
-// If successful, returns { allow: true }
-// If validation fails, throws error with proper Payme error code
-async function checkPerformTransaction(
-  fastify: any,
-  params: PaymeRequest["params"],
-): Promise<any> {
-  const { account, amount } = params;
+// ─── Extract userId and plan from account params ───
+// Supports both sandbox format (user_id + product_id) and production format (order_id)
+function extractAccountInfo(account: Record<string, string> | undefined): {
+  userId: string;
+  plan: string;
+  yearly: boolean;
+  orderId: string;
+  invalidField: string;
+} | null {
+  if (!account || Object.keys(account).length === 0) return null;
 
-  // Support both formats:
-  // 1. Sandbox format: { user_id, product_id }
-  // 2. Production format: { order_id } which parses to userId_plan_yearly
-
-  let userId: string | undefined;
-  let plan: string | undefined;
-  let invalidDataField: string | undefined;
-
-  // Check if account is empty or missing
-  if (!account || Object.keys(account).length === 0) {
-    throw {
-      code: ERROR_CODES.INVALID_ACCOUNT,
-      message: "Нам не удалось найти товар.",
-      data: "account",
-    };
-  }
-
-  if (account?.user_id && account?.product_id) {
-    // Sandbox format - user_id contains the full user ID, product_id maps to plan
-    userId = account.user_id;
-    // Map product_id to plan (1=starter, 2=professional, 3=business)
+  if (account.user_id && account.product_id) {
+    // Sandbox format
     const planMap: Record<string, string> = {
       "1": "starter",
       "2": "professional",
       "3": "business",
     };
-    plan = planMap[account.product_id] || "starter";
-    invalidDataField = "user_id";
-  } else if (account?.order_id) {
-    // Production format - parse order_id
+    const plan = planMap[account.product_id] || "starter";
+    return {
+      userId: account.user_id,
+      plan,
+      yearly: false,
+      orderId: `${account.user_id}_${plan}_monthly`,
+      invalidField: "user_id",
+    };
+  }
+
+  if (account.order_id) {
     const parsed = parseOrderId(account.order_id);
-    userId = parsed.userId;
-    plan = parsed.plan;
-    invalidDataField = "order_id";
-  } else {
-    // No valid account format or empty account
+    return {
+      userId: parsed.userId,
+      plan: parsed.plan,
+      yearly: parsed.yearly,
+      orderId: account.order_id,
+      invalidField: "order_id",
+    };
+  }
+
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CheckPerformTransaction
+// Checks if transaction can be performed. Returns { allow: true }.
+// ═══════════════════════════════════════════════════════════════
+async function checkPerformTransaction(
+  fastify: any,
+  params: PaymeRequest["params"],
+): Promise<any> {
+  const accountInfo = extractAccountInfo(params.account);
+  if (!accountInfo) {
     throw {
-      code: ERROR_CODES.INVALID_ACCOUNT,
-      message: "Нам не удалось найти товар.",
+      ...PaymeError.AccountNotFound,
       data: "account",
     };
   }
 
-  // Validate amount first
-  if (!amount || amount <= 0) {
-    throw {
-      code: ERROR_CODES.INVALID_AMOUNT,
-      message: "Недопустимая сумма",
-    };
+  // Validate amount
+  if (!params.amount || params.amount <= 0) {
+    throw PaymeError.InvalidAmount;
   }
 
-  // Verify user exists (try both MongoDB _id and clerkUserId)
-  const user = await findUserByIdentifier(userId);
+  // Verify user exists
+  const user = await findUserByIdentifier(accountInfo.userId);
   if (!user) {
     throw {
-      code: ERROR_CODES.INVALID_ACCOUNT,
-      message: "Мы не нашли вашу учетную запись",
-      data: invalidDataField || "user_id",
+      ...PaymeError.AccountNotFound,
+      data: accountInfo.invalidField,
     };
   }
 
   // Verify plan is valid
-  const credits = getCreditsForPlan(plan);
+  const credits = getCreditsForPlan(accountInfo.plan);
   if (!credits || credits <= 0) {
     throw {
-      code: ERROR_CODES.INVALID_ACCOUNT,
-      message: "Нам не удалось найти товар.",
-      data: invalidDataField || "product_id",
+      ...PaymeError.AccountNotFound,
+      data: accountInfo.invalidField,
     };
   }
 
-  // All checks passed - transaction can be performed
+  // Validate amount matches expected price for the plan (amount is in tiyins)
+  const expectedPriceUzs = getPriceForPlan(accountInfo.plan, accountInfo.yearly);
+  const expectedAmountTiyins = expectedPriceUzs * 100;
+  if (expectedAmountTiyins > 0 && params.amount !== expectedAmountTiyins) {
+    fastify.log.warn(
+      {
+        expected: expectedAmountTiyins,
+        received: params.amount,
+        plan: accountInfo.plan,
+        yearly: accountInfo.yearly,
+      },
+      "Payme amount mismatch",
+    );
+    throw PaymeError.InvalidAmount;
+  }
+
   return {
     allow: true,
     additional: {
-      name: user.name,
-      plan: plan,
+      name: user.name?.slice(0, 20),
+      plan: accountInfo.plan,
     },
   };
 }
 
-// CreateTransaction - Called when user initiates payment
+// ═══════════════════════════════════════════════════════════════
+// CreateTransaction
+// Creates a pending transaction. Handles idempotency and timeout.
+// ═══════════════════════════════════════════════════════════════
 async function createTransaction(
   fastify: any,
   params: PaymeRequest["params"],
 ): Promise<any> {
   const { id, account, amount, time } = params;
 
-  // Support both sandbox and production formats
-  let userId: string | undefined;
-  let plan: string | undefined;
-  let yearly = false;
-  let orderId: string;
-
-  if (account?.user_id && account?.product_id) {
-    // Sandbox format
-    userId = account.user_id;
-    const planMap: Record<string, string> = {
-      "1": "starter",
-      "2": "professional",
-      "3": "business",
-    };
-    plan = planMap[account.product_id] || "starter";
-    // Generate order_id for sandbox
-    orderId = `${userId}_${plan}_monthly`;
-  } else if (account?.order_id) {
-    // Production format
-    orderId = account.order_id;
-    const parsed = parseOrderId(orderId);
-    userId = parsed.userId;
-    plan = parsed.plan;
-    yearly = parsed.yearly;
-  } else {
+  // Extract account info
+  const accountInfo = extractAccountInfo(account);
+  if (!accountInfo) {
     throw {
-      code: ERROR_CODES.INVALID_ACCOUNT,
-      message: "Order ID not found",
+      ...PaymeError.AccountNotFound,
       data: "account",
     };
   }
 
   if (!amount || amount <= 0) {
-    throw {
-      code: ERROR_CODES.INVALID_AMOUNT,
-      message: "Invalid amount",
-    };
+    throw PaymeError.InvalidAmount;
   }
 
-  // Check if transaction with same ID already exists (idempotency check)
-  const existingTransaction = await PaymeTransactionModel.findOne({
-    transactionId: id,
-  });
+  // Check if transaction with same Payme ID already exists (idempotency)
+  const existing = await PaymeTransactionModel.findOne({ transactionId: id });
 
-  if (existingTransaction) {
-    // If transaction is cancelled, throw error
+  if (existing) {
+    // If cancelled — can't re-create
     if (
-      existingTransaction.state ===
-        TRANSACTION_STATE_CANCELLED_BEFORE_PERFORM ||
-      existingTransaction.state === TRANSACTION_STATE_CANCELLED_AFTER_PERFORM
+      existing.state === STATE.CANCELLED_BEFORE ||
+      existing.state === STATE.CANCELLED_AFTER
     ) {
-      throw {
-        code: ERROR_CODES.CANT_DO_OPERATION,
-        message: "Transaction is cancelled",
-      };
+      throw PaymeError.CantDoOperation;
     }
 
-    // Return existing transaction (idempotency for PENDING/PERFORMED)
+    // If pending — check timeout
+    if (existing.state === STATE.CREATED) {
+      const elapsed = Date.now() - existing.createTime.getTime();
+      if (elapsed > TRANSACTION_TIMEOUT_MS) {
+        // Auto-cancel expired transaction
+        existing.state = STATE.CANCELLED_BEFORE;
+        existing.cancelTime = new Date();
+        existing.reason = 4; // CanceledDueToTimeout
+        await existing.save();
+        throw PaymeError.CantDoOperation;
+      }
+    }
+
+    // Return existing transaction (idempotent response)
     return {
-      create_time: existingTransaction.createTime.getTime(),
-      transaction: existingTransaction.merchantTransactionId,
-      state: existingTransaction.state,
-      perform_time: existingTransaction.performTime
-        ? existingTransaction.performTime.getTime()
-        : 0,
-      cancel_time: existingTransaction.cancelTime
-        ? existingTransaction.cancelTime.getTime()
-        : 0,
-      reason: existingTransaction.reason ?? null,
+      create_time: existing.createTime.getTime(),
+      transaction: existing.merchantTransactionId,
+      state: existing.state,
     };
   }
 
-  // Note: Removed awaiting transaction check to allow new transactions for the same user/order
-  // The sandbox test expects -31099 to -31050 range for account validation errors
-  // Idempotency is already handled by the existing transaction check above
+  // Verify user exists
+  const user = await findUserByIdentifier(accountInfo.userId);
+  if (!user) {
+    throw {
+      ...PaymeError.AccountNotFound,
+      data: accountInfo.invalidField,
+    };
+  }
 
   // Create new transaction
   const merchantTransactionId = randomUUID();
-  const now = new Date();
-
-  // Ensure merchantTransactionId is always a valid string
-  if (!merchantTransactionId) {
-    throw {
-      code: ERROR_CODES.ERROR_OCCURRED,
-      message: "Failed to generate transaction ID",
-    };
-  }
 
   const transaction = new PaymeTransactionModel({
     transactionId: id,
     merchantTransactionId,
-    orderId,
-    amount: amount / 100, // Convert tiyn to UZS
-    state: TRANSACTION_STATE_CREATED,
-    createTime: time ? new Date(time) : now,
-    userId,
-    plan,
-    yearly,
+    orderId: accountInfo.orderId,
+    amount: amount / 100, // tiyin → UZS for storage
+    state: STATE.CREATED,
+    createTime: time ? new Date(time) : new Date(),
+    userId: accountInfo.userId,
+    plan: accountInfo.plan,
+    yearly: accountInfo.yearly,
+    provider: "PAYME",
   });
 
   try {
     await transaction.save();
   } catch (error: any) {
-    // Handle MongoDB duplicate key errors
+    // Handle MongoDB duplicate key errors (race condition)
     if (error.code === 11000 || error.code === 11001) {
       fastify.log.warn(
         { transactionId: id, error: error.message },
         "Duplicate transaction detected, finding existing",
       );
 
-      // Try to find existing transaction and return it
-      const existing = await PaymeTransactionModel.findOne({
-        transactionId: id,
-      });
-      if (existing) {
-        // If transaction is cancelled, throw error
+      const dup = await PaymeTransactionModel.findOne({ transactionId: id });
+      if (dup) {
         if (
-          existing.state === TRANSACTION_STATE_CANCELLED_BEFORE_PERFORM ||
-          existing.state === TRANSACTION_STATE_CANCELLED_AFTER_PERFORM
+          dup.state === STATE.CANCELLED_BEFORE ||
+          dup.state === STATE.CANCELLED_AFTER
         ) {
-          throw {
-            code: ERROR_CODES.CANT_DO_OPERATION,
-            message: "Transaction is cancelled",
-          };
+          throw PaymeError.CantDoOperation;
         }
-
-        // Return existing transaction (idempotency)
         return {
-          create_time: existing.createTime.getTime(),
-          transaction: existing.merchantTransactionId,
-          state: existing.state,
-          perform_time: existing.performTime
-            ? existing.performTime.getTime()
-            : 0,
-          cancel_time: existing.cancelTime ? existing.cancelTime.getTime() : 0,
-          reason: existing.reason ?? null,
+          create_time: dup.createTime.getTime(),
+          transaction: dup.merchantTransactionId,
+          state: dup.state,
         };
       }
     }
 
-    // Log the full error for debugging
     fastify.log.error(
       { transactionId: id, error: error.message, stack: error.stack },
       "Failed to create transaction",
     );
-
-    // Re-throw if it's not a duplicate error or we couldn't find existing
-    throw {
-      code: ERROR_CODES.ERROR_OCCURRED,
-      message: "Failed to create transaction",
-    };
+    throw PaymeError.InternalError;
   }
 
   fastify.log.info(
     {
       transactionId: id,
       merchantTransactionId,
-      orderId,
+      orderId: accountInfo.orderId,
       amount,
-      userId,
-      plan,
+      userId: accountInfo.userId,
+      plan: accountInfo.plan,
     },
     "Payme transaction created",
   );
 
   return {
-    create_time: +transaction.createTime,
+    create_time: transaction.createTime.getTime(),
     transaction: merchantTransactionId,
-    state: TRANSACTION_STATE_CREATED,
-    perform_time: 0,
-    cancel_time: 0,
+    state: STATE.CREATED,
   };
 }
 
-// PerformTransaction - Called after payment is successful
+// ═══════════════════════════════════════════════════════════════
+// PerformTransaction
+// Marks transaction as paid, grants credits to user.
+// ═══════════════════════════════════════════════════════════════
 async function performTransaction(
   fastify: any,
   params: PaymeRequest["params"],
@@ -368,69 +399,65 @@ async function performTransaction(
   });
 
   if (!transaction) {
-    throw {
-      code: ERROR_CODES.TRANSACTION_NOT_FOUND,
-      message: "Transaction not found",
-    };
+    throw PaymeError.TransactionNotFound;
   }
 
-  // If already performed, return current state
-  if (transaction.state === TRANSACTION_STATE_PERFORMED) {
+  // Already performed — return idempotent response
+  if (transaction.state === STATE.PERFORMED) {
     return {
       transaction: transaction.merchantTransactionId,
-      create_time: transaction.createTime.getTime(),
       perform_time: transaction.performTime
         ? transaction.performTime.getTime()
         : 0,
-      cancel_time: 0,
-      state: TRANSACTION_STATE_PERFORMED,
-      reason: null,
+      state: STATE.PERFORMED,
     };
   }
 
-  // If cancelled, cannot perform
+  // Cancelled — can't perform
   if (
-    transaction.state === TRANSACTION_STATE_CANCELLED_BEFORE_PERFORM ||
-    transaction.state === TRANSACTION_STATE_CANCELLED_AFTER_PERFORM
+    transaction.state === STATE.CANCELLED_BEFORE ||
+    transaction.state === STATE.CANCELLED_AFTER
   ) {
-    throw {
-      code: ERROR_CODES.ERROR_OCCURRED,
-      message: "Transaction is cancelled",
-    };
+    throw PaymeError.CantDoOperation;
   }
 
-  // Use stored values from transaction (supports both sandbox and production formats)
-  const userId = transaction.userId;
-  const plan = transaction.plan;
-  const yearly = transaction.yearly || false;
+  // Check timeout for pending transactions
+  if (transaction.state === STATE.CREATED) {
+    const elapsed = Date.now() - transaction.createTime.getTime();
+    if (elapsed > TRANSACTION_TIMEOUT_MS) {
+      transaction.state = STATE.CANCELLED_BEFORE;
+      transaction.cancelTime = new Date();
+      transaction.reason = 4;
+      await transaction.save();
+      throw PaymeError.CantDoOperation;
+    }
+  }
 
-  // Find and update user (try both MongoDB _id and clerkUserId)
-  const user = await findUserByIdentifier(userId);
-
+  // Find and update user
+  const user = await findUserByIdentifier(transaction.userId);
   if (!user) {
-    fastify.log.warn({ userId }, "User not found for Payme transaction");
-    throw {
-      code: ERROR_CODES.INVALID_ACCOUNT,
-      message: "User not found",
-      data: "user",
-    };
+    fastify.log.warn(
+      { userId: transaction.userId },
+      "User not found for Payme transaction",
+    );
+    throw PaymeError.AccountNotFound;
   }
 
   // Calculate credits
-  const credits = getCreditsForPlan(plan);
-  const yearlyMultiplier = yearly ? 12 : 1;
+  const credits = getCreditsForPlan(transaction.plan);
+  const yearlyMultiplier = transaction.yearly ? 12 : 1;
   const totalCredits = credits * yearlyMultiplier;
 
-  // Update user credits and Payme info
+  // Update user credits and plan
   user.credits = (user.credits || 0) + totalCredits;
+  user.plan = transaction.plan;
   user.paymeCustomerId = id;
   user.paymeTransactionId = transaction.merchantTransactionId;
-  user.paymeSubscriptionPlan = plan;
-
+  user.paymeSubscriptionPlan = transaction.plan;
   await user.save();
 
-  // Update transaction state
-  transaction.state = TRANSACTION_STATE_PERFORMED;
+  // Mark transaction as performed
+  transaction.state = STATE.PERFORMED;
   transaction.performTime = new Date();
   await transaction.save();
 
@@ -439,21 +466,22 @@ async function performTransaction(
       transactionId: id,
       userId: user.id,
       creditsAdded: totalCredits,
-      plan,
+      plan: transaction.plan,
     },
     "Payme transaction performed - credits granted",
   );
 
   return {
     transaction: transaction.merchantTransactionId,
-    create_time: transaction.createTime.getTime(),
     perform_time: transaction.performTime.getTime(),
-    state: TRANSACTION_STATE_PERFORMED,
-    cancel_time: 0,
+    state: STATE.PERFORMED,
   };
 }
 
-// CheckTransaction - Check payment status
+// ═══════════════════════════════════════════════════════════════
+// CheckTransaction
+// Returns current transaction status.
+// ═══════════════════════════════════════════════════════════════
 async function checkTransaction(
   fastify: any,
   params: PaymeRequest["params"],
@@ -465,25 +493,27 @@ async function checkTransaction(
   });
 
   if (!transaction) {
-    throw {
-      code: ERROR_CODES.TRANSACTION_NOT_FOUND,
-      message: "Transaction not found",
-    };
+    throw PaymeError.TransactionNotFound;
   }
 
   return {
-    transaction: transaction.merchantTransactionId,
-    state: transaction.state,
     create_time: transaction.createTime.getTime(),
     perform_time: transaction.performTime
       ? transaction.performTime.getTime()
       : 0,
-    cancel_time: transaction.cancelTime ? transaction.cancelTime.getTime() : 0,
+    cancel_time: transaction.cancelTime
+      ? transaction.cancelTime.getTime()
+      : 0,
+    transaction: transaction.merchantTransactionId,
+    state: transaction.state,
     reason: transaction.reason ?? null,
   };
 }
 
-// CancelTransaction - Cancel payment
+// ═══════════════════════════════════════════════════════════════
+// CancelTransaction
+// Cancels a created or performed transaction.
+// ═══════════════════════════════════════════════════════════════
 async function cancelTransaction(
   fastify: any,
   params: PaymeRequest["params"],
@@ -495,50 +525,64 @@ async function cancelTransaction(
   });
 
   if (!transaction) {
-    throw {
-      code: ERROR_CODES.TRANSACTION_NOT_FOUND,
-      message: "Transaction not found",
-    };
+    throw PaymeError.TransactionNotFound;
   }
 
-  // If already cancelled, return current state
+  // Already cancelled — return idempotent response
   if (
-    transaction.state === TRANSACTION_STATE_CANCELLED_BEFORE_PERFORM ||
-    transaction.state === TRANSACTION_STATE_CANCELLED_AFTER_PERFORM
+    transaction.state === STATE.CANCELLED_BEFORE ||
+    transaction.state === STATE.CANCELLED_AFTER
   ) {
     return {
       transaction: transaction.merchantTransactionId,
-      create_time: transaction.createTime.getTime(),
-      perform_time: transaction.performTime
-        ? transaction.performTime.getTime()
-        : 0,
       cancel_time: transaction.cancelTime
         ? transaction.cancelTime.getTime()
         : 0,
       state: transaction.state,
-      reason: transaction.reason ?? null,
     };
   }
 
-  // Determine cancel state (-1 or -2)
+  // Determine cancel state based on whether it was already performed
   const cancelState =
-    transaction.state === TRANSACTION_STATE_PERFORMED
-      ? TRANSACTION_STATE_CANCELLED_AFTER_PERFORM
-      : TRANSACTION_STATE_CANCELLED_BEFORE_PERFORM;
+    transaction.state === STATE.PERFORMED
+      ? STATE.CANCELLED_AFTER
+      : STATE.CANCELLED_BEFORE;
 
-  // If cancelling after perform, check if refund is possible
-  if (cancelState === TRANSACTION_STATE_CANCELLED_AFTER_PERFORM) {
-    // For now, allow refunds (refund business logic can be added here)
-    // If refund is not possible, throw:
-    // throw { code: ERROR_CODES.CANT_DO_OPERATION, message: "Refund not possible" };
+  // If cancelling after perform, reverse the credits granted to the user
+  if (cancelState === STATE.CANCELLED_AFTER) {
+    const user = await findUserByIdentifier(transaction.userId);
+    if (user) {
+      const credits = getCreditsForPlan(transaction.plan);
+      const yearlyMultiplier = transaction.yearly ? 12 : 1;
+      const totalCredits = credits * yearlyMultiplier;
+
+      user.credits = Math.max(0, (user.credits || 0) - totalCredits);
+      user.plan = "free";
+      user.paymeSubscriptionPlan = undefined;
+      await user.save();
+
+      fastify.log.info(
+        {
+          transactionId: id,
+          userId: user.id,
+          creditsReversed: totalCredits,
+          newCredits: user.credits,
+        },
+        "Payme cancellation — credits reversed, plan reset to free",
+      );
+    } else {
+      fastify.log.warn(
+        { userId: transaction.userId, transactionId: id },
+        "User not found during cancellation — could not reverse credits",
+      );
+    }
   }
 
-  // Cancel transaction
+  // Update transaction
   transaction.state = cancelState;
   transaction.cancelTime = new Date();
-  if (reason) {
-    transaction.reason =
-      typeof reason === "number" ? reason : parseInt(String(reason));
+  if (reason !== undefined) {
+    transaction.reason = reason;
   }
   await transaction.save();
 
@@ -549,117 +593,87 @@ async function cancelTransaction(
 
   return {
     transaction: transaction.merchantTransactionId,
-    create_time: transaction.createTime.getTime(),
-    perform_time: transaction.performTime
-      ? transaction.performTime.getTime()
-      : 0,
     cancel_time: transaction.cancelTime.getTime(),
     state: cancelState,
-    reason: transaction.reason ?? null,
   };
 }
 
-// GetStatement - Get transaction history
+// ═══════════════════════════════════════════════════════════════
+// GetStatement
+// Returns list of transactions for a given time period.
+// Per docs: from <= createTime <= to, sorted ascending.
+// ═══════════════════════════════════════════════════════════════
 async function getStatement(
   fastify: any,
   params: PaymeRequest["params"],
 ): Promise<any> {
   const { from, to } = params;
 
-  if (!from || !to) {
-    throw {
-      code: ERROR_CODES.ERROR_OCCURRED,
-      message: "Invalid period",
-    };
+  if (from === undefined || to === undefined) {
+    throw PaymeError.InternalError;
   }
-
-  const startTime = new Date(from);
-  const endTime = new Date(to);
 
   const transactions = await PaymeTransactionModel.find({
     createTime: {
-      $gte: startTime,
-      $lte: endTime,
+      $gte: new Date(from),
+      $lte: new Date(to),
     },
   }).sort({ createTime: 1 });
 
-  const result = transactions.map((t) => ({
-    id: t.transactionId,
-    time: t.createTime.getTime(),
-    amount: t.amount * 100, // UZS to tiyn for Payme
-    account: { order_id: t.orderId },
-    create_time: t.createTime.getTime(),
-    perform_time: t.performTime?.getTime() || 0,
-    cancel_time: t.cancelTime?.getTime() || 0,
-    state: t.state,
-    reason: t.reason,
-  }));
-
   return {
-    transactions: result,
+    transactions: transactions.map((t) => ({
+      id: t.transactionId,
+      time: t.createTime.getTime(),
+      amount: t.amount * 100, // UZS → tiyin for Payme
+      account: { order_id: t.orderId },
+      create_time: t.createTime.getTime(),
+      perform_time: t.performTime?.getTime() || 0,
+      cancel_time: t.cancelTime?.getTime() || 0,
+      transaction: t.merchantTransactionId,
+      state: t.state,
+      reason: t.reason ?? null,
+    })),
   };
 }
 
+// ═══════════════════════════════════════════════════════════════
+// Route Registration
+// ═══════════════════════════════════════════════════════════════
 const paymeMerchantRoutes: FastifyPluginAsync = async (fastify) => {
-  // Merchant API endpoint
+  // Main Merchant API endpoint — single POST handler for all JSON-RPC methods
   fastify.post("/merchant", async (request, reply) => {
-    try {
-      // Parse body first to get the request ID
-      const body = request.body as PaymeRequest;
-      const { id, method, params } = body;
+    const body = request.body as PaymeRequest;
+    const requestId = body?.id;
 
-      // Verify Basic Auth
+    try {
+      // ── Step 1: Verify Basic Auth ──
       const authHeader = request.headers["authorization"];
       if (!verifyAuth(authHeader)) {
         fastify.log.warn(
           { authHeader: authHeader?.substring(0, 20) },
           "Invalid Payme auth",
         );
-        // Return proper JSON-RPC error with code -32504 for authorization failure
+        // Per Payme docs: auth error MUST still be HTTP 200
         return reply.status(200).send({
           jsonrpc: "2.0",
-          id: id || "",
-          error: {
-            code: ERROR_CODES.INSUFFICIENT_PRIVILEGES,
-            message: "Недостаточно привилегий для выполнения метода",
-          },
+          id: requestId,
+          error: PaymeError.InvalidAuthorization,
         });
       }
 
-      // Check IP whitelist in production
-      if (config.NODE_ENV === "production") {
-        const ip = request.ip;
-        const paymeIps = Array.from(
-          { length: 15 },
-          (_, i) => `185.234.113.${i + 1}`,
-        );
-
-        if (!paymeIps.some((paymeIp) => ip === paymeIp)) {
-          fastify.log.warn({ ip }, "Payme request from non-whitelisted IP");
-          return reply.status(200).send({
-            jsonrpc: "2.0",
-            id: id || "",
-            error: {
-              code: ERROR_CODES.ERROR_OCCURRED,
-              message: "Forbidden",
-            },
-          });
-        }
-      }
-
-      if (!id || !method) {
+      // ── Step 2: Validate request structure ──
+      const { method, params } = body;
+      if (!requestId || !method) {
         return reply.status(200).send({
           jsonrpc: "2.0",
-          id: id || "",
-          error: {
-            code: ERROR_CODES.ERROR_OCCURRED,
-            message: "Invalid request",
-          },
+          id: requestId ?? null,
+          error: PaymeError.InternalError,
         });
       }
 
       fastify.log.info({ method, params }, "Payme Merchant API request");
 
+      // ── Step 3: Route to method handler ──
       let result: any;
 
       switch (method) {
@@ -682,50 +696,46 @@ const paymeMerchantRoutes: FastifyPluginAsync = async (fastify) => {
           result = await getStatement(fastify, params);
           break;
         default:
-          return reply.status(400).send({
+          // Per Payme docs: ALL responses must be HTTP 200
+          return reply.status(200).send({
             jsonrpc: "2.0",
-            id,
-            error: {
-              code: ERROR_CODES.ERROR_OCCURRED,
-              message: "Method not found",
-            },
+            id: requestId,
+            error: PaymeError.MethodNotFound,
           });
       }
 
-      return reply.send({
+      return reply.status(200).send({
         jsonrpc: "2.0",
-        id,
+        id: requestId,
         result,
       });
     } catch (error: any) {
       fastify.log.error(error, "Payme Merchant API error");
 
-      const response: PaymeResponse = {
+      // Build JSON-RPC error response — always HTTP 200
+      const errorResponse: any = {
         jsonrpc: "2.0",
-        id: (request.body as PaymeRequest).id,
+        id: requestId ?? null,
       };
 
-      // If error has Payme error code, use it
       if (error.code && error.message) {
-        response.error = {
+        // Payme-formatted error (has code + message object)
+        errorResponse.error = {
           code: error.code,
           message: error.message,
-          // Include data field if present, otherwise omit it (Payme only requires it for certain errors)
           ...(error.data && { data: error.data }),
         };
       } else {
-        response.error = {
-          code: ERROR_CODES.ERROR_OCCURRED,
-          message: "Internal server error",
-        };
+        // Unexpected error — wrap in standard format
+        errorResponse.error = PaymeError.InternalError;
       }
 
-      return reply.status(200).send(response);
+      return reply.status(200).send(errorResponse);
     }
   });
 
   // Health check endpoint
-  fastify.get("/merchant", async (request, reply) => {
+  fastify.get("/merchant", async (_request, reply) => {
     return reply.send({
       status: "ok",
       message: "Payme Merchant API endpoint is active",
@@ -740,12 +750,11 @@ const paymeMerchantRoutes: FastifyPluginAsync = async (fastify) => {
     });
   });
 
-  // Test user creation endpoint - for sandbox testing
+  // Test user creation endpoint — for sandbox testing only
   fastify.post("/test-user", async (request, reply) => {
     try {
       const { userId, email, name } = request.body as any;
 
-      // Check if user already exists (by clerkUserId)
       const existingUser = await UserModel.findOne({
         $or: [{ clerkUserId: userId }, { email: userId }],
       });
@@ -762,9 +771,8 @@ const paymeMerchantRoutes: FastifyPluginAsync = async (fastify) => {
         });
       }
 
-      // Create test user for sandbox
       const testUser = new UserModel({
-        email: userId,
+        email: email || userId,
         name: name || "Test User",
         plan: "free",
         credits: 2,
@@ -783,9 +791,7 @@ const paymeMerchantRoutes: FastifyPluginAsync = async (fastify) => {
         },
       });
     } catch (error: any) {
-      return reply.status(500).send({
-        error: error.message,
-      });
+      return reply.status(500).send({ error: error.message });
     }
   });
 };

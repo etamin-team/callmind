@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+    import mongoose, { Document, Schema } from "mongoose";
 import { User } from "@repo/types";
 
 export interface IUser extends Omit<User, "id">, Document {}
@@ -23,7 +23,7 @@ const userSchema = new Schema<IUser>(
     },
     plan: {
       type: String,
-      enum: ["free", "starter", "professional", "enterprise"],
+      enum: ["free", "starter", "professional", "business"],
       default: "free",
       required: false,
     },
