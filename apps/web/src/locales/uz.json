@@ -1,0 +1,369 @@
+{
+    "translation": {
+        "marketing": {
+            "nav": {
+                "features": "Xususiyatlar",
+                "solutions": "Yechimlar",
+                "pricing": "Narxlar",
+                "testimonials": "Fikrlar"
+            },
+            "buttons": {
+                "login": "Kirish",
+                "dashboard": "Boshqaruv paneli"
+            },
+            "hero": {
+                "badge": "Haqiqiy Vaqtda Suhbati tahlili",
+                "title": "Mijozlar qo'ng'iroqlarini AI yordamida avtomatlashtiring",
+                "description": "Mijozlar bilan o'zbek tilida gaplashadigan, yangi mijozlarni jalb qiladigan, kayfiyatni tahlil qiladigan va 24/7 ishonchli yordam ko'rsatadigan AI ovozli agentlarini ishlating.",
+                "start_trial": "Bepul sinab ko'rish",
+                "watch_demo": "Demoni ko'rish",
+                "features": {
+                    "calls": "24/7 qo'ng'iroqlar",
+                    "calls_desc": "Mijoz qo'ng'irog'ini o'tkazib yubormang",
+                    "ai": "AI agentlar",
+                    "ai_desc": "Aqlli ovozli yordamchilar",
+                    "lang": "Ko'p tillilik",
+                    "lang_desc": "O'zbekcha, Inglizcha, Ruscha"
+                }
+            },
+            "features_grid": {
+                "item1": {
+                    "title": "Ko'p tilli AI agentlari"
+                },
+                "item2": {
+                    "title": "Uch tilli muloqot",
+                    "desc": "Ingliz, o'zbek va rus tillari orasida muammosiz almashing. AI agentlarimiz har uchala tilni tushunadi va tabiiy javob berib, muloqot to'siqlarini yengib o'tadi."
+                },
+                "item3": {
+                    "title": "Lead yig'ish va CRM",
+                    "desc": "Mijozlar ma'lumotlari, ismlari va aloqa raqamlarini avtomatik yig'ing. To'g'ridan-to'g'ri CRM bilan sinxronizatsiya qilib, har qanday imkoniyatni qo'ldan boy bermang."
+                },
+                "item4": {
+                    "title": "Kayfiyat va maqsadni tahlil qilish",
+                    "desc": "Haqiqiy vaqtda hissiyot va maqsadni aniqlash. Mijozlar xursandmi, xafami yoki sotib olishga tayyormi, tushuning hamda yondashuvingizni bir zumda moslashtiring."
+                },
+                "item5": {
+                    "title": "Kross-platformalarga moslashuv",
+                    "desc": "Kompyuter, mobil, veb va planshetda ishlating. AI agentlaringiz mijozlaringiz bor hamma joyda ishlaydi hamda barcha qurilmalarda bir xil xizmat ko'rsatadi."
+                }
+            },
+            "features_accordion": {
+                "title": "AI yordamida ajoyib qo'ng'iroqlar",
+                "desc": "Haqiqiy vaqtda suhbat tahlili orqali koll-markazingizni o'zgartiring. Jonli ko'rsatmalar oling, mijozning kayfiyatini aniqlang va AI yordamida ko'proq savdolarni amalga oshiring.",
+                "items": {
+                    "coaching": {
+                        "title": "Haqiqiy vaqtda qo'ng'iroqlarni o'rgatish",
+                        "desc": "Jonli qo'ng'iroqlar paytida zudlik bilan takliflar oling. Bizning AI suhbatlarni tahlil qiladi va agentlarga e'tirozlarni yengishga yordam beradi."
+                    },
+                    "sentiment": {
+                        "title": "Kayfiyat va hissiyotlarni aniqlash",
+                        "desc": "Ilg'or NLP yordamida mijozlarning his-tuyg'ularini darhol aniqlang. Ular qachon qiziqayotgani, shubhalanayotgani yoki xafa bo'lganini bilib oling."
+                    },
+                    "analytics": {
+                        "title": "Suhbat tahlili",
+                        "desc": "Gapirish va eshitish nisbati, kalit so'zlar chastotasi kabi unumdorlik ko'rsatkichlarini kuzatib boring. Har bir suhbatni amaliy ma'lumotlarga aylantiring."
+                    },
+                    "insights": {
+                        "title": "Unumdorlik tahlili",
+                        "desc": "Jamoa unumdorligini kuzating, eng yaxshi xodimlarni aniqlang va g'alaba qozonish strategiyalarini butun jamoangiz bo'ylab tatbiq eting."
+                    }
+                },
+                "ui": {
+                    "customer": "Mijoz",
+                    "ai_suggestion": "AI taklifi",
+                    "live_sentiment": "Jonli kayfiyat",
+                    "analyzing": "Ovoz tahlil qilinmoqda...",
+                    "journey": "Emotsional sayohat",
+                    "active_calls": "Faol qo'ng'iroqlar",
+                    "resolution": "Hal qilinishi",
+                    "avg_handle": "O'rtacha vaqt",
+                    "agents": "Agentlar",
+                    "team_perf": "Jamoa unumdorligi",
+                    "insight": "Fikr:",
+                    "insight_text": "So'nggi mashg'ulotlardan so'ng Saraning empatiya balli 14% ga yaxshilandi."
+                }
+            },
+            "cta": {
+                "title": "Mijozlaringiz tilida suhbatlashadigan AI agentlarini yarating",
+                "subtitle": "Barcha uchta tilda jami 100 bepul daqiqa bilan boshlang.",
+                "button": "Bepul sinab ko'rish"
+            },
+            "faqs": {
+                "title": "Ko'p so'raladigan savollar",
+                "subtitle": "AI koll-markaz agentlarimiz va ko'p tilli imkoniyatlarimiz haqidagi umumiy savollarga tez va batafsil javoblar.",
+                "contact_prefix": "Kerakli ma'lumotni topolmadingizmi? Bizning",
+                "contact_link": "qo'llab-quvvatlash xizmatimiz",
+                "items": {
+                    "item-1": {
+                        "q": "AI agentlaringiz qaysi tillarni qo'llab-quvvatlaydi?",
+                        "a": "Bizning AI agentlarimiz ingliz, o'zbek va rus tillarida erkin so'zlashadi. Ular ushbu uch tilda hududiy shevalar, madaniy o'ziga xosliklar va tabiiy suhbat turlarini yaxshi tushunadi, natijada mijozlar bilan haqiqiy muloqotni ta'minlaydi."
+                    },
+                    "item-2": {
+                        "q": "AI agentlari mijoz ma'lumotlarini (leadlar) yig'a oladimi?",
+                        "a": "Albatta. Agentlarimiz istiqbolli mijozlar bilan tabiiy muloqot qilish, ismlar, aloqa ma'lumotlari, kompaniya detallari va maxsus talablarni to'plashga o'rgatilgan. Ular sizning talablaringiz asosida yig'ib, to'g'ridan-to'g'ri CRM bilan sinxronlashtiradi."
+                    },
+                    "item-3": {
+                        "q": "AI agentlar qaysi platformalarda ishlaydi?",
+                        "a": "Agentlar barcha platformalarda ishlaydi — kompyuter, telefon, planshet va veb-brauzerlar orqali. Ofisda yoki masofadan bo'lsin, iOS va Android uchun maxsus ilovalarimiz barqaror ishlashni ta'minlaydi."
+                    },
+                    "item-4": {
+                        "q": "Hissiyotlar tahlili qanchalik aniq?",
+                        "a": "Hissiyotlar tahlili uchala tilda ham 95% dan yuqori aniqlikka ega. U mijozlarning ohangi, so'z tanlashi va suhbat yo'nalishini tahlil qilib xursandchilik, norozilik yoki shoshilinchlikni aniqlaydi va sizga o'z vaqtida chora ko'rishga yordam beradi."
+                    },
+                    "item-5": {
+                        "q": "AI agent skripti va jarayonlarini o'zim moslashtira olamanmi?",
+                        "a": "Ha, sizda to'liq nazorat bo'ladi. Suhbat ketma-ketligi, brend ovozi, saralash savollari va javoblarni o'zingiz moslashtirasiz. Kod yozishni talab qilmaydigan (no-code) vositamiz yordamida turli stsenariylar uchun agent xulq-atvorini loyihalashingiz mumkin."
+                    }
+                }
+            },
+            "voice_comparison": {
+                "title": "Standart va Super Haqiqiy",
+                "subtitle": "Super haqiqiy ovozlar ilg'or AIdan foydalanadi va oddiy odamlardan farq qilmaydi. Mijozlaringiz AI bilan gaplashayotganini hatto sezmaydilar ham.",
+                "standard": {
+                    "title": "Standart ovoz",
+                    "subtitle": "Matnni o'quvchi AI (TTS)",
+                    "good_for": "Mos keladi:",
+                    "good_for_text": "Asosiy avtomatlashtirish, oddiy savollar uchun"
+                },
+                "realistic": {
+                    "badge": "Premium",
+                    "title": "Super Haqiqiy",
+                    "subtitle": "Insonga o'xshash AI ovozi",
+                    "best_for": "Zo'r tanlov:",
+                    "best_for_text": "Sotuv, mijozlarni qo'llab-quvvatlash bo'limi uchun"
+                },
+                "footer": "Super haqiqiy qo'ng'iroqlar Professional va Business ta'riflariga kiritilgan.",
+                "pricing_link": "Narxlarni ko'rish",
+                "features": {
+                    "Natural Intonation": "Tabiiy intonatsiya",
+                    "Emotional Expression": "Hissiyot ifodasi",
+                    "Breathing Pauses": "Nafas olish pauzalari",
+                    "Background Noise": "Orqa fon shovqini",
+                    "Filler Words": "To'ldiruvchi so'zlar",
+                    "Response Latency": "Javob kechikishi",
+                    "Customer Trust": "Mijoz holdsanligi"
+                },
+                "values": {
+                    "Low": "Past",
+                    "High": "Yuqori",
+                    "Human-like speech patterns": "Insonga xos nutq xususiyatlari",
+                    "Conveys empathy and tone": "Empatiya va ohangni yetkazish",
+                    "Natural breathing rhythm": "Tabiiy nafas olish",
+                    "Subtle environmental sounds": "Suhbat atrofidagi tabiiy tovushlar",
+                    "Um, uh, like natural speech": "«Himm», «a» kabi tabiiy pauzalar",
+                    "Time to first response": "Birinchi javobni kutish vaqti",
+                    "Perceived authenticity": "Sezishga bo'lgan haqiqiylik"
+                }
+            },
+            "testimonials": {
+                "title": "Dunyo bo'ylab koll-markazlar ishonchi",
+                "subtitle": "Turli tillar va platformalarda AI agentlari mijozlar bilan muloqotni qanday o'zgartirayotganini ko'ring.",
+                "items": {
+                    "Dilshod Karimov": {
+                        "role": "UzbekTel Koll-markazi menejeri",
+                        "quote": "O'zbek tilini qo'llab-quvvatlashi ajoyib. Endi biz qo'shimcha operatorlar yollamasdan butun mijozlar bazamizga xizmat ko'rsata olamiz. Qamrovimiz 300% ga oshdi."
+                    },
+                    "Elena Volkov": {
+                        "role": "GlobalConnect Operatsion direktori",
+                        "quote": "Rus tilida so'zlashuvchi mijozlar nihoyat ingliz tilidagi bazamiz kabi sifatli xizmatga ega bo'lishdi. AI har uchala tilda ajoyib ishlaydi va CRM bilan uzluksiz sinxronlanadi."
+                    },
+                    "Michael Chen": {
+                        "role": "QuickLead Pro asoschisi",
+                        "quote": "Ma'lumot yig'ish hech qachon bunchalik oson bo'lmagan. AI agentlari mijozni 24/7 kutib oladi, kerakli hamma ma'lumotlarni yig'adi va sotuv bo'limimizga tayyor qilib beradi."
+                    },
+                    "Zarina Ahmedova": {
+                        "role": "Mijozlar tajribasi bo'yicha rahbar",
+                        "quote": "Tillararo hissiyotlar tahlili hayratlanarli. Mijozning kayfiyati buzilganini darhol bilib olamiz, u ingliz, o'zbek yoki rus tilida gapirayotganidan qat'i nazar."
+                    },
+                    "Alex Thompson": {
+                        "role": "MobileFirst Solutions Savdo menejeri",
+                        "quote": "Mobil ilova orqali ishlash doirasini o'zgartirib yubordik. Agentlarimiz endi boshlang'ich qo'ng'iroqlar va uchrashuvlarni telefonida oson hal qilmoqda."
+                    },
+                    "Nadiya Kovalenko": {
+                        "role": "Qo'llab-quvvatlash markazi rahbari",
+                        "quote": "Biz bu yechimni topgungacha to'rtta loyihani sinab ko'rdik. 3-tildagi qobiliyati haqiqiy - bu shunchaki tarjima emas, balki orqa fondagi mazmunni anglash."
+                    },
+                    "Ravshan Rustamov": {
+                        "role": "UzCommerce Bosh direktori",
+                        "quote": "Xalqaro miqyosga chiqayotgan O'zbek biznesi sifatida bizga chinakam tillarni biladigan hamkor kerak edi. Ushbu xizmat mahalliy va xalqaro mijozlarga bir xil darajada xizmat ko'rsatishga imkon berdi."
+                    },
+                    "Sofia Petrova": {
+                        "role": "Raqamli transformatsiya bo'limi",
+                        "quote": "Joriy etish nihoyatda tez kechdi. Rus tilidagi so'rovlarni birinchi AI agentimiz bir necha soat ichida javoblashni boshladi."
+                    },
+                    "James Morrison": {
+                        "role": "Biznesni rivojlantirish bo'yicha vitse-prezident",
+                        "quote": "Foyda darhol ko'rindi. Avval tungi navbat uchun AI agentlarini joylashtirdik, so'ng o'zbek va rus bozorlariga chiqdik."
+                    },
+                    "Gulnara Tashpulatova": {
+                        "role": "Customer Success Manager",
+                        "quote": "Yig'ilgan ma'lumotlar sifati ajoyib. AI faqatgina ismlarni to'plamaydi — u ularni saralaydi, xarid niyatini aniqlaydi va tayyor profillarni jamoamizga yetkazadi."
+                    },
+                    "Dmitri Sokolov": {
+                        "role": "Texnik operatsiyalar menejeri",
+                        "quote": "Hissiyotlar tahlilining aniqligi hatto biroz qo'rqinchli. Insoniy operatorlar o'tkazib yuboradigan nozik norozilik ohanglarini rus tilida ham bemalol aniqlayapti."
+                    },
+                    "Layla Ahmed": {
+                        "role": "Startap asoschisi",
+                        "quote": "Kichik biznes sifatida biz ko'p tilli qo'llab-quvvatlash jamoasiga imkon topa olmasdik. Bu AI agentlar bizga uchta tilda muammosiz kompaniya sifatida faoliyat yuritish imkonini berdi."
+                    }
+                }
+            },
+            "footer": {
+                "groups": {
+                    "product": "Mahsulot",
+                    "solution": "Yechim",
+                    "company": "Kompaniya",
+                    "legal": "Huquqiy"
+                },
+                "links": {
+                    "features": "Imkoniyatlar",
+                    "solution": "Yechim",
+                    "customers": "Mijozlar",
+                    "pricing": "Narxlar",
+                    "help": "Yordam",
+                    "about": "Haqimizda",
+                    "startup": "Startap",
+                    "freelancers": "Frilanserlar",
+                    "organizations": "Tashkilotlar",
+                    "students": "Talabalar",
+                    "collaboration": "Hamkorlik",
+                    "design": "Dizayn",
+                    "management": "Boshqaruv",
+                    "careers": "Karyera",
+                    "blog": "Blog",
+                    "press": "Matbuot",
+                    "contact": "Aloqa",
+                    "licence": "Litsenziya",
+                    "privacy": "Maxfiylik",
+                    "cookies": "Kukilar",
+                    "security": "Xavfsizlik"
+                },
+                "copyright": "© {{year}} CallMind AI, Barcha huquqlar himoyalangan"
+            },
+            "pricing": {
+                "title": "Narxlar",
+                "subtitle": "Oddiy narxlar. Yashirin to'lovlar yo'q.",
+                "monthly": "Oylik",
+                "yearly": "Yillik",
+                "save": "17% tejang",
+                "popular": "Mashhur",
+                "mo": "oy",
+                "yr": "yil",
+                "loading": "Yuklanmoqda...",
+                "need_more": "Ko'proq kerakmi?",
+                "contact_link": "Biz bilan bog'laning",
+                "enterprise_suffix": "korporativ narxlar uchun.",
+                "plans": {
+                    "free": {
+                        "name": "Bepul",
+                        "desc": "Sinab ko'ring",
+                        "cta": "Boshlash",
+                        "features": [
+                            "oyiga 10 ta qo'ng'iroq",
+                            "1 ta AI agent",
+                            "Asosiy tahlil"
+                        ]
+                    },
+                    "starter": {
+                        "name": "Boshlang'ich",
+                        "desc": "Kichik jamoalar uchun",
+                        "cta": "Boshlash",
+                        "features": [
+                            "oyiga 250 ta qo'ng'iroq",
+                            "3 ta AI agent",
+                            "Barcha tillar",
+                            "Qo'ng'iroq transkriptlari",
+                            "Email qo'llab-quvvatlash"
+                        ]
+                    },
+                    "pro": {
+                        "name": "Professional",
+                        "desc": "O'sib borayotgan bizneslar uchun",
+                        "cta": "Boshlash",
+                        "features": [
+                            "oyiga 1000 ta qo'ng'iroq",
+                            "40 ta o'ta real qo'ng'iroq",
+                            "10 ta AI agent",
+                            "Premium ovozlar",
+                            "CRM integratsiyalari"
+                        ]
+                    },
+                    "business": {
+                        "name": "Biznes",
+                        "desc": "Korxonalar uchun",
+                        "cta": "Boshlash",
+                        "features": [
+                            "oyiga 3000 ta qo'ng'iroq",
+                            "90 ta o'ta real qo'ng'iroq",
+                            "25 ta AI agent",
+                            "Maxsus integratsiyalar",
+                            "Maxsus qo'llab-quvvatlash"
+                        ]
+                    }
+                },
+                "enterprise": {
+                    "name": "Korporativ",
+                    "desc": "Yirik tashkilotlar uchun",
+                    "cta": "Sotuvlar bilan bog'lanish",
+                    "badge": "Premium",
+                    "tailored": "Tashkilotingizning o'ziga xos ehtiyojlari uchun moslashtirilgan yechimlar",
+                    "features": [
+                        "Cheksiz qo'ng'iroqlar",
+                        "Cheksiz o'ta real qo'ng'iroqlar",
+                        "Cheksiz AI agentlar",
+                        "White-label yechimi",
+                        "Maxsus tizimlar bilan integratsiya",
+                        "Prioritetli qo'llab-quvvatlash",
+                        "SLA kafolati",
+                        "Maxsus shartnoma"
+                    ],
+                    "b2b_title": "B2B Yechimlar",
+                    "b2b_features": [
+                        "Maxsus limitlar bilan cheksiz API qo'ng'iroqlari",
+                        "99.9% SLA bilan maxsus infratuzilma",
+                        "Maxsus ovoz modellari va brending",
+                        "CRM integratsiyalari (Salesforce, HubSpot va b.)",
+                        "Kengaytirilgan tahlil paneli",
+                        "Jamoani boshqarish va rollarga asoslangan kirish"
+                    ],
+                    "b2g_title": "B2G Yechimlar",
+                    "b2g_features": [
+                        "On-premise o'rnatish imkoniyati",
+                        "Ma'lumotlar qarorgohi va xavfsizlik muvofiqligi",
+                        "Hukumat darajasidagi shifrlash (AES-256)",
+                        "Maxsus xaridlar va hisob-faktura",
+                        "Maxsus CSM bilan 24/7 ustuvor yordam",
+                        "Davlat tizimlari bilan integratsiya"
+                    ]
+                }
+            }
+        },
+        "app": {
+            "nav": {
+                "agents": "Agentlar",
+                "usage": "Iste'mol",
+                "workspace_settings": "Ish stoli sozlamalari",
+                "settings_general": "Umumiy",
+                "settings_members": "A'zolar",
+                "settings_billing": "To'lovlar",
+                "settings_notifications": "Bildirishnomalar",
+                "settings_security": "Xavfsizlik"
+            },
+            "user_menu": {
+                "manage_account": "Hisobni boshqarish",
+                "language": "Til",
+                "theme": "Mavzu",
+                "dark_mode": "Tungi rejim",
+                "light_mode": "Kunduzgi rejim",
+                "system_theme": "Tizim rejimi",
+                "log_out": "Chiqish"
+            }
+        },
+        "language": {
+            "en": "English",
+            "ru": "Русский",
+            "uz": "O'zbekcha"
+        }
+    }
+}

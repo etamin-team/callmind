@@ -1,7 +1,10 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Shield, Users } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export default function FeaturesSection() {
+    const { t } = useTranslation()
+
     return (
         <section className="bg-gray-50 py-16 md:py-32 dark:bg-transparent">
             <div className="mx-auto max-w-5xl px-6">
@@ -22,7 +25,7 @@ export default function FeaturesSection() {
                                     </svg>
                                     <span className="mx-auto block w-fit text-5xl font-semibold">100%</span>
                                 </div>
-                                <h2 className="mt-6 text-center text-3xl font-semibold">Multilingual AI Agents</h2>
+                                <h2 className="mt-6 text-center text-3xl font-semibold">{t('marketing.features_grid.item1.title')}</h2>
                             </CardContent>
                         </Card>
                         <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2">
@@ -81,8 +84,8 @@ export default function FeaturesSection() {
                                     </svg>
                                 </div>
                                 <div className="relative z-10 mt-6 space-y-2 text-center">
-                                    <h2 className="group-hover:text-secondary-950 text-lg font-medium transition dark:text-white">Trilingual Communication</h2>
-                                    <p className="text-foreground">Seamlessly switch between English, Uzbek, and Russian. Our AI agents understand and respond naturally in all three languages, breaking down communication barriers.</p>
+                                    <h2 className="group-hover:text-secondary-950 text-lg font-medium transition dark:text-white">{t('marketing.features_grid.item2.title')}</h2>
+                                    <p className="text-foreground">{t('marketing.features_grid.item2.desc')}</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -173,8 +176,8 @@ export default function FeaturesSection() {
                                     </svg>
                                 </div>
                                 <div className="relative z-10 mt-14 space-y-2 text-center">
-                                    <h2 className="text-lg font-medium transition">Lead Collection & CRM</h2>
-                                    <p className="text-foreground">Automatically capture leads, names, contact details, and customer information. Sync directly with your CRM and never miss a potential opportunity again.</p>
+                                    <h2 className="text-lg font-medium transition">{t('marketing.features_grid.item3.title')}</h2>
+                                    <p className="text-foreground">{t('marketing.features_grid.item3.desc')}</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -188,8 +191,8 @@ export default function FeaturesSection() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <h2 className="group-hover:text-secondary-950 text-lg font-medium text-zinc-800 transition dark:text-white">Sentiment & Intent Analysis</h2>
-                                        <p className="text-foreground">Real-time emotion detection and intent recognition. Understand if customers are happy, frustrated, or ready to buy, and adapt your approach instantly.</p>
+                                        <h2 className="group-hover:text-secondary-950 text-lg font-medium text-zinc-800 transition dark:text-white">{t('marketing.features_grid.item4.title')}</h2>
+                                        <p className="text-foreground">{t('marketing.features_grid.item4.desc')}</p>
                                     </div>
                                 </div>
                                 <div className="rounded-tl-(--radius) relative -mb-6 -mr-6 mt-6 h-fit border-l border-t p-6 py-6 sm:ml-6">
@@ -249,8 +252,8 @@ export default function FeaturesSection() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <h2 className="text-lg font-medium transition">Cross-Platform Deployment</h2>
-                                        <p className="text-foreground">Deploy on desktop, mobile, web, and tablet. Your AI agents work everywhere your customers are, providing consistent service across all devices.</p>
+                                        <h2 className="text-lg font-medium transition">{t('marketing.features_grid.item5.title')}</h2>
+                                        <p className="text-foreground">{t('marketing.features_grid.item5.desc')}</p>
                                     </div>
                                 </div>
                                 <div className="before:bg-(--color-border) relative mt-6 before:absolute before:inset-0 before:mx-auto before:w-px sm:-my-6 sm:-mr-6">

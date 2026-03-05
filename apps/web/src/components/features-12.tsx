@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { BorderBeam } from '@/components/ui/border-beam'
 import { 
     TrendingUp,
@@ -24,6 +25,7 @@ type FeatureKey = 'item-1' | 'item-2' | 'item-3' | 'item-4'
 
 // Animated components for each feature
 function CallCoachingAnimation() {
+    const { t } = useTranslation()
     return (
         <div className="relative flex h-full w-full flex-col items-center justify-center p-4">
             <motion.div 
@@ -49,7 +51,7 @@ function CallCoachingAnimation() {
                 <div className="space-y-3">
                     <div className="rounded-lg bg-muted/50 p-3">
                         <div className="mb-2 flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                            <MessageSquare className="h-3 w-3" /> Customer
+                            <MessageSquare className="h-3 w-3" /> {t('marketing.features_accordion.ui.customer')}
                         </div>
                         <div className="h-2 w-full rounded-full bg-muted-foreground/20 mb-1.5" />
                         <div className="h-2 w-4/5 rounded-full bg-muted-foreground/20" />
@@ -65,7 +67,7 @@ function CallCoachingAnimation() {
                             className="absolute left-0 top-0 h-full w-1 bg-primary"
                         />
                         <div className="mb-2 flex items-center gap-1.5 text-[10px] font-medium text-primary uppercase tracking-wider">
-                            <Sparkles className="h-3 w-3" /> AI Suggestion
+                            <Sparkles className="h-3 w-3" /> {t('marketing.features_accordion.ui.ai_suggestion')}
                         </div>
                         <div className="h-2 w-[90%] rounded-full bg-primary/20 mb-1.5" />
                         <div className="h-2 w-2/3 rounded-full bg-primary/20" />
@@ -77,6 +79,7 @@ function CallCoachingAnimation() {
 }
 
 function SentimentAnimation() {
+    const { t } = useTranslation()
     const emojis = [<Smile className="text-emerald-500" />, <Meh className="text-amber-500" />, <Frown className="text-rose-500" />]
     const [index, setIndex] = useState(0)
 
@@ -96,8 +99,8 @@ function SentimentAnimation() {
                             <AudioWaveform className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <div>
-                            <div className="text-xs font-medium">Live Sentiment</div>
-                            <div className="text-[10px] text-muted-foreground">Analyzing voice...</div>
+                            <div className="text-xs font-medium">{t('marketing.features_accordion.ui.live_sentiment')}</div>
+                            <div className="text-[10px] text-muted-foreground">{t('marketing.features_accordion.ui.analyzing')}</div>
                         </div>
                     </div>
                     <AnimatePresence mode="wait">
@@ -116,7 +119,7 @@ function SentimentAnimation() {
 
                 <div className="rounded-xl border border-border bg-background p-4 shadow-xl">
                     <div className="mb-3 flex justify-between text-xs">
-                        <span className="font-medium">Emotional Journey</span>
+                        <span className="font-medium">{t('marketing.features_accordion.ui.journey')}</span>
                     </div>
                     <div className="flex h-12 w-full items-end gap-1">
                         {[...Array(15)].map((_, i) => (
@@ -145,6 +148,7 @@ function SentimentAnimation() {
 }
 
 function AnalyticsAnimation() {
+    const { t } = useTranslation()
     return (
         <div className="relative flex h-full w-full items-center justify-center p-4">
             <div className="grid w-full max-w-[280px] grid-cols-2 gap-3">
@@ -179,12 +183,13 @@ function AnalyticsAnimation() {
 }
 
 function InsightsAnimation() {
+    const { t } = useTranslation()
     return (
         <div className="relative flex h-full w-full items-center justify-center p-4">
             <div className="w-full max-w-[280px] rounded-xl border border-border bg-background p-4 shadow-xl">
                 <div className="mb-4 flex items-center gap-2">
                     <BarChart3 className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">Team Performance</span>
+                    <span className="text-sm font-medium">{t('marketing.features_accordion.ui.team_perf')}</span>
                 </div>
                 
                 <div className="space-y-4">
@@ -213,7 +218,7 @@ function InsightsAnimation() {
                 <div className="mt-5 rounded-lg border border-primary/20 bg-primary/5 p-3 flex items-start gap-2">
                     <Zap className="h-4 w-4 shrink-0 text-primary mt-0.5" />
                     <p className="text-[10px] leading-relaxed text-muted-foreground">
-                        <span className="font-medium text-foreground">Insight:</span> Sarah's empathy scoring improved by 14% after recent coaching.
+                        <span className="font-medium text-foreground">{t('marketing.features_accordion.ui.insight')}</span> {t('marketing.features_accordion.ui.insight_text')}
                     </p>
                 </div>
             </div>
@@ -222,6 +227,7 @@ function InsightsAnimation() {
 }
 
 export default function Features() {
+    const { t } = useTranslation()
     const [activeItem, setActiveItem] = useState<FeatureKey>('item-1')
 
     const featureComponents = {
@@ -236,8 +242,8 @@ export default function Features() {
             <div className="bg-linear-to-b absolute inset-0 -z-10 sm:inset-6 sm:rounded-b-3xl dark:block dark:to-[color-mix(in_oklab,var(--color-zinc-900)_75%,var(--color-background))]"></div>
             <div className="mx-auto max-w-5xl space-y-8 px-6 md:space-y-16 lg:space-y-20 dark:[--color-border:color-mix(in_oklab,var(--color-white)_10%,transparent)]">
                 <div className="relative z-10 mx-auto max-w-2xl space-y-6 text-center">
-                    <h2 className="text-balance text-4xl font-semibold lg:text-6xl">AI-Powered Call Excellence</h2>
-                    <p>Transform your call center with real-time conversation intelligence. Get instant coaching, detect customer sentiment, and close more deals with AI-guided conversations.</p>
+                    <h2 className="text-balance text-4xl font-semibold lg:text-6xl">{t('marketing.features_accordion.title')}</h2>
+                    <p>{t('marketing.features_accordion.desc')}</p>
                 </div>
 
                 <div className="grid gap-12 sm:px-12 md:grid-cols-2 lg:gap-20 lg:px-0">
@@ -250,37 +256,37 @@ export default function Features() {
                             <AccordionTrigger>
                                 <div className="flex items-center gap-2 text-base">
                                     <Sparkles className="size-4" />
-                                    Real-Time Call Coaching
+                                    {t('marketing.features_accordion.items.coaching.title')}
                                 </div>
                             </AccordionTrigger>
-                            <AccordionContent>Get instant suggestions during live calls. Our AI analyzes conversations in real-time and provides contextual prompts to help agents overcome objections and guide conversations toward successful outcomes.</AccordionContent>
+                            <AccordionContent>{t('marketing.features_accordion.items.coaching.desc')}</AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-2">
                             <AccordionTrigger>
                                 <div className="flex items-center gap-2 text-base">
                                     <AudioWaveform className="size-4" />
-                                    Sentiment & Emotion Detection
+                                    {t('marketing.features_accordion.items.sentiment.title')}
                                 </div>
                             </AccordionTrigger>
-                            <AccordionContent>Detect customer emotions instantly with advanced NLP. Know when they're interested, skeptical, or frustrated so agents can adjust their approach and improve customer satisfaction.</AccordionContent>
+                            <AccordionContent>{t('marketing.features_accordion.items.sentiment.desc')}</AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-3">
                             <AccordionTrigger>
                                 <div className="flex items-center gap-2 text-base">
                                     <BarChart3 className="size-4" />
-                                    Conversation Analytics
+                                    {t('marketing.features_accordion.items.analytics.title')}
                                 </div>
                             </AccordionTrigger>
-                            <AccordionContent>Track performance metrics like talk-to-listen ratios, keyword frequency, and conversion patterns. Turn every conversation into actionable data that drives continuous improvement.</AccordionContent>
+                            <AccordionContent>{t('marketing.features_accordion.items.analytics.desc')}</AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-4">
                             <AccordionTrigger>
                                 <div className="flex items-center gap-2 text-base">
                                     <TrendingUp className="size-4" />
-                                    Performance Insights
+                                    {t('marketing.features_accordion.items.insights.title')}
                                 </div>
                             </AccordionTrigger>
-                            <AccordionContent>Monitor team performance, identify top performers, and replicate winning strategies across your entire team. Get detailed reports on call outcomes and agent effectiveness.</AccordionContent>
+                            <AccordionContent>{t('marketing.features_accordion.items.insights.desc')}</AccordionContent>
                         </AccordionItem>
                     </Accordion>
 

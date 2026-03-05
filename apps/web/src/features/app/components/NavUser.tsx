@@ -13,16 +13,28 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu"
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
-import { Moon, Sun, Monitor, ChevronsUpDown, LogOut, Settings } from "lucide-react"
+import { Moon, Sun, Monitor, ChevronsUpDown, LogOut, Settings, Globe, Check } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
+import { useTranslation } from "react-i18next"
+
+const LANGUAGES = [
+  { code: "en", label: "English" },
+  { code: "ru", label: "Русский" },
+  { code: "uz", label: "O'zbekcha" },
+]
 
 export function NavUser() {
+  const { t, i18n } = useTranslation()
   const { isMobile } = useSidebar()
   const { user } = useUser()
   const { signOut, openUserProfile } = useClerk()
@@ -80,24 +92,59 @@ export function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => openUserProfile()}>
                 <Settings className="mr-2 h-4 w-4" />
-                Manage Account
+                {t('app.user_menu.manage_account')}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
-                {theme === "light" ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
-                {theme === "light" ? "Dark Mode" : "Light Mode"}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("system")}>
-                <Monitor className="mr-2 h-4 w-4" />
-                System Theme
-              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Globe className="mr-2 h-4 w-4" />
+                  <span>{t('app.user_menu.language')}</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    {LANGUAGES.map((lang) => (
+                      <DropdownMenuItem
+                        key={lang.code}
+                        onClick={() => i18n.changeLanguage(lang.code)}
+                        className="flex items-center justify-between"
+                      >
+                        {lang.label}
+                        {i18n.resolvedLanguage === lang.code && <Check className="h-4 w-4 text-muted-foreground ml-4" />}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+              
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  {theme === "light" ? <Sun className="mr-2 h-4 w-4" /> : theme === "dark" ? <Moon className="mr-2 h-4 w-4" /> : <Monitor className="mr-2 h-4 w-4" />}
+                  <span>{t('app.user_menu.theme')}</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem onClick={() => setTheme("light")} className="flex items-center justify-between">
+                      <div className="flex items-center"><Sun className="mr-2 h-4 w-4" /> {t('app.user_menu.light_mode')}</div>
+                      {theme === 'light' && <Check className="h-4 w-4 text-muted-foreground ml-4" />}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme("dark")} className="flex items-center justify-between">
+                      <div className="flex items-center"><Moon className="mr-2 h-4 w-4" /> {t('app.user_menu.dark_mode')}</div>
+                      {theme === 'dark' && <Check className="h-4 w-4 text-muted-foreground ml-4" />}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme("system")} className="flex items-center justify-between">
+                      <div className="flex items-center"><Monitor className="mr-2 h-4 w-4" /> {t('app.user_menu.system_theme')}</div>
+                      {theme === 'system' && <Check className="h-4 w-4 text-muted-foreground ml-4" />}
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut()}>
               <LogOut className="mr-2 h-4 w-4" />
-              Log out
+              {t('app.user_menu.log_out')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -105,3 +152,4 @@ export function NavUser() {
     </SidebarMenu>
   )
 }
+

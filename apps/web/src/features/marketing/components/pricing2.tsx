@@ -3,6 +3,7 @@
 import { Check, Loader2, ChevronDown, Building2, Landmark } from 'lucide-react'
 import { useState } from 'react'
 import { useUser } from '@clerk/clerk-react'
+import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -10,96 +11,65 @@ import { Switch } from '@/components/ui/switch'
 import { useCreatePaymeCheckout } from '@/features/payments/api'
 import { usePayme } from '@/features/payments/components/payme-provider'
 
-const plans = [
-  {
-    id: 'free',
-    name: 'Free',
-    price: { monthly: 0, yearly: 0 },
-    priceUzs: { monthly: 0, yearly: 0 },
-    description: 'Try it out',
-    features: ['10 calls/month', '1 AI agent', 'Basic analytics'],
-    cta: 'Get Started',
-    href: '/sign-up',
-  },
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: { monthly: 59, yearly: 590 },
-    priceUzs: { monthly: 108000, yearly: 1032000 },
-    description: 'For small teams',
-    features: [
-      '250 calls/month',
-      '3 AI agents',
-      'All languages',
-      'Call transcripts',
-      'Email support',
-    ],
-    cta: 'Get Started',
-    paymePlan: 'starter',
-    popular: true,
-  },
-  {
-    id: 'pro',
-    name: 'Professional',
-    price: { monthly: 172, yearly: 1720 },
-    priceUzs: { monthly: 348000, yearly: 3336000 },
-    description: 'For growing businesses',
-    features: [
-      '1000 calls/month',
-      '40 super realistic calls',
-      '10 AI agents',
-      'Premium voices',
-      'CRM integrations',
-    ],
-    cta: 'Get Started',
-    paymePlan: 'pro',
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: { monthly: 345, yearly: 3450 },
-    priceUzs: { monthly: 948000, yearly: 9096000 },
-    description: 'For enterprises',
-    features: [
-      '3000 calls/month',
-      '90 super realistic calls',
-      '25 AI agents',
-      'Custom integrations',
-      'Dedicated support',
-    ],
-    cta: 'Get Started',
-    paymePlan: 'business',
-  },
-]
-
-const enterprisePlan = {
-  id: 'enterprise',
-  name: 'Enterprise',
-  description: 'For large organizations',
-  features: [
-    'Unlimited calls',
-    'Unlimited super realistic calls',
-    'Unlimited AI agents',
-    'White-label solution',
-    'Integrations to custom systems',
-    'Priority support',
-    'SLA guarantee',
-    'Custom contract',
-  ],
-  cta: 'Contact Sales',
-  href: 'mailto:sales@callmind.uz',
-}
-
 interface Pricing2Props {
   className?: string
 }
 
 const Pricing2 = ({ className }: Pricing2Props) => {
+  const { t } = useTranslation()
   const [yearly, setYearly] = useState<boolean>(false)
   const [enterpriseExpanded, setEnterpriseExpanded] = useState(false)
   const { user, isSignedIn } = useUser()
   const createPaymeCheckout = useCreatePaymeCheckout()
   const { redirectToCheckout } = usePayme()
+
+  const plans = [
+    {
+      id: 'free',
+      name: t('marketing.pricing.plans.free.name'),
+      price: { monthly: 0, yearly: 0 },
+      priceUzs: { monthly: 0, yearly: 0 },
+      description: t('marketing.pricing.plans.free.desc'),
+      features: t('marketing.pricing.plans.free.features', { returnObjects: true }) as string[],
+      cta: t('marketing.pricing.plans.free.cta'),
+      href: '/sign-up',
+    },
+    {
+      id: 'starter',
+      name: t('marketing.pricing.plans.starter.name'),
+      price: { monthly: 59, yearly: 590 },
+      priceUzs: { monthly: 108000, yearly: 1032000 },
+      description: t('marketing.pricing.plans.starter.desc'),
+      features: t('marketing.pricing.plans.starter.features', { returnObjects: true }) as string[],
+      cta: t('marketing.pricing.plans.starter.cta'),
+      paymePlan: 'starter',
+      popular: true,
+    },
+    {
+      id: 'pro',
+      name: t('marketing.pricing.plans.pro.name'),
+      price: { monthly: 172, yearly: 1720 },
+      priceUzs: { monthly: 348000, yearly: 3336000 },
+      description: t('marketing.pricing.plans.pro.desc'),
+      features: t('marketing.pricing.plans.pro.features', { returnObjects: true }) as string[],
+      cta: t('marketing.pricing.plans.pro.cta'),
+      paymePlan: 'pro',
+    },
+    {
+      id: 'business',
+      name: t('marketing.pricing.plans.business.name'),
+      price: { monthly: 345, yearly: 3450 },
+      priceUzs: { monthly: 948000, yearly: 9096000 },
+      description: t('marketing.pricing.plans.business.desc'),
+      features: t('marketing.pricing.plans.business.features', { returnObjects: true }) as string[],
+      cta: t('marketing.pricing.plans.business.cta'),
+      paymePlan: 'business',
+    },
+  ]
+
+  const enterpriseFeatures = t('marketing.pricing.enterprise.features', { returnObjects: true }) as string[]
+  const b2bFeatures = t('marketing.pricing.enterprise.b2b_features', { returnObjects: true }) as string[]
+  const b2gFeatures = t('marketing.pricing.enterprise.b2g_features', { returnObjects: true }) as string[]
 
   const handlePlanClick = (plan: (typeof plans)[0]) => {
     if (plan.id === 'free' || !plan.paymePlan) {
@@ -146,16 +116,16 @@ const Pricing2 = ({ className }: Pricing2Props) => {
     <section className={cn('py-24', className)}>
       <div className="container max-w-6xl mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-semibold mb-3">Pricing</h2>
+          <h2 className="text-3xl font-semibold mb-3">{t('marketing.pricing.title')}</h2>
           <p className="text-muted-foreground">
-            Simple pricing. No hidden fees.
+            {t('marketing.pricing.subtitle')}
           </p>
           <div className="flex items-center justify-center gap-3 mt-6">
-            <span className="text-sm">Monthly</span>
+            <span className="text-sm">{t('marketing.pricing.monthly')}</span>
             <Switch checked={yearly} onCheckedChange={setYearly} />
-            <span className="text-sm">Yearly</span>
+            <span className="text-sm">{t('marketing.pricing.yearly')}</span>
             <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-              Save 17%
+              {t('marketing.pricing.save')}
             </span>
           </div>
         </div>
@@ -171,7 +141,7 @@ const Pricing2 = ({ className }: Pricing2Props) => {
             >
               {plan.popular && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full">
-                  Popular
+                  {t('marketing.pricing.popular')}
                 </span>
               )}
               <div className="mb-4">
@@ -185,12 +155,12 @@ const Pricing2 = ({ className }: Pricing2Props) => {
                   ${yearly ? plan.price.yearly : plan.price.monthly}
                 </span>
                 <span className="text-muted-foreground">
-                  /{yearly ? 'yr' : 'mo'}
+                  /{yearly ? t('marketing.pricing.yr') : t('marketing.pricing.mo')}
                 </span>
               </div>
               <ul className="space-y-3 mb-6 flex-1">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-2 text-sm">
+                {plan.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
                     <Check className="h-4 w-4 text-primary shrink-0" />
                     <span>{feature}</span>
                   </li>
@@ -205,7 +175,7 @@ const Pricing2 = ({ className }: Pricing2Props) => {
                 {isLoading(plan.id) ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Loading...
+                    {t('marketing.pricing.loading')}
                   </>
                 ) : (
                   plan.cta
@@ -215,20 +185,24 @@ const Pricing2 = ({ className }: Pricing2Props) => {
           ))}
         </div>
 
-        <button
-          onClick={() => setEnterpriseExpanded(!enterpriseExpanded)}
-          className="relative w-full rounded-xl border-2 border-primary bg-gradient-to-r from-primary/5 to-primary/10 p-6 md:p-8 text-left transition-all hover:shadow-lg"
-        >
-          <div className="flex items-start justify-between gap-4">
+        <div className="relative mt-8 max-w-5xl mx-auto w-full group">
+          {/* Subtle animated gradient glow effect behind the card */}
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-blue-600/30 rounded-2xl blur opacity-30 group-hover:opacity-70 transition duration-500"></div>
+          
+          <button
+            onClick={() => setEnterpriseExpanded(!enterpriseExpanded)}
+            className="relative w-full rounded-2xl border border-primary/20 bg-background/60 backdrop-blur-lg p-6 md:p-10 text-left transition-all duration-300 hover:border-primary/50 hover:bg-background/80 hover:shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
-                <h3 className="text-2xl font-bold">{enterprisePlan.name}</h3>
+                <h3 className="text-2xl font-bold">{t('marketing.pricing.enterprise.name')}</h3>
                 <span className="bg-primary text-primary-foreground text-sm px-3 py-1 rounded-full">
-                  Premium
+                  {t('marketing.pricing.enterprise.badge')}
                 </span>
               </div>
               <p className="text-muted-foreground mb-4">
-                {enterprisePlan.description}
+                {t('marketing.pricing.enterprise.desc')}
               </p>
 
               <div
@@ -248,9 +222,9 @@ const Pricing2 = ({ className }: Pricing2Props) => {
                       : 'opacity-100',
                   )}
                 >
-                  {enterprisePlan.features.map((feature) => (
+                  {enterpriseFeatures.map((feature, idx) => (
                     <li
-                      key={feature}
+                      key={idx}
                       className="flex items-center gap-2 text-sm"
                     >
                       <Check className="h-4 w-4 text-primary shrink-0" />
@@ -260,10 +234,10 @@ const Pricing2 = ({ className }: Pricing2Props) => {
                 </ul>
               </div>
             </div>
-            <div className="shrink-0">
+            <div className="shrink-0 pt-2 shrink-0 flex items-center justify-center p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
               <ChevronDown
                 className={cn(
-                  'w-5 h-5 text-muted-foreground transition-transform duration-300',
+                  'w-6 h-6 text-primary transition-transform duration-300',
                   enterpriseExpanded && 'rotate-180',
                 )}
               />
@@ -289,33 +263,15 @@ const Pricing2 = ({ className }: Pricing2Props) => {
               >
                 <div className="flex items-center gap-2 mb-4">
                   <Building2 className="w-5 h-5 text-primary" />
-                  <h4 className="font-semibold">B2B Solutions</h4>
+                  <h4 className="font-semibold">{t('marketing.pricing.enterprise.b2b_title')}</h4>
                 </div>
                 <ul className="space-y-3">
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>Unlimited API calls with custom rate limits</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>Dedicated infrastructure with 99.9% SLA</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>Custom voice models & branding</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>CRM integrations (Salesforce, HubSpot, etc.)</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>Advanced analytics dashboard</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>Team management & role-based access</span>
-                  </li>
+                  {b2bFeatures.map((feature, idx) => (
+                    <li key={idx} className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
               <div
@@ -328,33 +284,15 @@ const Pricing2 = ({ className }: Pricing2Props) => {
               >
                 <div className="flex items-center gap-2 mb-4">
                   <Landmark className="w-5 h-5 text-primary" />
-                  <h4 className="font-semibold">B2G Solutions</h4>
+                  <h4 className="font-semibold">{t('marketing.pricing.enterprise.b2g_title')}</h4>
                 </div>
                 <ul className="space-y-3">
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>On-premise deployment option</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>Data residency & security compliance</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>Government-grade encryption (AES-256)</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>Custom procurement & billing</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>Priority 24/7 support with dedicated CSM</span>
-                  </li>
-                  <li className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>Integration with government systems</span>
-                  </li>
+                  {b2gFeatures.map((feature, idx) => (
+                    <li key={idx} className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
@@ -367,21 +305,22 @@ const Pricing2 = ({ className }: Pricing2Props) => {
               )}
             >
               <p className="text-lg text-muted-foreground">
-                Tailored solutions for your organization's unique needs
+                {t('marketing.pricing.enterprise.tailored')}
               </p>
-              <Button size="lg" asChild>
-                <a href={enterprisePlan.href}>{enterprisePlan.cta}</a>
+              <Button size="lg" className="px-8 shadow-lg shadow-primary/25" asChild>
+                <a href="mailto:sales@callmind.uz">{t('marketing.pricing.enterprise.cta')}</a>
               </Button>
             </div>
           </div>
         </button>
+      </div>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          Need more?{' '}
+          {t('marketing.pricing.need_more')}{' '}
           <a href="mailto:sales@callmind.uz" className="underline">
-            Contact us
+            {t('marketing.pricing.contact_link')}
           </a>{' '}
-          for enterprise pricing.
+          {t('marketing.pricing.enterprise_suffix')}
         </p>
       </div>
     </section>

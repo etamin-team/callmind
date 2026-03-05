@@ -2,33 +2,35 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import {Link} from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 export default function FAQsFour() {
+    const { t } = useTranslation()
     const faqItems = [
         {
             id: 'item-1',
-            question: 'Which languages do your AI agents support?',
-            answer: 'Our AI agents are fluent in English, Uzbek, and Russian. They understand natural conversation patterns, cultural nuances, and regional dialects in all three languages, providing authentic customer interactions.',
+            question: t('marketing.faqs.items.item-1.q'),
+            answer: t('marketing.faqs.items.item-1.a'),
         },
         {
             id: 'item-2',
-            question: 'Can the AI agents collect and qualify leads?',
-            answer: 'Absolutely. Our AI agents are trained to engage prospects naturally, collect names, contact information, company details, and specific requirements. They qualify leads based on your criteria and sync everything directly to your CRM.',
+            question: t('marketing.faqs.items.item-2.q'),
+            answer: t('marketing.faqs.items.item-2.a'),
         },
         {
             id: 'item-3',
-            question: 'What platforms do your AI agents work on?',
-            answer: 'Our AI agents work across all platforms—desktop computers, mobile phones, tablets, and web browsers. They provide consistent service whether your team is in the office or working remotely, with native mobile apps for iOS and Android.',
+            question: t('marketing.faqs.items.item-3.q'),
+            answer: t('marketing.faqs.items.item-3.a'),
         },
         {
             id: 'item-4',
-            question: 'How accurate is the sentiment analysis?',
-            answer: 'Our sentiment analysis achieves over 95% accuracy across all three languages. It detects happiness, frustration, confusion, and urgency by analyzing tone, word choice, and conversation patterns, allowing you to respond appropriately in real-time.',
+            question: t('marketing.faqs.items.item-4.q'),
+            answer: t('marketing.faqs.items.item-4.a'),
         },
         {
             id: 'item-5',
-            question: 'Can I customize the AI agent scripts and workflows?',
-            answer: 'Yes, you have complete control. Customize conversation flows, brand voice, qualifying questions, and response patterns. Our no-code workflow builder lets you design agent behaviors for different scenarios, products, and customer types.',
+            question: t('marketing.faqs.items.item-5.q'),
+            answer: t('marketing.faqs.items.item-5.a'),
         },
     ]
 
@@ -36,8 +38,8 @@ export default function FAQsFour() {
         <section className="py-16 md:py-24">
             <div className="mx-auto max-w-5xl px-4 md:px-6">
                 <div className="mx-auto max-w-xl text-center">
-                    <h2 className="text-balance text-3xl font-bold md:text-4xl lg:text-5xl">Frequently Asked Questions</h2>
-                    <p className="text-muted-foreground mt-4 text-balance">Discover quick and comprehensive answers to common questions about our AI call center agents and multilingual capabilities.</p>
+                    <h2 className="text-balance text-3xl font-bold md:text-4xl lg:text-5xl">{t('marketing.faqs.title')}</h2>
+                    <p className="text-muted-foreground mt-4 text-balance">{t('marketing.faqs.subtitle')}</p>
                 </div>
 
                 <div className="mx-auto mt-12 max-w-xl">
@@ -63,12 +65,12 @@ export default function FAQsFour() {
                     </Accordion>
 
                     <p className="text-muted-foreground mt-6 px-8">
-                        Can't find what you're looking for? Contact our{' '}
-                        <Link
-                            href="#"
+                        {t('marketing.faqs.contact_prefix')}{' '}
+                        <a
+                            href="mailto:support@callmind.uz"
                             className="text-primary font-medium hover:underline">
-                            customer support team
-                        </Link>
+                            {t('marketing.faqs.contact_link')}
+                        </a>
                     </p>
                 </div>
             </div>

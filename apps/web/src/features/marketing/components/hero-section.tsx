@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { TextEffect } from '@/components/ui/text-effect'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { HeroHeader } from './header'
+import { useTranslation } from 'react-i18next'
 
 const transitionVariants = {
   item: {
@@ -29,25 +30,27 @@ const transitionVariants = {
   },
 }
 
-const features = [
-  {
-    icon: Phone,
-    title: '24/7 Calls',
-    description: 'Never miss a customer call',
-  },
-  {
-    icon: Bot,
-    title: 'AI Agents',
-    description: 'Intelligent voice assistants',
-  },
-  {
-    icon: MessageSquare,
-    title: 'Multi-language',
-    description: 'Uzbek, English, Russian',
-  },
-]
-
 export default function HeroSection() {
+  const { t, i18n } = useTranslation()
+
+  const features = [
+    {
+      icon: Phone,
+      title: t('marketing.hero.features.calls'),
+      description: t('marketing.hero.features.calls_desc'),
+    },
+    {
+      icon: Bot,
+      title: t('marketing.hero.features.ai'),
+      description: t('marketing.hero.features.ai_desc'),
+    },
+    {
+      icon: MessageSquare,
+      title: t('marketing.hero.features.lang'),
+      description: t('marketing.hero.features.lang_desc'),
+    },
+  ]
+
   return (
     <>
       <HeroHeader />
@@ -75,7 +78,7 @@ export default function HeroSection() {
                     className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-zinc-950/5 transition-colors duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
                   >
                     <span className="text-foreground text-sm">
-                      Real-Time Conversation Intelligence
+                      {t('marketing.hero.badge')}
                     </span>
                     <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
 
@@ -93,6 +96,7 @@ export default function HeroSection() {
                 </AnimatedGroup>
 
                 <TextEffect
+                  key={`title-${i18n.language}`}
                   preset="fade"
                   speedSegment={0.225}
                   as="h1"
@@ -102,9 +106,10 @@ export default function HeroSection() {
                     willChange: 'opacity, transform',
                   }}
                 >
-                  Automate Customer Calls with AI
+                  {t('marketing.hero.title')}
                 </TextEffect>
                 <TextEffect
+                  key={`desc-${i18n.language}`}
                   per="line"
                   preset="fade"
                   speedSegment={0.225}
@@ -116,9 +121,7 @@ export default function HeroSection() {
                     willChange: 'opacity, transform',
                   }}
                 >
-                  Deploy AI voice agents that handle customer calls in Uzbek,
-                  capture leads, analyze sentiment, and provide reliable 24/7
-                  support.
+                  {t('marketing.hero.description')}
                 </TextEffect>
 
                 <AnimatedGroup
@@ -143,7 +146,7 @@ export default function HeroSection() {
                     size="lg"
                     className="h-12 rounded-full px-8 text-base"
                   >
-                    <Link to="/register">Start Free Trial</Link>
+                    <Link to="/register">{t('marketing.hero.start_trial')}</Link>
                   </Button>
                   <Button
                     asChild
@@ -151,7 +154,7 @@ export default function HeroSection() {
                     variant="ghost"
                     className="h-12 rounded-full px-8 text-base hover:bg-transparent hover:underline underline-offset-4"
                   >
-                    <a href="#demo">Watch Demo</a>
+                    <a href="#demo">{t('marketing.hero.watch_demo')}</a>
                   </Button>
                 </AnimatedGroup>
 

@@ -1,24 +1,27 @@
 import { Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/clerk-react'
-import { Logo } from '@/components/logo'
+
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils'
 import { AnimatedThemeToggler } from './animated-theme-toggler'
-
-const menuItems = [
-  { name: 'Features', href: '#features' },
-  { name: 'Solutions', href: '#solutions' },
-  { name: 'Pricing', href: '#pricing' },
-  { name: 'Testimonials', href: '#testimonials' },
-]
+import { LanguageSwitcher } from '@/components/language-switcher'
 
 export const HeroHeader = () => {
+  const { t } = useTranslation()
   const { isSignedIn, isLoaded } = useUser()
   const [menuState, setMenuState] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+
+  const menuItems = [
+    { name: t('marketing.nav.features'), href: '#features' },
+    { name: t('marketing.nav.solutions'), href: '#solutions' },
+    { name: t('marketing.nav.pricing'), href: '#pricing' },
+    { name: t('marketing.nav.testimonials'), href: '#testimonials' },
+  ]
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,7 +62,8 @@ export const HeroHeader = () => {
                 aria-label="home"
                 className="flex items-center space-x-2"
               >
-                <Logo />
+                <img src="/logo_light.svg" alt="CallMind Logo" className="h-8 w-auto dark:hidden" />
+                <img src="/logo_dark.svg" alt="CallMind Logo" className="h-8 w-auto hidden dark:block" />
               </Link>
 
               <button
@@ -122,7 +126,8 @@ export const HeroHeader = () => {
                   ))}
                 </ul>
               </div>
-              <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+              <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:items-center sm:space-y-0 md:w-fit">
+                <LanguageSwitcher />
                 <AnimatedThemeToggler />
                 {!isLoaded ? (
                   <div className="h-9 w-[88px] animate-pulse rounded-md bg-muted/50" />
@@ -133,7 +138,7 @@ export const HeroHeader = () => {
                     className="bg-blue-600 hover:bg-blue-700 text-white border-0"
                   >
                     <Link to="/agents">
-                      <span>Dashboard</span>
+                      <span>{t('marketing.buttons.dashboard')}</span>
                     </Link>
                   </Button>
                 ) : (
@@ -144,7 +149,7 @@ export const HeroHeader = () => {
                     className="font-medium"
                   >
                     <Link to="/login">
-                      <span>Login</span>
+                      <span>{t('marketing.buttons.login')}</span>
                     </Link>
                   </Button>
                 )}

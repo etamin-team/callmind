@@ -3,64 +3,69 @@
 import { Check, X, Volume2, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const comparison = [
-  {
-    feature: "Natural Intonation",
-    standard: false,
-    realistic: true,
-    description: "Human-like speech patterns",
-  },
-  {
-    feature: "Emotional Expression",
-    standard: false,
-    realistic: true,
-    description: "Conveys empathy and tone",
-  },
-  {
-    feature: "Breathing Pauses",
-    standard: false,
-    realistic: true,
-    description: "Natural breathing rhythm",
-  },
-  {
-    feature: "Background Noise",
-    standard: false,
-    realistic: true,
-    description: "Subtle environmental sounds",
-  },
-  {
-    feature: "Filler Words",
-    standard: false,
-    realistic: true,
-    description: "Um, uh, like natural speech",
-  },
-  {
-    feature: "Response Latency",
-    standard: "1-2 seconds",
-    realistic: "0.3-0.5 seconds",
-    description: "Time to first response",
-  },
-  {
-    feature: "Customer Trust",
-    standard: "Low",
-    realistic: "High",
-    description: "Perceived authenticity",
-  },
-];
+
 
 interface VoiceComparisonProps {
   className?: string;
 }
 
+import { useTranslation } from 'react-i18next';
+
 export function VoiceComparison({ className }: VoiceComparisonProps) {
+  const { t } = useTranslation();
+  
+  const comparison = [
+    {
+      feature: t('marketing.voice_comparison.features.Natural Intonation'),
+      standard: false,
+      realistic: true,
+      description: t('marketing.voice_comparison.values.Human-like speech patterns'),
+    },
+    {
+      feature: t('marketing.voice_comparison.features.Emotional Expression'),
+      standard: false,
+      realistic: true,
+      description: t('marketing.voice_comparison.values.Conveys empathy and tone'),
+    },
+    {
+      feature: t('marketing.voice_comparison.features.Breathing Pauses'),
+      standard: false,
+      realistic: true,
+      description: t('marketing.voice_comparison.values.Natural breathing rhythm'),
+    },
+    {
+      feature: t('marketing.voice_comparison.features.Background Noise'),
+      standard: false,
+      realistic: true,
+      description: t('marketing.voice_comparison.values.Subtle environmental sounds'),
+    },
+    {
+      feature: t('marketing.voice_comparison.features.Filler Words'),
+      standard: false,
+      realistic: true,
+      description: t('marketing.voice_comparison.values.Um, uh, like natural speech'),
+    },
+    {
+      feature: t('marketing.voice_comparison.features.Response Latency'),
+      standard: "1-2 seconds",
+      realistic: "0.3-0.5 seconds",
+      description: t('marketing.voice_comparison.values.Time to first response'),
+    },
+    {
+      feature: t('marketing.voice_comparison.features.Customer Trust'),
+      standard: t('marketing.voice_comparison.values.Low'),
+      realistic: t('marketing.voice_comparison.values.High'),
+      description: t('marketing.voice_comparison.values.Perceived authenticity'),
+    },
+  ];
+
   return (
     <section className={cn("py-24 bg-muted/30", className)}>
       <div className="container max-w-5xl mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-semibold mb-3">Standard vs Super Realistic</h2>
+          <h2 className="text-3xl font-semibold mb-3">{t('marketing.voice_comparison.title')}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Super realistic voices use advanced AI to sound indistinguishable from human agents.
-            Your customers won't know they're talking to AI.
+            {t('marketing.voice_comparison.subtitle')}
           </p>
         </div>
 
@@ -72,8 +77,8 @@ export function VoiceComparison({ className }: VoiceComparisonProps) {
                 <Volume2 className="h-6 w-6 text-muted-foreground" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Standard Voice</h3>
-                <p className="text-sm text-muted-foreground">Text-to-speech AI</p>
+                <h3 className="font-semibold text-lg">{t('marketing.voice_comparison.standard.title')}</h3>
+                <p className="text-sm text-muted-foreground">{t('marketing.voice_comparison.standard.subtitle')}</p>
               </div>
             </div>
             <div className="space-y-4">
@@ -99,7 +104,7 @@ export function VoiceComparison({ className }: VoiceComparisonProps) {
             </div>
             <div className="mt-8 pt-6 border-t">
               <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">Good for:</span> Basic automation, simple queries
+                <span className="font-medium text-foreground">{t('marketing.voice_comparison.standard.good_for')}</span> {t('marketing.voice_comparison.standard.good_for_text')}
               </p>
             </div>
           </div>
@@ -109,7 +114,7 @@ export function VoiceComparison({ className }: VoiceComparisonProps) {
             <div className="absolute top-4 right-4">
               <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                 <Sparkles className="h-3 w-3" />
-                Premium
+                {t('marketing.voice_comparison.realistic.badge')}
               </span>
             </div>
             <div className="flex items-center gap-3 mb-6">
@@ -117,8 +122,8 @@ export function VoiceComparison({ className }: VoiceComparisonProps) {
                 <Sparkles className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg">Super Realistic</h3>
-                <p className="text-sm text-muted-foreground">Human-like AI voice</p>
+                <h3 className="font-semibold text-lg">{t('marketing.voice_comparison.realistic.title')}</h3>
+                <p className="text-sm text-muted-foreground">{t('marketing.voice_comparison.realistic.subtitle')}</p>
               </div>
             </div>
             <div className="space-y-4">
@@ -144,15 +149,15 @@ export function VoiceComparison({ className }: VoiceComparisonProps) {
             </div>
             <div className="mt-8 pt-6 border-t">
               <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-foreground">Best for:</span> Sales, customer support, building trust
+                <span className="font-medium text-foreground">{t('marketing.voice_comparison.realistic.best_for')}</span> {t('marketing.voice_comparison.realistic.best_for_text')}
               </p>
             </div>
           </div>
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          Super realistic calls are included in Professional and Business plans.{" "}
-          <a href="#pricing" className="underline">View pricing</a>
+          {t('marketing.voice_comparison.footer')}{" "}
+          <a href="#pricing" className="underline">{t('marketing.voice_comparison.pricing_link')}</a>
         </p>
       </div>
     </section>

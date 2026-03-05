@@ -13,6 +13,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/components/theme-provider'
 import { PaddleProvider } from '@/features/payments/components/paddle-provider'
 import { PaymeProvider } from '@/features/payments/components/payme-provider'
+import '@/lib/i18n'
 
 export interface MyRouterContext {
   queryClient: QueryClient
