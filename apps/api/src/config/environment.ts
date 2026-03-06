@@ -66,6 +66,10 @@ export const config = {
   PAYME_CALLBACK_URL: getOptionalEnv("PAYME_CALLBACK_URL", [
     "https://your-domain.com",
   ]),
+  // Product IDs from Payme merchant dashboard (required for each plan)
+  PAYME_STARTER_PRODUCT_ID: getOptionalEnv("PAYME_STARTER_PRODUCT_ID"),
+  PAYME_PRO_PRODUCT_ID: getOptionalEnv("PAYME_PRO_PRODUCT_ID"),
+  PAYME_BUSINESS_PRODUCT_ID: getOptionalEnv("PAYME_BUSINESS_PRODUCT_ID"),
 
   // Price overrides (in UZS, same as FreedomPay)
   PAYME_STARTER_MONTHLY: getOptionalEnv("PAYME_STARTER_MONTHLY"),

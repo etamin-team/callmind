@@ -231,11 +231,10 @@ export function useChargeRecurringPayment() {
 }
 
 export interface PaymeCheckoutResponse {
-  merchantId: string
+  paymeLink: string
+  checkoutUrl: string // Alias for compatibility
   orderId: string
-  merchantTransactionId: string
   amount: number
-  amountDisplay: number
   currency: string
   plan: string
   yearly: boolean
@@ -253,6 +252,10 @@ async function createPaymeCheckout(
     lang?: string
   },
 ): Promise<PaymeCheckoutResponse> {
+  console.log('=== PAYME API REQUEST ===')
+  console.log('URL:', `${API_URL}/api/payme/checkout/${plan}`)
+  console.log('Body:', data)
+
   const response = await fetch(`${API_URL}/api/payme/checkout/${plan}`, {
     method: 'POST',
     headers: {
@@ -263,10 +266,13 @@ async function createPaymeCheckout(
 
   if (!response.ok) {
     const error = await response.json()
+    console.log('=== PAYME API ERROR ===', error)
     throw new Error(error.error || 'Failed to create Payme checkout')
   }
 
-  return response.json()
+  const json = await response.json()
+  console.log('=== PAYME API RESPONSE ===', json)
+  return json
 }
 
 export function useCreatePaymeCheckout() {

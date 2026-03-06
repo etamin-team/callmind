@@ -29,6 +29,13 @@ const PRICE_IDS = {
     PRICE_PER_PLAN_YEARLY.business,
 };
 
+const PLAN_PRODUCT_IDS: Record<string, string | undefined> = {
+  starter: config.PAYME_STARTER_PRODUCT_ID,
+  pro: config.PAYME_PRO_PRODUCT_ID,
+  professional: config.PAYME_PRO_PRODUCT_ID,
+  business: config.PAYME_BUSINESS_PRODUCT_ID,
+};
+
 const paymeRoutes: FastifyPluginAsync = async (fastify) => {
   const isTestMode = config.NODE_ENV !== "production";
 
@@ -73,23 +80,37 @@ const paymeRoutes: FastifyPluginAsync = async (fastify) => {
       );
 
       // Generate Payme checkout link
-      // Format: m={merchant_id};l={lang};ac.order_id={order_id};a={amount_in_tiyins};c={callback_url}
+      // Format: m={merchant_id};l={lang};ac.user_id={user_id};ac.product_id={product_id};a={amount_in_tiyins};c={callback_url}
       const amountInTiyins = amount * 100;
       const callbackUrl =
-        config.PAYME_CALLBACK_URL || "https://your-domain.com";
-      const data = `m=${config.PAYME_MERCHANT_ID};l=${lang};ac.order_id=${orderId};a=${amountInTiyins};c=${callbackUrl}`;
+        config.PAYME_CALLBACK_URL ||
+        "https://your-domain.com/api/payme/callback";
+
+      // Build account params
+      let accountParams = `ac.user_id=${userId || "guest"}`;
+
+      // Add product_id based on the plan (required if configured in Payme dashboard)
+      const productId = PLAN_PRODUCT_IDS[plan];
+      if (productId) {
+        accountParams += `;ac.product_id=${productId}`;
+      }
+
+      const data = `m=${config.PAYME_MERCHANT_ID};l=${lang};${accountParams};a=${amountInTiyins};c=${callbackUrl}`;
       const encoded = Buffer.from(data).toString("base64");
       const paymeLink = `https://checkout.paycom.uz/${encoded}`;
 
+      const returnUrl = `${callbackUrl.replace("/callback", "/success")}?order_id=${orderId}&plan=${plan}&yearly=${yearly}`;
+
       return reply.send({
         paymeLink,
+        checkoutUrl: paymeLink, // Alias for compatibility
         orderId,
-        amount,
-        amountInTiyins,
+        amount: amountInTiyins,
         currency: "UZS",
         plan,
         yearly,
         lang,
+        return_url: returnUrl,
       });
     } catch (error) {
       fastify.log.error(error, "Failed to create Payme checkout");

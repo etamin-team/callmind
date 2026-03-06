@@ -26,9 +26,10 @@ export function usePayme() {
   const isConfigured = !!env.VITE_PAYME_MERCHANT_ID
   // Use test checkout URL if VITE_PAYME_TEST_MODE is true
   // Note: Test URL is https://test.paycom.uz (not test.checkout.paycom.uz)
-  const checkoutUrl = env.VITE_PAYME_TEST_MODE === 'true'
-    ? 'https://test.paycom.uz'
-    : 'https://checkout.paycom.uz/'
+  const checkoutUrl =
+    env.VITE_PAYME_TEST_MODE === 'true'
+      ? 'https://test.paycom.uz'
+      : 'https://checkout.paycom.uz/'
 
   const openCheckout = (params: {
     orderId: string
@@ -36,6 +37,8 @@ export function usePayme() {
     returnUrl: string
     lang?: 'ru' | 'uz' | 'en'
   }) => {
+    console.log('=== openCheckout PARAMS ===', params)
+
     if (!env.VITE_PAYME_MERCHANT_ID) {
       console.error('Payme merchant ID not configured')
       return

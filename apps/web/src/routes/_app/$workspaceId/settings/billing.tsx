@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useUser } from '@clerk/clerk-react'
-import { Loader2, Zap, Check, CreditCard, ChevronDown, Building2, Landmark } from 'lucide-react'
+import {
+  Loader2,
+  Zap,
+  Check,
+  CreditCard,
+  ChevronDown,
+  Building2,
+  Landmark,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { useCreatePaymeCheckout } from '@/features/payments/api'
@@ -54,20 +62,39 @@ function BillingSettingsPage() {
       },
       {
         onSuccess: (data) => {
-          openCheckout({
-            orderId: data.orderId,
-            amount: data.amount,
-            returnUrl:
-              data.return_url || `${window.location.origin}/payments/success`,
-            lang: 'ru',
-          })
+          console.log('=== BILLING onSuccess ===', data)
+          console.log('return_url:', data.return_url)
+          console.log('amount:', data.amount)
+          console.log('orderId:', data.orderId)
+          console.log('paymeLink:', data.paymeLink)
+
+          setTimeout(() => {
+            // Use the paymeLink directly from API response!
+            if (data.paymeLink) {
+              window.location.href = data.paymeLink
+            } else {
+              openCheckout({
+                orderId: data.orderId,
+                amount: data.amount,
+                returnUrl:
+                  data.return_url ||
+                  `${window.location.origin}/payments/success`,
+                lang: 'ru',
+              })
+            }
+          }, 100)
+        },
+        onError: (error) => {
+          console.log('=== BILLING onError ===', error)
         },
       },
     )
   }
 
   const isLoading = (planId: PlanType) => {
-    return !!(createCheckout.isPending && createCheckout.variables?.plan === planId)
+    return !!(
+      createCheckout.isPending && createCheckout.variables?.plan === planId
+    )
   }
 
   if (!isLoaded) {
@@ -83,7 +110,10 @@ function BillingSettingsPage() {
       <div className="text-center mb-12">
         <h2 className="text-3xl font-semibold mb-3">Pricing</h2>
         <p className="text-muted-foreground">
-          Your current plan: <span className="text-foreground font-medium">{currentPlanConfig.name}</span>
+          Your current plan:{' '}
+          <span className="text-foreground font-medium">
+            {currentPlanConfig.name}
+          </span>
         </p>
         <div className="flex items-center justify-center gap-3 mt-6">
           <span className="text-sm">Monthly</span>
@@ -100,7 +130,7 @@ function BillingSettingsPage() {
           const config = PRICING_CONFIG[planId]
           const content = planContent[planId]
           const isCurrent = planId === userPlan
-          
+
           return (
             <div
               key={planId}
@@ -119,7 +149,7 @@ function BillingSettingsPage() {
                   Current
                 </span>
               )}
-              
+
               <div className="mb-4">
                 <h3 className="font-semibold text-lg">{config.name}</h3>
                 <p className="text-sm text-muted-foreground">
@@ -173,8 +203,10 @@ function BillingSettingsPage() {
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Loading...
                     </>
+                  ) : planId === 'free' ? (
+                    'Included'
                   ) : (
-                    planId === 'free' ? 'Included' : 'Upgrade'
+                    'Upgrade'
                   )}
                 </Button>
               )}
@@ -226,10 +258,7 @@ function BillingSettingsPage() {
                   'SLA guarantee',
                   'Custom contract',
                 ].map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-center gap-2 text-sm"
-                  >
+                  <li key={feature} className="flex items-center gap-2 text-sm">
                     <Check className="h-4 w-4 text-primary shrink-0" />
                     <span>{feature}</span>
                   </li>
@@ -358,7 +387,9 @@ function BillingSettingsPage() {
           <CreditCard className="w-5 h-5 text-muted-foreground" />
           <h3 className="text-xl font-bold">Billing History</h3>
         </div>
-        <p className="text-sm text-muted-foreground mb-6">Your past transactions</p>
+        <p className="text-sm text-muted-foreground mb-6">
+          Your past transactions
+        </p>
         <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
           <CreditCard className="w-12 h-12 mx-auto mb-4 opacity-20" />
           <p>No billing history yet</p>
