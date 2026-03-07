@@ -1,5 +1,4 @@
 import { FastifyPluginAsync } from "fastify";
-import crypto from "crypto";
 import { config } from "../../config/environment.js";
 import {
   PRICING_CONFIG,
@@ -79,38 +78,60 @@ const paymeRoutes: FastifyPluginAsync = async (fastify) => {
         "Payme checkout initiated",
       );
 
-      // Generate Payme checkout link
-      // Format: m={merchant_id};l={lang};ac.user_id={user_id};ac.product_id={product_id};a={amount_in_tiyins};c={callback_url}
-      const amountInTiyins = amount * 100;
-      const callbackUrl =
-        config.PAYME_CALLBACK_URL ||
-        "https://your-domain.com/api/payme/callback";
+      const callbackUrlBase =
+        config.PAYME_CALLBACK_URL || "https://your-domain.com";
+      const returnUrl = `${callbackUrlBase}/payments/success?order_id=${orderId}&plan=${plan}&yearly=${yearly}`;
 
-      // Build account params
-      let accountParams = `ac.user_id=${userId || "guest"}`;
+      // Amount must be in tiyins (1 UZS = 100 tiyin)
+      const amountTiyins = amount * 100;
 
-      // Add product_id based on the plan (required if configured in Payme dashboard)
-      const productId = PLAN_PRODUCT_IDS[plan];
-      if (productId) {
-        accountParams += `;ac.product_id=${productId}`;
-      }
+      // Get the product_id from the Payme merchant dashboard mapping
+      const productId = PLAN_PRODUCT_IDS[plan] || "1";
 
-      const data = `m=${config.PAYME_MERCHANT_ID};l=${lang};${accountParams};a=${amountInTiyins};c=${callbackUrl}`;
-      const encoded = Buffer.from(data).toString("base64");
+      // Build the Payme checkout URL using the official base64-encoded format:
+      // https://checkout.paycom.uz/BASE64(m=MERCHANT_ID;ac.KEY=VALUE;a=AMOUNT;c=CALLBACK;l=LANG)
+      // Account fields must match what's configured in the Payme dashboard: user_id + product_id
+      const paramParts = [
+        `m=${config.PAYME_MERCHANT_ID}`,
+        `ac.user_id=${userId || "guest"}`,
+        `ac.product_id=${productId}`,
+        `a=${amountTiyins}`,
+        `c=${returnUrl}`,
+        `l=${lang || "ru"}`,
+        `ct=15000`,
+      ];
+
+      const paramString = paramParts.join(";");
+      const encoded = Buffer.from(paramString).toString("base64");
+      // Use checkout.paycom.uz for production mode
       const paymeLink = `https://checkout.paycom.uz/${encoded}`;
 
-      const returnUrl = `${callbackUrl.replace("/callback", "/success")}?order_id=${orderId}&plan=${plan}&yearly=${yearly}`;
+      fastify.log.info(
+        {
+          paymeLink,
+          paramString,
+          amountTiyins,
+          orderId,
+          productId,
+        },
+        "Payme checkout link generated",
+      );
 
       return reply.send({
         paymeLink,
-        checkoutUrl: paymeLink, // Alias for compatibility
+        checkoutUrl: paymeLink,
         orderId,
-        amount: amountInTiyins,
+        amount: amountTiyins,
         currency: "UZS",
         plan,
         yearly,
         lang,
         return_url: returnUrl,
+        merchant_id: config.PAYME_MERCHANT_ID,
+        account: {
+          user_id: userId || "guest",
+          product_id: productId,
+        },
       });
     } catch (error) {
       fastify.log.error(error, "Failed to create Payme checkout");

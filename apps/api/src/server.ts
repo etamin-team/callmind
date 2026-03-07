@@ -32,6 +32,17 @@ const fastify = Fastify({
   },
 })
 
+// Add parser for 'text/json' content type (Payme sends "Content-Type: text/json; charset=UTF-8")
+// Fastify only supports 'application/json' by default, causing 415 errors for Payme webhooks
+fastify.addContentTypeParser('text/json', { parseAs: 'string' }, (req, body, done) => {
+  try {
+    const json = JSON.parse(body as string)
+    done(null, json)
+  } catch (err: any) {
+    done(err, undefined)
+  }
+})
+
 // Register raw body parser (needed for webhooks verification)
 await fastify.register(rawBody, {
   field: 'rawBody', // attach raw body to request.rawBody

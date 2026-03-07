@@ -232,14 +232,20 @@ export function useChargeRecurringPayment() {
 
 export interface PaymeCheckoutResponse {
   paymeLink: string
-  checkoutUrl: string // Alias for compatibility
+  checkoutUrl: string
   orderId: string
   amount: number
+  amountRaw?: number
   currency: string
   plan: string
   yearly: boolean
   lang?: string
   return_url: string
+  merchant_id?: string
+  account?: {
+    user_id: string
+    product_id?: string
+  }
 }
 
 async function createPaymeCheckout(

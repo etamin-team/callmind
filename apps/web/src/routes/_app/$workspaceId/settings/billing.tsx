@@ -3,7 +3,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useUser } from '@clerk/clerk-react'
 import {
   Loader2,
-  Zap,
   Check,
   CreditCard,
   ChevronDown,
@@ -13,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { useCreatePaymeCheckout } from '@/features/payments/api'
-import { usePayme } from '@/features/payments/components/payme-provider'
+
 import { PRICING_CONFIG, type PlanType } from '@repo/types'
 import { cn } from '@/lib/utils'
 
@@ -38,7 +37,6 @@ const planContent = {
 function BillingSettingsPage() {
   const { user, isLoaded } = useUser()
   const createCheckout = useCreatePaymeCheckout()
-  const { openCheckout } = usePayme()
   const [yearly, setYearly] = useState(false)
   const [enterpriseExpanded, setEnterpriseExpanded] = useState(false)
 
@@ -63,26 +61,14 @@ function BillingSettingsPage() {
       {
         onSuccess: (data) => {
           console.log('=== BILLING onSuccess ===', data)
-          console.log('return_url:', data.return_url)
-          console.log('amount:', data.amount)
-          console.log('orderId:', data.orderId)
           console.log('paymeLink:', data.paymeLink)
 
-          setTimeout(() => {
-            // Use the paymeLink directly from API response!
-            if (data.paymeLink) {
-              window.location.href = data.paymeLink
-            } else {
-              openCheckout({
-                orderId: data.orderId,
-                amount: data.amount,
-                returnUrl:
-                  data.return_url ||
-                  `${window.location.origin}/payments/success`,
-                lang: 'ru',
-              })
-            }
-          }, 100)
+          if (data.paymeLink) {
+            // Redirect to the Payme checkout page
+            window.location.href = data.paymeLink
+          } else {
+            console.error('No paymeLink returned from API')
+          }
         },
         onError: (error) => {
           console.log('=== BILLING onError ===', error)

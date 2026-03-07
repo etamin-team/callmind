@@ -174,6 +174,8 @@ if (config.PAYME_PASSWORD) {
     `[Config] Payme Password is MISSING. Payme webhook verification will fail.`,
   );
 }
+// Triggering dev server restart to reload .env fixed
+
 
 const hasPaymePrices = !!(
   config.PAYME_STARTER_MONTHLY ||

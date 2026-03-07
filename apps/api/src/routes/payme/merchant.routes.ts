@@ -11,7 +11,7 @@ import { randomUUID } from "crypto";
 const STATE = {
   CREATED: 1,
   PERFORMED: 2,
-  CANCELLED_BEFORE: -1,
+  CANCELLED_BEFORE: -1, 
   CANCELLED_AFTER: -2,
 } as const;
 
@@ -116,37 +116,78 @@ function verifyAuth(authHeader: string | undefined): boolean {
   const login = decoded.substring(0, colonIndex);
   const password = decoded.substring(colonIndex + 1);
 
+  console.log(`[Payme Auth Debug] Comparing Login: [${login}] vs [${config.PAYME_LOGIN}]`);
+  console.log(`[Payme Auth Debug] Comparing Password: [${password}] vs [${config.PAYME_PASSWORD}]`);
+  console.log(`[Payme Auth Debug] Matches? ${login === config.PAYME_LOGIN && password === config.PAYME_PASSWORD}`);
+
+
   return login === config.PAYME_LOGIN && password === config.PAYME_PASSWORD;
 }
 
 // ─── Parse order_id to extract components ───
+// Format: {userId}_{plan}_{monthly|yearly}_{timestamp}
+// Note: userId may contain underscores (e.g. Clerk IDs like "user_37NW...")
 function parseOrderId(orderId: string): {
   userId: string;
   plan: string;
   yearly: boolean;
 } {
+  // Parse from the end since plan, billing period, and timestamp are known formats
   const parts = orderId.split("_");
+
+  if (parts.length < 4) {
+    // Fallback for malformed order IDs
+    return {
+      userId: parts[0] || "",
+      plan: parts[1] || "",
+      yearly: parts[2] === "yearly",
+    };
+  }
+
+  // Last part is timestamp, second-to-last is "monthly"/"yearly", third-to-last is plan
+  const timestamp = parts[parts.length - 1];
+  const billingPeriod = parts[parts.length - 2];
+  const plan = parts[parts.length - 3];
+  // Everything before plan is the userId (may contain underscores)
+  const userId = parts.slice(0, parts.length - 3).join("_");
+
   return {
-    userId: parts[0] || "",
-    plan: parts[1] || "",
-    yearly: parts[2] === "yearly",
+    userId,
+    plan: plan || "",
+    yearly: billingPeriod === "yearly",
   };
 }
 
 // ─── Find user by either MongoDB _id or clerkUserId ───
 async function findUserByIdentifier(identifier: string) {
+  console.log(`[Payme] Looking for user: ${identifier}`);
   try {
     const user = await UserModel.findById(identifier);
-    if (user) return user;
+    if (user) {
+      console.log(`[Payme] Found user by _id: ${user._id}`);
+      return user;
+    }
   } catch {
     // Not a valid ObjectId, try clerkUserId
   }
 
-  return UserModel.findOne({ clerkUserId: identifier });
+  const userByClerk = await UserModel.findOne({ clerkUserId: identifier });
+  if (userByClerk) {
+    console.log(
+      `[Payme] Found user by clerkUserId: ${userByClerk.clerkUserId}`,
+    );
+    return userByClerk;
+  }
+
+  console.log(`[Payme] User NOT found: ${identifier}`);
+  return null;
 }
 
 // ─── Extract userId and plan from account params ───
-// Supports both sandbox format (user_id + product_id) and production format (order_id)
+// Supports multiple formats:
+//   1. user_id + order_id (new checkout format from base64-encoded URL)
+//   2. user_id + product_id (sandbox format)
+//   3. order_id alone (legacy format)
 function extractAccountInfo(account: Record<string, string> | undefined): {
   userId: string;
   plan: string;
@@ -156,8 +197,20 @@ function extractAccountInfo(account: Record<string, string> | undefined): {
 } | null {
   if (!account || Object.keys(account).length === 0) return null;
 
+  // Format 1: user_id + order_id (new checkout format)
+  if (account.user_id && account.order_id) {
+    const parsed = parseOrderId(account.order_id);
+    return {
+      userId: account.user_id,
+      plan: parsed.plan,
+      yearly: parsed.yearly,
+      orderId: account.order_id,
+      invalidField: "user_id",
+    };
+  }
+
+  // Format 2: user_id + product_id (sandbox format)
   if (account.user_id && account.product_id) {
-    // Sandbox format
     const planMap: Record<string, string> = {
       "1": "starter",
       "2": "professional",
@@ -173,6 +226,7 @@ function extractAccountInfo(account: Record<string, string> | undefined): {
     };
   }
 
+  // Format 3: order_id alone (legacy)
   if (account.order_id) {
     const parsed = parseOrderId(account.order_id);
     return {
@@ -181,6 +235,17 @@ function extractAccountInfo(account: Record<string, string> | undefined): {
       yearly: parsed.yearly,
       orderId: account.order_id,
       invalidField: "order_id",
+    };
+  }
+
+  // Format 4: user_id alone (basic fallback)
+  if (account.user_id) {
+    return {
+      userId: account.user_id,
+      plan: "starter",
+      yearly: false,
+      orderId: `${account.user_id}_starter_monthly`,
+      invalidField: "user_id",
     };
   }
 
@@ -227,7 +292,10 @@ async function checkPerformTransaction(
   }
 
   // Validate amount matches expected price for the plan (amount is in tiyins)
-  const expectedPriceUzs = getPriceForPlan(accountInfo.plan, accountInfo.yearly);
+  const expectedPriceUzs = getPriceForPlan(
+    accountInfo.plan,
+    accountInfo.yearly,
+  );
   const expectedAmountTiyins = expectedPriceUzs * 100;
   if (expectedAmountTiyins > 0 && params.amount !== expectedAmountTiyins) {
     fastify.log.warn(
@@ -501,9 +569,7 @@ async function checkTransaction(
     perform_time: transaction.performTime
       ? transaction.performTime.getTime()
       : 0,
-    cancel_time: transaction.cancelTime
-      ? transaction.cancelTime.getTime()
-      : 0,
+    cancel_time: transaction.cancelTime ? transaction.cancelTime.getTime() : 0,
     transaction: transaction.merchantTransactionId,
     state: transaction.state,
     reason: transaction.reason ?? null,
