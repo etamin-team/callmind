@@ -30,38 +30,38 @@ export function SidebarFooterComponent() {
 
   return (
     <div className="group-data-[collapsible=icon]:hidden">
-      <div className="rounded-2xl border border-sidebar-border/70 bg-sidebar/80 p-3 shadow-lg supports-[backdrop-filter]:backdrop-blur-xl">
-        <div className="flex items-center justify-between text-sm text-sidebar-foreground">
-          <span className="font-medium">{t('app.sidebar.credits')}</span>
-          <span className="font-semibold tabular-nums">
+      <div className="rounded-3xl bg-background p-4 shadow-sm ring-1 ring-border/20">
+        <div className="flex items-center justify-between text-sm text-foreground">
+          <span className="font-semibold">{t('app.sidebar.credits')}</span>
+          <span className="font-semibold tabular-nums text-foreground/80">
             {userCredits} / {planConfig.credits}
           </span>
         </div>
-        <div className="my-2 h-px bg-sidebar-border/70" />
-        <p className="text-xs text-sidebar-foreground/65">
+        <div className="my-3 h-px bg-border" />
+        <p className="text-xs font-medium text-muted-foreground">
           {t('app.sidebar.resets_on', { date: resetDate })}
         </p>
 
         {userPlan === 'free' && (
           <div
-            className="mt-3 rounded-xl p-[1px]"
+            className="mt-4 rounded-2xl p-px"
             style={{
               background:
-                'linear-gradient(135deg, var(--sidebar-primary) 0%, var(--primary) 80%)',
+                'linear-gradient(90deg, #f5a35c 0%, #f08db9 55%, #d38cff 100%)',
             }}
           >
             <Button
               asChild
               size="sm"
               variant="ghost"
-              className="h-9 w-full rounded-[11px] bg-sidebar font-semibold text-sidebar-foreground hover:bg-sidebar/90"
+              className="h-11 w-full rounded-[15px] bg-background text-base font-semibold text-foreground hover:bg-background"
             >
               <Link
                 to="/$workspaceId/settings/billing"
                 params={{ workspaceId }}
               >
-                <span className="mr-2 inline-flex size-5 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
-                  <ArrowUp className="size-3" />
+                <span className="mr-2 inline-flex size-6 items-center justify-center rounded-full bg-foreground text-background">
+                  <ArrowUp className="size-3.5" />
                 </span>
                 {t('app.sidebar.upgrade')}
               </Link>

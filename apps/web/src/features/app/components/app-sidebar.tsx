@@ -12,7 +12,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-  SidebarTrigger,
   useSidebar,
 } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
@@ -73,32 +72,24 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
       collapsible="icon"
       className={cn(
         '[&_[data-slot=sidebar-inner]]:border-r [&_[data-slot=sidebar-inner]]:border-sidebar-border/80 [&_[data-slot=sidebar-inner]]:bg-sidebar [&_[data-slot=sidebar-inner]]:text-sidebar-foreground',
-        'supports-[backdrop-filter]:[&_[data-slot=sidebar-inner]]:bg-sidebar/70 supports-[backdrop-filter]:[&_[data-slot=sidebar-inner]]:backdrop-blur-2xl',
+        'supports-[backdrop-filter]:[&_[data-slot=sidebar-inner]]:bg-sidebar/92 supports-[backdrop-filter]:[&_[data-slot=sidebar-inner]]:backdrop-blur-xl',
         '[&_[data-slot=sidebar-header]]:bg-transparent [&_[data-slot=sidebar-footer]]:bg-transparent [&_[data-slot=sidebar-content]]:bg-transparent',
         className,
       )}
       {...props}
     >
-      <SidebarHeader className="px-3 pb-0 pt-3">
-        <div className="flex items-center gap-2">
-          <div className="min-w-0 flex-1">
-            <TeamSwitcher />
-          </div>
-          <SidebarTrigger className="shrink-0 rounded-xl border border-sidebar-border/60 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" />
-        </div>
+      <SidebarHeader className="border-b border-sidebar-border/70 px-4 pb-3 pt-4">
+        <TeamSwitcher />
         {!isCollapsed && (
-          <p className="px-2 pt-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-sidebar-foreground/55">
+          <p className="px-1 pt-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-sidebar-foreground/50">
             {t('app.nav.navigation')}
           </p>
         )}
       </SidebarHeader>
-      <SidebarContent className="px-3 pb-4 pt-2">
-        <div className="-mx-1">
-          <TeamSwitcher />
-        </div>
+      <SidebarContent className="px-4 pb-4 pt-3">
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter className="px-3 pb-4 pt-0">
+      <SidebarFooter className="px-4 pb-4 pt-0">
         <SidebarFooterComponent />
       </SidebarFooter>
       <SidebarRail />

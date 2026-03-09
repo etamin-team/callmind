@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -43,9 +44,11 @@ export function TeamSwitcher() {
   const userPlan = (
     (user.publicMetadata.plan as string) || 'free'
   ).toLowerCase()
+  const planLabel = userPlan.charAt(0).toUpperCase() + userPlan.slice(1)
   const displayName =
     activeOrg?.name || user.fullName || user.username || 'Personal'
-  const displayImage = activeOrg?.imageUrl || user.imageUrl
+  const label =
+    activeOrg?.name || `${user.firstName || user.username || 'Personal'}'s Team`
 
   return (
     <SidebarMenu>
@@ -54,26 +57,26 @@ export function TeamSwitcher() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="h-11 rounded-2xl border border-sidebar-border/40 bg-sidebar/70 px-2 text-sidebar-foreground transition-colors data-[state=open]:border-sidebar-border data-[state=open]:bg-sidebar-accent/40 data-[state=open]:text-sidebar-accent-foreground supports-[backdrop-filter]:backdrop-blur-xl"
+              className={cn(
+                'h-10 rounded-none border-0 bg-transparent px-1 text-sidebar-foreground shadow-none transition-colors hover:bg-transparent data-[state=open]:bg-transparent',
+                'group-data-[collapsible=icon]:size-10 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0',
+              )}
             >
-              <Avatar className="size-8 rounded-lg">
-                <AvatarImage src={displayImage} alt={displayName} />
-                <AvatarFallback className="rounded-lg">
-                  {displayName.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <div className="flex items-center gap-2">
-                  <span className="truncate font-semibold">{displayName}</span>
-                  <span className="rounded-full border border-sidebar-border/60 bg-sidebar-accent/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-sidebar-accent-foreground">
-                    {userPlan}
+              <span className="flex size-8 items-center justify-center rounded-lg bg-foreground text-sm font-semibold text-background">
+                {displayName.charAt(0).toUpperCase()}
+              </span>
+              <div className="flex min-w-0 flex-1 items-center gap-3 text-left group-data-[collapsible=icon]:hidden">
+                <span className="text-sidebar-foreground/25">/</span>
+                <div className="flex min-w-0 items-center gap-2 overflow-hidden">
+                  <span className="truncate text-base font-semibold tracking-tight">
+                    {label}
+                  </span>
+                  <span className="rounded-full border border-sidebar-border bg-background px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                    {planLabel}
                   </span>
                 </div>
-                <span className="truncate text-xs text-sidebar-foreground/60">
-                  {activeOrg ? 'Organization' : 'Personal'}
-                </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDown className="ml-auto size-4 text-sidebar-foreground/35 group-data-[collapsible=icon]:hidden" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

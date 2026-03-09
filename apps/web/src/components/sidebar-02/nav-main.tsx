@@ -79,11 +79,11 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                   <SidebarMenuButton
                     data-active={isActive}
                     className={cn(
-                      'group flex w-full items-center rounded-2xl border border-transparent px-3 py-2 text-sm font-medium transition-all duration-200',
+                      'group flex w-full items-center rounded-2xl border px-3 py-2 text-sm font-medium transition-all duration-200',
                       isCollapsed && 'justify-center px-2',
                       isActive
-                        ? 'border-sidebar-border bg-sidebar-primary/15 text-sidebar-foreground shadow-[0_18px_45px_rgba(15,23,42,0.15)]'
-                        : 'text-sidebar-foreground/65 hover:border-sidebar-border/60 hover:bg-sidebar-accent/35 hover:text-sidebar-accent-foreground',
+                        ? 'border-sidebar-border bg-background text-foreground shadow-sm'
+                        : 'border-transparent text-sidebar-foreground/70 hover:border-sidebar-border/70 hover:bg-background/70 hover:text-foreground',
                     )}
                   >
                     {route.icon}
@@ -120,8 +120,8 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                                 className={cn(
                                   'flex items-center rounded-xl px-4 py-1.5 text-sm font-medium transition-colors',
                                   isSubActive
-                                    ? 'bg-sidebar-primary/15 text-sidebar-foreground'
-                                    : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/30 hover:text-sidebar-accent-foreground',
+                                    ? 'bg-background text-foreground'
+                                    : 'text-sidebar-foreground/60 hover:bg-background/70 hover:text-foreground',
                                 )}
                               >
                                 {subRoute.icon && (
@@ -144,11 +144,11 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                 <Link
                   to={route.link as any}
                   className={cn(
-                    'group flex items-center rounded-2xl border border-transparent px-3 py-2 text-sm font-medium transition-all duration-200',
+                    'group flex items-center rounded-2xl border px-3 py-2 text-sm font-medium transition-all duration-200',
                     isCollapsed && 'justify-center px-2',
                     isActive
-                      ? 'border-sidebar-border bg-sidebar-primary/15 text-sidebar-foreground shadow-[0_18px_45px_rgba(15,23,42,0.15)]'
-                      : 'text-sidebar-foreground/65 hover:border-sidebar-border/60 hover:bg-sidebar-accent/35 hover:text-sidebar-accent-foreground',
+                      ? 'border-sidebar-border bg-background text-foreground shadow-sm'
+                      : 'border-transparent text-sidebar-foreground/70 hover:border-sidebar-border/70 hover:bg-background/70 hover:text-foreground',
                   )}
                 >
                   {route.icon}
