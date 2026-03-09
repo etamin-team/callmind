@@ -1,44 +1,64 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useUser } from '@clerk/clerk-react'
-import {
-  Loader2,
-  Check,
-  CreditCard,
-  ChevronDown,
-  Building2,
-  Landmark,
-} from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Loader2, Check, CreditCard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
 import { useCreatePaymeCheckout } from '@/features/payments/api'
+import { motion, AnimatePresence } from 'motion/react'
 
 import { PRICING_CONFIG, type PlanType } from '@repo/types'
 import { cn } from '@/lib/utils'
 
-const planOrder: PlanType[] = ['free', 'starter', 'professional', 'business']
+const planOrder: PlanType[] = ['starter', 'professional', 'business']
 
-const planContent = {
-  free: {
-    description: 'Try it out',
-  },
+const planContent: Record<
+  string,
+  { description: string; icon: string; color: string; popular?: boolean }
+> = {
   starter: {
     description: 'For small teams',
-    popular: true,
+    icon: '⭐',
+    color: 'text-blue-500',
   },
   professional: {
     description: 'For growing businesses',
+    icon: '✨',
+    color: 'text-amber-500',
+    popular: true,
   },
   business: {
-    description: 'For enterprises',
+    description: 'For large teams',
+    icon: '💎',
+    color: 'text-pink-500',
   },
-} as const
+}
+
+// Animated Number Component
+function AnimatedNumber({ value }: { value: number }) {
+  return (
+    <motion.span
+      key={value}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{
+        type: 'spring',
+        stiffness: 300,
+        damping: 30,
+      }}
+      className="inline-block"
+    >
+      {value}
+    </motion.span>
+  )
+}
 
 function BillingSettingsPage() {
+  const { t } = useTranslation()
   const { user, isLoaded } = useUser()
   const createCheckout = useCreatePaymeCheckout()
   const [yearly, setYearly] = useState(false)
-  const [enterpriseExpanded, setEnterpriseExpanded] = useState(false)
 
   const userPlan = ((user?.publicMetadata?.plan as string) ||
     'free') as PlanType
@@ -53,9 +73,19 @@ function BillingSettingsPage() {
   const handleUpgrade = (planId: PlanType) => {
     if (!user) return
     if (planId === 'free' || planId === userPlan) return
+
+    // Map plan IDs to API plan names
+    const planMapping: Record<string, string> = {
+      starter: 'starter',
+      professional: 'pro',
+      business: 'business',
+    }
+
+    const apiPlanName = planMapping[planId] || planId
+
     createCheckout.mutate(
       {
-        plan: planId,
+        plan: apiPlanName,
         data: { yearly, userId: user.id, lang: 'ru' },
       },
       {
@@ -78,8 +108,15 @@ function BillingSettingsPage() {
   }
 
   const isLoading = (planId: PlanType) => {
+    const planMapping: Record<string, string> = {
+      starter: 'starter',
+      professional: 'pro',
+      business: 'business',
+    }
+    const apiPlanName = planMapping[planId] || planId
+
     return !!(
-      createCheckout.isPending && createCheckout.variables?.plan === planId
+      createCheckout.isPending && createCheckout.variables?.plan === apiPlanName
     )
   }
 
@@ -92,293 +129,267 @@ function BillingSettingsPage() {
   }
 
   return (
-    <div className="space-y-12">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-semibold mb-3">Pricing</h2>
-        <p className="text-muted-foreground">
-          Your current plan:{' '}
-          <span className="text-foreground font-medium">
-            {currentPlanConfig.name}
-          </span>
-        </p>
-        <div className="flex items-center justify-center gap-3 mt-6">
-          <span className="text-sm">Monthly</span>
-          <Switch checked={yearly} onCheckedChange={setYearly} />
-          <span className="text-sm">Yearly</span>
-          <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
-            Save 17%
-          </span>
+    <div className="max-w-6xl mx-auto py-8 space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">{t('app.billing.title')}</h1>
+        <div className="relative inline-flex items-center rounded-lg border bg-card p-1">
+          <motion.div
+            className="absolute inset-y-1 bg-background shadow-sm rounded-md"
+            initial={false}
+            animate={{
+              x: yearly ? '100%' : '0%',
+              width: yearly ? 'calc(50% - 4px)' : 'calc(50% - 4px)',
+            }}
+            transition={{
+              type: 'spring',
+              stiffness: 400,
+              damping: 35,
+            }}
+          />
+          <button
+            onClick={() => setYearly(false)}
+            className={cn(
+              'relative z-10 px-4 py-1.5 text-sm font-medium rounded-md transition-colors',
+              !yearly
+                ? 'text-foreground'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            {t('app.billing.monthly')}
+          </button>
+          <button
+            onClick={() => setYearly(true)}
+            className={cn(
+              'relative z-10 px-4 py-1.5 text-sm font-medium rounded-md transition-colors',
+              yearly
+                ? 'text-foreground'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            {t('app.billing.yearly')}
+          </button>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-4 gap-4 mb-6">
-        {planOrder.map((planId) => {
+      {/* Pricing Cards */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {planOrder.map((planId, index) => {
           const config = PRICING_CONFIG[planId]
           const content = planContent[planId]
           const isCurrent = planId === userPlan
+          const yearlyPrice = Math.floor(config.priceUsd * 12 * 0.83)
+          const monthlyPrice = config.priceUsd
 
           return (
-            <div
+            <motion.div
               key={planId}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: index * 0.1,
+                type: 'spring',
+                stiffness: 300,
+                damping: 30,
+              }}
+              whileHover={{
+                scale: 1.02,
+                transition: { type: 'spring', stiffness: 400, damping: 25 },
+              }}
               className={cn(
-                'relative rounded-xl border p-6 flex flex-col',
-                content.popular && 'border-primary shadow-lg',
+                'relative rounded-2xl border bg-card p-6 flex flex-col',
+                content.popular && 'shadow-xl',
+                isCurrent && 'ring-2 ring-primary',
               )}
             >
-              {content.popular && !isCurrent && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full">
-                  Popular
-                </span>
-              )}
-              {isCurrent && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full">
-                  Current
-                </span>
+              {/* Popular Badge */}
+              {content.popular && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    delay: index * 0.1 + 0.2,
+                    type: 'spring',
+                    stiffness: 400,
+                    damping: 25,
+                  }}
+                  className="absolute -top-3 left-1/2 -translate-x-1/2"
+                >
+                  <span className="inline-block px-3 py-1 text-xs font-medium bg-foreground text-background rounded-full">
+                    {t('app.billing.popular')}
+                  </span>
+                </motion.div>
               )}
 
-              <div className="mb-4">
-                <h3 className="font-semibold text-lg">{config.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {content.description}
-                </p>
-              </div>
+              {/* Plan Icon & Name */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  delay: index * 0.1 + 0.1,
+                  type: 'spring',
+                  stiffness: 400,
+                  damping: 25,
+                }}
+                className="flex items-center gap-2 mb-4"
+              >
+                <span className={cn('text-2xl', content.color)}>
+                  {content.icon}
+                </span>
+                <h3 className="text-xl font-semibold">
+                  {t(
+                    `marketing.pricing.plans.${planId === 'professional' ? 'pro' : planId}.name`,
+                  )}
+                </h3>
+              </motion.div>
+
+              {/* Price */}
               <div className="mb-6">
-                <span className="text-4xl font-bold">
-                  $
-                  {yearly
-                    ? Math.floor(config.priceUsd * 12 * 0.83)
-                    : config.priceUsd}
-                </span>
-                <span className="text-muted-foreground">
-                  /{yearly ? 'yr' : 'mo'}
-                </span>
+                <div className="flex items-baseline gap-2 mb-1">
+                  <span className="text-5xl font-bold tracking-tight">
+                    $
+                    <AnimatePresence mode="wait">
+                      <AnimatedNumber
+                        value={yearly ? yearlyPrice : monthlyPrice}
+                      />
+                    </AnimatePresence>
+                  </span>
+                  <AnimatePresence>
+                    {yearly && (
+                      <motion.span
+                        initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 400,
+                          damping: 25,
+                        }}
+                        className="inline-block px-2 py-0.5 text-xs font-medium bg-red-500 text-white rounded-md"
+                      >
+                        {t('app.billing.discount')}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </div>
+                <motion.p
+                  key={yearly ? 'yearly' : 'monthly'}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 30,
+                    delay: 0.05,
+                  }}
+                  className="text-sm text-muted-foreground"
+                >
+                  {t('app.billing.per_month', {
+                    amount: yearly ? yearlyPrice : monthlyPrice * 12,
+                    period: yearly
+                      ? t('app.billing.billed_annually')
+                      : t('app.billing.billed_monthly'),
+                  })}
+                </motion.p>
               </div>
-              <ul className="space-y-3 mb-6 flex-1">
-                {config.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
 
-              {isCurrent ? (
-                <div className="mt-auto border-t pt-4">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-muted-foreground">Credits</span>
-                    <span className="font-medium">
+              {/* CTA Button */}
+              <motion.div
+                key={`button-${yearly}`}
+                initial={{ scale: 0.98 }}
+                animate={{ scale: 1 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 20,
+                }}
+              >
+                <Button
+                  size="lg"
+                  className="w-full mb-6"
+                  variant={isCurrent ? 'outline' : 'default'}
+                  onClick={() => handleUpgrade(planId)}
+                  disabled={isLoading(planId) || isCurrent}
+                >
+                  {isLoading(planId) ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t('app.billing.processing')}
+                    </>
+                  ) : isCurrent ? (
+                    t('app.billing.current_plan')
+                  ) : (
+                    t('app.billing.upgrade')
+                  )}
+                </Button>
+              </motion.div>
+
+              {/* Usage for current plan */}
+              {isCurrent && (
+                <div className="mb-6 pb-6 border-b">
+                  <div className="flex items-center justify-between text-sm mb-2">
+                    <span className="text-muted-foreground">
+                      {t('app.billing.usage')}
+                    </span>
+                    <span className="font-medium tabular-nums">
                       {userCredits} / {config.credits}
                     </span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-primary"
+                      className="h-full bg-foreground rounded-full transition-all"
                       style={{ width: `${usagePercentage}%` }}
                     />
                   </div>
                 </div>
-              ) : (
-                <Button
-                  className="w-full mt-auto"
-                  variant={content.popular ? 'default' : 'outline'}
-                  onClick={() => handleUpgrade(planId)}
-                  disabled={isLoading(planId) || planId === 'free'}
-                >
-                  {isLoading(planId) ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Loading...
-                    </>
-                  ) : planId === 'free' ? (
-                    'Included'
-                  ) : (
-                    'Upgrade'
-                  )}
-                </Button>
               )}
-            </div>
+
+              {/* Features */}
+              <div className="space-y-3 flex-1">
+                <p className="text-sm font-semibold text-muted-foreground">
+                  {t('app.billing.everything_in', {
+                    plan:
+                      planId === 'starter'
+                        ? t('marketing.pricing.plans.free.name')
+                        : planOrder[planOrder.indexOf(planId) - 1]
+                          ? t(
+                              `marketing.pricing.plans.${planOrder[planOrder.indexOf(planId) - 1] === 'professional' ? 'pro' : planOrder[planOrder.indexOf(planId) - 1]}.name`,
+                            )
+                          : t('marketing.pricing.plans.free.name'),
+                  })}{' '}
+                  +
+                </p>
+                <ul className="space-y-3">
+                  {(
+                    t(
+                      `marketing.pricing.plans.${planId === 'professional' ? 'pro' : planId}.features`,
+                      { returnObjects: true },
+                    ) as string[]
+                  ).map((feature: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-sm">
+                      <Check className="h-4 w-4 shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </motion.div>
           )
         })}
       </div>
 
-      <button
-        onClick={() => setEnterpriseExpanded(!enterpriseExpanded)}
-        className="relative w-full rounded-xl border-2 border-primary bg-gradient-to-r from-primary/5 to-primary/10 p-6 md:p-8 text-left transition-all hover:shadow-lg"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <h3 className="text-2xl font-bold">Enterprise</h3>
-              <span className="bg-primary text-primary-foreground text-sm px-3 py-1 rounded-full">
-                Premium
-              </span>
-            </div>
-            <p className="text-muted-foreground mb-4">
-              For large organizations
-            </p>
-
-            <div
-              className={cn(
-                'grid gap-2 transition-all duration-300 ease-in-out',
-                enterpriseExpanded
-                  ? 'grid-rows-[1fr] opacity-100'
-                  : 'grid-rows-[1fr] opacity-100',
-              )}
-            >
-              <ul
-                className={cn(
-                  'grid grid-cols-1 sm:grid-cols-2 gap-2',
-                  'transition-all duration-300 ease-in-out',
-                  enterpriseExpanded
-                    ? 'opacity-0 h-0 overflow-hidden'
-                    : 'opacity-100',
-                )}
-              >
-                {[
-                  'Unlimited calls',
-                  'Unlimited super realistic calls',
-                  'Unlimited AI agents',
-                  'White-label solution',
-                  'Integrations to custom systems',
-                  'Priority support',
-                  'SLA guarantee',
-                  'Custom contract',
-                ].map((feature) => (
-                  <li key={feature} className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-          <div className="shrink-0">
-            <ChevronDown
-              className={cn(
-                'w-5 h-5 text-muted-foreground transition-transform duration-300',
-                enterpriseExpanded && 'rotate-180',
-              )}
-            />
-          </div>
+      {/* Billing History */}
+      <div className="rounded-xl border bg-card overflow-hidden">
+        <div className="px-6 py-4 border-b">
+          <h3 className="font-semibold">{t('app.billing.billing_history')}</h3>
         </div>
-
-        <div
-          className={cn(
-            'overflow-hidden transition-all duration-500 ease-in-out',
-            enterpriseExpanded
-              ? 'max-h-[800px] mt-8 pt-6 border-t border-primary/20 opacity-100'
-              : 'max-h-0 mt-0 pt-0 border-t-0 border-transparent opacity-0',
-          )}
-        >
-          <div className="grid md:grid-cols-2 gap-8">
-            <div
-              className={cn(
-                'transition-all duration-500 delay-100',
-                enterpriseExpanded
-                  ? 'translate-y-0 opacity-100'
-                  : 'translate-y-4 opacity-0',
-              )}
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <Building2 className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold">B2B Solutions</h4>
-              </div>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>Unlimited API calls with custom rate limits</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>Dedicated infrastructure with 99.9% SLA</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>Custom voice models & branding</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>CRM integrations (Salesforce, HubSpot, etc.)</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>Advanced analytics dashboard</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>Team management & role-based access</span>
-                </li>
-              </ul>
-            </div>
-            <div
-              className={cn(
-                'transition-all duration-500 delay-200',
-                enterpriseExpanded
-                  ? 'translate-y-0 opacity-100'
-                  : 'translate-y-4 opacity-0',
-              )}
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <Landmark className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold">B2G Solutions</h4>
-              </div>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>On-premise deployment option</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>Data residency & security compliance</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>Government-grade encryption (AES-256)</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>Custom procurement & billing</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>Priority 24/7 support with dedicated CSM</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-primary shrink-0" />
-                  <span>Integration with government systems</span>
-                </li>
-              </ul>
-            </div>
+        <div className="p-12 text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-muted mb-3">
+            <CreditCard className="h-5 w-5 text-muted-foreground" />
           </div>
-          <div
-            className={cn(
-              'mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between transition-all duration-500 delay-300',
-              enterpriseExpanded
-                ? 'translate-y-0 opacity-100'
-                : 'translate-y-4 opacity-0',
-            )}
-          >
-            <p className="text-lg text-muted-foreground">
-              Tailored solutions for your organization's unique needs
-            </p>
-            <Button size="lg" asChild>
-              <a href="mailto:sales@callmind.uz">Contact Sales</a>
-            </Button>
-          </div>
-        </div>
-      </button>
-
-      <div className="mt-12 rounded-xl border p-6">
-        <div className="flex items-center gap-2 mb-1">
-          <CreditCard className="w-5 h-5 text-muted-foreground" />
-          <h3 className="text-xl font-bold">Billing History</h3>
-        </div>
-        <p className="text-sm text-muted-foreground mb-6">
-          Your past transactions
-        </p>
-        <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
-          <CreditCard className="w-12 h-12 mx-auto mb-4 opacity-20" />
-          <p>No billing history yet</p>
+          <p className="text-sm text-muted-foreground">
+            {t('app.billing.no_billing_history')}
+          </p>
         </div>
       </div>
     </div>

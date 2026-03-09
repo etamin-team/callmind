@@ -208,139 +208,144 @@ const Pricing2 = ({ className }: Pricing2Props) => {
         </div>
 
         <div className="relative mt-8 max-w-5xl mx-auto w-full group">
-          {/* Subtle animated gradient glow effect behind the card */}
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/30 to-blue-600/30 rounded-2xl blur opacity-30 group-hover:opacity-70 transition duration-500"></div>
+          <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-br from-primary/20 via-primary/5 to-transparent blur-2xl opacity-40 transition duration-500 group-hover:opacity-70" />
 
           <button
+            type="button"
             onClick={() => setEnterpriseExpanded(!enterpriseExpanded)}
-            className="relative w-full rounded-2xl border border-primary/20 bg-background/60 backdrop-blur-lg p-6 md:p-10 text-left transition-all duration-300 hover:border-primary/50 hover:bg-background/80 hover:shadow-2xl"
+            className="relative isolate w-full overflow-hidden rounded-2xl border border-border/60 bg-card/70 px-6 py-8 text-left shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-primary/35 hover:bg-card/85 hover:shadow-xl"
           >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-2xl font-bold">
-                    {t('marketing.pricing.enterprise.name')}
-                  </h3>
-                  <span className="bg-primary text-primary-foreground text-sm px-3 py-1 rounded-full">
-                    {t('marketing.pricing.enterprise.badge')}
-                  </span>
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent opacity-70" />
+            <div className="pointer-events-none absolute -right-10 top-6 h-28 w-28 rounded-full bg-primary/10 blur-3xl" />
+            <div className="pointer-events-none absolute left-6 bottom-6 h-36 w-36 rounded-full bg-primary/5 blur-3xl" />
+            <div className="relative z-10 flex flex-col gap-6">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="flex-1 space-y-2">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h3 className="text-2xl md:text-3xl font-semibold tracking-tight text-foreground">
+                      {t('marketing.pricing.enterprise.name')}
+                    </h3>
+                    <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary">
+                      {t('marketing.pricing.enterprise.badge')}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground max-w-2xl">
+                    {t('marketing.pricing.enterprise.desc')}
+                  </p>
                 </div>
-                <p className="text-muted-foreground mb-4">
-                  {t('marketing.pricing.enterprise.desc')}
-                </p>
-
-                <div
-                  className={cn(
-                    'grid gap-2 transition-all duration-300 ease-in-out',
-                    enterpriseExpanded
-                      ? 'grid-rows-[1fr] opacity-100'
-                      : 'grid-rows-[1fr] opacity-100',
-                  )}
-                >
-                  <ul
+                <div className="flex flex-col items-end gap-2">
+                  <div className="inline-flex items-center gap-2 rounded-2xl border border-border/60 bg-background/50 px-3 py-1 text-[0.65rem] uppercase tracking-[0.4em] text-muted-foreground">
+                    <Building2 className="h-4 w-4 text-primary" />
+                    {t('marketing.pricing.enterprise.badge')}
+                  </div>
+                  <div
                     className={cn(
-                      'grid grid-cols-1 sm:grid-cols-2 gap-2',
-                      'transition-all duration-300 ease-in-out',
+                      'flex h-10 w-10 items-center justify-center rounded-full border border-border/60 bg-background/50 transition-colors',
                       enterpriseExpanded
-                        ? 'opacity-0 h-0 overflow-hidden'
-                        : 'opacity-100',
+                        ? 'border-primary/30 bg-primary/10'
+                        : 'border-border/60 bg-background/50',
                     )}
                   >
-                    {enterpriseFeatures.map((feature, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                    <ChevronDown
+                      className={cn(
+                        'w-6 h-6 text-primary transition-transform duration-300',
+                        enterpriseExpanded && 'rotate-180',
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="shrink-0 pt-2 shrink-0 flex items-center justify-center p-2 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <ChevronDown
-                  className={cn(
-                    'w-6 h-6 text-primary transition-transform duration-300',
-                    enterpriseExpanded && 'rotate-180',
-                  )}
-                />
-              </div>
-            </div>
 
-            <div
-              className={cn(
-                'overflow-hidden transition-all duration-500 ease-in-out',
-                enterpriseExpanded
-                  ? 'max-h-[800px] mt-8 pt-6 border-t border-primary/20 opacity-100'
-                  : 'max-h-0 mt-0 pt-0 border-t-0 border-transparent opacity-0',
-              )}
-            >
-              <div className="grid md:grid-cols-2 gap-8">
-                <div
-                  className={cn(
-                    'transition-all duration-500 delay-100',
-                    enterpriseExpanded
-                      ? 'translate-y-0 opacity-100'
-                      : 'translate-y-4 opacity-0',
-                  )}
-                >
-                  <div className="flex items-center gap-2 mb-4">
-                    <Building2 className="w-5 h-5 text-primary" />
-                    <h4 className="font-semibold">
-                      {t('marketing.pricing.enterprise.b2b_title')}
-                    </h4>
-                  </div>
-                  <ul className="space-y-3">
-                    {b2bFeatures.map((feature, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div
-                  className={cn(
-                    'transition-all duration-500 delay-200',
-                    enterpriseExpanded
-                      ? 'translate-y-0 opacity-100'
-                      : 'translate-y-4 opacity-0',
-                  )}
-                >
-                  <div className="flex items-center gap-2 mb-4">
-                    <Landmark className="w-5 h-5 text-primary" />
-                    <h4 className="font-semibold">
-                      {t('marketing.pricing.enterprise.b2g_title')}
-                    </h4>
-                  </div>
-                  <ul className="space-y-3">
-                    {b2gFeatures.map((feature, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-sm">
-                        <Check className="h-4 w-4 text-primary shrink-0" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div
+              <ul
                 className={cn(
-                  'mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between transition-all duration-500 delay-300',
-                  enterpriseExpanded
-                    ? 'translate-y-0 opacity-100'
-                    : 'translate-y-4 opacity-0',
+                  'grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm transition-all duration-300',
+                  enterpriseExpanded ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100',
                 )}
               >
-                <p className="text-lg text-muted-foreground">
-                  {t('marketing.pricing.enterprise.tailored')}
-                </p>
-                <Button
-                  size="lg"
-                  className="px-8 shadow-lg shadow-primary/25"
-                  asChild
+                {enterpriseFeatures.map((feature, idx) => (
+                  <li
+                    key={idx}
+                    className="flex items-start gap-2 rounded-xl border border-border/50 bg-background/40 px-3 py-2"
+                  >
+                    <Check className="mt-0.5 h-4 w-4 text-primary shrink-0" />
+                    <span className="text-foreground/90">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div
+                className={cn(
+                  'overflow-hidden transition-all duration-500 ease-in-out',
+                  enterpriseExpanded
+                    ? 'max-h-[800px] mt-8 pt-6 border-t border-border/60 opacity-100'
+                    : 'max-h-0 mt-0 pt-0 border-t-0 border-transparent opacity-0',
+                )}
+              >
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div
+                    className={cn(
+                      'transition-all duration-500 delay-100',
+                      enterpriseExpanded
+                        ? 'translate-y-0 opacity-100'
+                        : 'translate-y-4 opacity-0',
+                    )}
+                  >
+                    <div className="flex items-center gap-2 mb-4 text-sm font-semibold tracking-wide text-foreground">
+                      <Building2 className="w-5 h-5 text-primary" />
+                      {t('marketing.pricing.enterprise.b2b_title')}
+                    </div>
+                    <ul className="space-y-3 text-sm text-muted-foreground">
+                      {b2bFeatures.map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2">
+                          <Check className="h-4 w-4 text-primary" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div
+                    className={cn(
+                      'transition-all duration-500 delay-200',
+                      enterpriseExpanded
+                        ? 'translate-y-0 opacity-100'
+                        : 'translate-y-4 opacity-0',
+                    )}
+                  >
+                    <div className="flex items-center gap-2 mb-4 text-sm font-semibold tracking-wide text-foreground">
+                      <Landmark className="w-5 h-5 text-primary" />
+                      {t('marketing.pricing.enterprise.b2g_title')}
+                    </div>
+                    <ul className="space-y-3 text-sm text-muted-foreground">
+                      {b2gFeatures.map((feature, idx) => (
+                        <li key={idx} className="flex items-center gap-2">
+                          <Check className="h-4 w-4 text-primary" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div
+                  className={cn(
+                    'mt-8 flex flex-col sm:flex-row gap-4 items-center justify-between transition-all duration-500 delay-300',
+                    enterpriseExpanded
+                      ? 'translate-y-0 opacity-100'
+                      : 'translate-y-4 opacity-0',
+                  )}
                 >
-                  <a href="mailto:sales@callmind.uz">
-                    {t('marketing.pricing.enterprise.cta')}
-                  </a>
-                </Button>
+                  <p className="text-lg text-muted-foreground">
+                    {t('marketing.pricing.enterprise.tailored')}
+                  </p>
+                  <Button
+                    size="lg"
+                    className="px-8 shadow-lg shadow-primary/15"
+                    asChild
+                  >
+                    <a href="mailto:sales@callmind.uz">
+                      {t('marketing.pricing.enterprise.cta')}
+                    </a>
+                  </Button>
+                </div>
               </div>
             </div>
           </button>

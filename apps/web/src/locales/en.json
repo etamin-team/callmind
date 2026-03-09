@@ -1,369 +1,398 @@
 {
-    "translation": {
-        "marketing": {
-            "nav": {
-                "features": "Features",
-                "solutions": "Solutions",
-                "pricing": "Pricing",
-                "testimonials": "Testimonials"
-            },
-            "buttons": {
-                "login": "Login",
-                "dashboard": "Dashboard"
-            },
-            "hero": {
-                "badge": "Real-Time Conversation Intelligence",
-                "title": "Automate Customer Calls with AI",
-                "description": "Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analyze sentiment, and provide reliable 24/7 support.",
-                "start_trial": "Start Free Trial",
-                "watch_demo": "Watch Demo",
-                "features": {
-                    "calls": "24/7 Calls",
-                    "calls_desc": "Never miss a customer call",
-                    "ai": "AI Agents",
-                    "ai_desc": "Intelligent voice assistants",
-                    "lang": "Multi-language",
-                    "lang_desc": "Uzbek, English, Russian"
-                }
-            },
-            "features_grid": {
-                "item1": {
-                    "title": "Multilingual AI Agents"
-                },
-                "item2": {
-                    "title": "Trilingual Communication",
-                    "desc": "Seamlessly switch between English, Uzbek, and Russian. Our AI agents understand and respond naturally in all three languages, breaking down communication barriers."
-                },
-                "item3": {
-                    "title": "Lead Collection & CRM",
-                    "desc": "Automatically capture leads, names, contact details, and customer information. Sync directly with your CRM and never miss a potential opportunity again."
-                },
-                "item4": {
-                    "title": "Sentiment & Intent Analysis",
-                    "desc": "Real-time emotion detection and intent recognition. Understand if customers are happy, frustrated, or ready to buy, and adapt your approach instantly."
-                },
-                "item5": {
-                    "title": "Cross-Platform Deployment",
-                    "desc": "Deploy on desktop, mobile, web, and tablet. Your AI agents work everywhere your customers are, providing consistent service across all devices."
-                }
-            },
-            "features_accordion": {
-                "title": "AI-Powered Call Excellence",
-                "desc": "Transform your call center with real-time conversation intelligence. Get instant coaching, detect customer sentiment, and close more deals with AI-guided conversations.",
-                "items": {
-                    "coaching": {
-                        "title": "Real-Time Call Coaching",
-                        "desc": "Get instant suggestions during live calls. Our AI analyzes conversations in real-time and provides contextual prompts to help agents overcome objections and guide conversations toward successful outcomes."
-                    },
-                    "sentiment": {
-                        "title": "Sentiment & Emotion Detection",
-                        "desc": "Detect customer emotions instantly with advanced NLP. Know when they're interested, skeptical, or frustrated so agents can adjust their approach and improve customer satisfaction."
-                    },
-                    "analytics": {
-                        "title": "Conversation Analytics",
-                        "desc": "Track performance metrics like talk-to-listen ratios, keyword frequency, and conversion patterns. Turn every conversation into actionable data that drives continuous improvement."
-                    },
-                    "insights": {
-                        "title": "Performance Insights",
-                        "desc": "Monitor team performance, identify top performers, and replicate winning strategies across your entire team. Get detailed reports on call outcomes and agent effectiveness."
-                    }
-                },
-                "ui": {
-                    "customer": "Customer",
-                    "ai_suggestion": "AI Suggestion",
-                    "live_sentiment": "Live Sentiment",
-                    "analyzing": "Analyzing voice...",
-                    "journey": "Emotional Journey",
-                    "active_calls": "Active Calls",
-                    "resolution": "Resolution",
-                    "avg_handle": "Avg Handle",
-                    "agents": "Agents",
-                    "team_perf": "Team Performance",
-                    "insight": "Insight:",
-                    "insight_text": "Sarah's empathy scoring improved by 14% after recent coaching."
-                }
-            },
-            "cta": {
-                "title": "Deploy AI Agents That Speak Your Customers Language",
-                "subtitle": "Start with 100 free minutes across all three languages.",
-                "button": "Start Free Trial"
-            },
-            "faqs": {
-                "title": "Frequently Asked Questions",
-                "subtitle": "Discover quick and comprehensive answers to common questions about our AI call center agents and multilingual capabilities.",
-                "contact_prefix": "Can't find what you're looking for? Contact our",
-                "contact_link": "customer support team",
-                "items": {
-                    "item-1": {
-                        "q": "Which languages do your AI agents support?",
-                        "a": "Our AI agents are fluent in English, Uzbek, and Russian. They understand natural conversation patterns, cultural nuances, and regional dialects in all three languages, providing authentic customer interactions."
-                    },
-                    "item-2": {
-                        "q": "Can the AI agents collect and qualify leads?",
-                        "a": "Absolutely. Our AI agents are trained to engage prospects naturally, collect names, contact information, company details, and specific requirements. They qualify leads based on your criteria and sync everything directly to your CRM."
-                    },
-                    "item-3": {
-                        "q": "What platforms do your AI agents work on?",
-                        "a": "Our AI agents work across all platforms—desktop computers, mobile phones, tablets, and web browsers. They provide consistent service whether your team is in the office or working remotely, with native mobile apps for iOS and Android."
-                    },
-                    "item-4": {
-                        "q": "How accurate is the sentiment analysis?",
-                        "a": "Our sentiment analysis achieves over 95% accuracy across all three languages. It detects happiness, frustration, confusion, and urgency by analyzing tone, word choice, and conversation patterns, allowing you to respond appropriately in real-time."
-                    },
-                    "item-5": {
-                        "q": "Can I customize the AI agent scripts and workflows?",
-                        "a": "Yes, you have complete control. Customize conversation flows, brand voice, qualifying questions, and response patterns. Our no-code workflow builder lets you design agent behaviors for different scenarios, products, and customer types."
-                    }
-                }
-            },
-            "voice_comparison": {
-                "title": "Standard vs Super Realistic",
-                "subtitle": "Super realistic voices use advanced AI to sound indistinguishable from human agents. Your customers won't know they're talking to AI.",
-                "standard": {
-                    "title": "Standard Voice",
-                    "subtitle": "Text-to-speech AI",
-                    "good_for": "Good for:",
-                    "good_for_text": "Basic automation, simple queries"
-                },
-                "realistic": {
-                    "badge": "Premium",
-                    "title": "Super Realistic",
-                    "subtitle": "Human-like AI voice",
-                    "best_for": "Best for:",
-                    "best_for_text": "Sales, customer support, building trust"
-                },
-                "footer": "Super realistic calls are included in Professional and Business plans.",
-                "pricing_link": "View pricing",
-                "features": {
-                    "Natural Intonation": "Natural Intonation",
-                    "Emotional Expression": "Emotional Expression",
-                    "Breathing Pauses": "Breathing Pauses",
-                    "Background Noise": "Background Noise",
-                    "Filler Words": "Filler Words",
-                    "Response Latency": "Response Latency",
-                    "Customer Trust": "Customer Trust"
-                },
-                "values": {
-                    "Low": "Low",
-                    "High": "High",
-                    "Human-like speech patterns": "Human-like speech patterns",
-                    "Conveys empathy and tone": "Conveys empathy and tone",
-                    "Natural breathing rhythm": "Natural breathing rhythm",
-                    "Subtle environmental sounds": "Subtle environmental sounds",
-                    "Um, uh, like natural speech": "Um, uh, like natural speech",
-                    "Time to first response": "Time to first response",
-                    "Perceived authenticity": "Perceived authenticity"
-                }
-            },
-            "testimonials": {
-                "title": "Trusted by Call Centers Worldwide",
-                "subtitle": "See how AI agents are transforming customer engagement across languages and platforms.",
-                "items": {
-                    "Dilshod Karimov": {
-                        "role": "Call Center Manager at UzbekTel",
-                        "quote": "The Uzbek language support is phenomenal. We can now serve our entire customer base without hiring specialized bilingual agents. Our coverage has expanded by 300%."
-                    },
-                    "Elena Volkov": {
-                        "role": "Operations Director at GlobalConnect",
-                        "quote": "Russian-speaking customers finally get the same quality service as our English base. The AI captures leads perfectly in all three languages and syncs seamlessly with our CRM."
-                    },
-                    "Michael Chen": {
-                        "role": "Founder of QuickLead Pro",
-                        "quote": "Lead collection has never been easier. The AI agents qualify prospects 24/7, collect all the details we need, and only pass hot leads to our sales team. We have doubled our qualified leads."
-                    },
-                    "Zarina Ahmedova": {
-                        "role": "Customer Experience Lead",
-                        "quote": "Sentiment analysis across languages is incredible. We can tell instantly when a customer is frustrated, regardless of whether they are speaking English, Uzbek, or Russian. Response time improved by 60%."
-                    },
-                    "Alex Thompson": {
-                        "role": "Sales Manager at MobileFirst Solutions",
-                        "quote": "Mobile deployment was a game-changer. Our field agents use the AI agents on their phones to handle initial calls, collect customer info, and schedule appointments. Productivity is through the roof."
-                    },
-                    "Nadiya Kovalenko": {
-                        "role": "Support Center Manager",
-                        "quote": "We tested four different solutions before finding this. The trilingual capabilities are authentic—not just basic translation, but true contextual understanding in Uzbek and Russian dialects."
-                    },
-                    "Ravshan Rustamov": {
-                        "role": "CEO of UzCommerce",
-                        "quote": "As a Uzbek business expanding internationally, we needed authentic language support. This solution let us serve local Uzbek customers and international clients with the same quality and efficiency."
-                    },
-                    "Sofia Petrova": {
-                        "role": "Digital Transformation Lead",
-                        "quote": "Implementation was shockingly fast. We had our first AI agent handling Russian customer inquiries within hours. The desktop and mobile sync works flawlessly across our distributed team."
-                    },
-                    "James Morrison": {
-                        "role": "VP of Business Development",
-                        "quote": "The ROI was immediate. We deployed AI agents for after-hours English support, then expanded to Uzbek and Russian markets. Revenue from those regions grew 180% in six months."
-                    },
-                    "Gulnara Tashpulatova": {
-                        "role": "Customer Success Manager",
-                        "quote": "Lead quality improved dramatically. The AI does not just collect names—it qualifies prospects, identifies buying intent, and passes complete customer profiles to our team."
-                    },
-                    "Dmitri Sokolov": {
-                        "role": "Technical Operations Manager",
-                        "quote": "The sentiment analysis accuracy is scary good. It picks up subtle frustration cues in Russian that human agents sometimes miss. Our customer satisfaction scores reflect the difference."
-                    },
-                    "Layla Ahmed": {
-                        "role": "Startup Founder",
-                        "quote": "As a small business, we could not afford a multilingual support team. These AI agents let us punch way above our weight, serving three language markets with enterprise-level quality."
-                    }
-                }
-            },
-            "footer": {
-                "groups": {
-                    "product": "Product",
-                    "solution": "Solution",
-                    "company": "Company",
-                    "legal": "Legal"
-                },
-                "links": {
-                    "features": "Features",
-                    "solution": "Solution",
-                    "customers": "Customers",
-                    "pricing": "Pricing",
-                    "help": "Help",
-                    "about": "About",
-                    "startup": "Startup",
-                    "freelancers": "Freelancers",
-                    "organizations": "Organizations",
-                    "students": "Students",
-                    "collaboration": "Collaboration",
-                    "design": "Design",
-                    "management": "Management",
-                    "careers": "Careers",
-                    "blog": "Blog",
-                    "press": "Press",
-                    "contact": "Contact",
-                    "licence": "Licence",
-                    "privacy": "Privacy",
-                    "cookies": "Cookies",
-                    "security": "Security"
-                },
-                "copyright": "© {{year}} CallMind AI, All rights reserved"
-            },
-            "pricing": {
-                "title": "Pricing",
-                "subtitle": "Simple pricing. No hidden fees.",
-                "monthly": "Monthly",
-                "yearly": "Yearly",
-                "save": "Save 17%",
-                "popular": "Popular",
-                "mo": "mo",
-                "yr": "yr",
-                "loading": "Loading...",
-                "need_more": "Need more?",
-                "contact_link": "Contact us",
-                "enterprise_suffix": "for enterprise pricing.",
-                "plans": {
-                    "free": {
-                        "name": "Free",
-                        "desc": "Try it out",
-                        "cta": "Get Started",
-                        "features": [
-                            "10 calls/month",
-                            "1 AI agent",
-                            "Basic analytics"
-                        ]
-                    },
-                    "starter": {
-                        "name": "Starter",
-                        "desc": "For small teams",
-                        "cta": "Get Started",
-                        "features": [
-                            "250 calls/month",
-                            "3 AI agents",
-                            "All languages",
-                            "Call transcripts",
-                            "Email support"
-                        ]
-                    },
-                    "pro": {
-                        "name": "Professional",
-                        "desc": "For growing businesses",
-                        "cta": "Get Started",
-                        "features": [
-                            "1000 calls/month",
-                            "40 super realistic calls",
-                            "10 AI agents",
-                            "Premium voices",
-                            "CRM integrations"
-                        ]
-                    },
-                    "business": {
-                        "name": "Business",
-                        "desc": "For enterprises",
-                        "cta": "Get Started",
-                        "features": [
-                            "3000 calls/month",
-                            "90 super realistic calls",
-                            "25 AI agents",
-                            "Custom integrations",
-                            "Dedicated support"
-                        ]
-                    }
-                },
-                "enterprise": {
-                    "name": "Enterprise",
-                    "desc": "For large organizations",
-                    "cta": "Contact Sales",
-                    "badge": "Premium",
-                    "tailored": "Tailored solutions for your organization's unique needs",
-                    "features": [
-                        "Unlimited calls",
-                        "Unlimited super realistic calls",
-                        "Unlimited AI agents",
-                        "White-label solution",
-                        "Integrations to custom systems",
-                        "Priority support",
-                        "SLA guarantee",
-                        "Custom contract"
-                    ],
-                    "b2b_title": "B2B Solutions",
-                    "b2b_features": [
-                        "Unlimited API calls with custom rate limits",
-                        "Dedicated infrastructure with 99.9% SLA",
-                        "Custom voice models & branding",
-                        "CRM integrations (Salesforce, HubSpot, etc.)",
-                        "Advanced analytics dashboard",
-                        "Team management & role-based access"
-                    ],
-                    "b2g_title": "B2G Solutions",
-                    "b2g_features": [
-                        "On-premise deployment option",
-                        "Data residency & security compliance",
-                        "Government-grade encryption (AES-256)",
-                        "Custom procurement & billing",
-                        "Priority 24/7 support with dedicated CSM",
-                        "Integration with government systems"
-                    ]
-                }
-            }
-        },
-        "app": {
-            "nav": {
-                "agents": "Agents",
-                "usage": "Usage",
-                "workspace_settings": "Workspace Settings",
-                "settings_general": "General",
-                "settings_members": "Members",
-                "settings_billing": "Billing",
-                "settings_notifications": "Notifications",
-                "settings_security": "Security"
-            },
-            "user_menu": {
-                "manage_account": "Manage Account",
-                "language": "Language",
-                "theme": "Theme",
-                "dark_mode": "Dark Mode",
-                "light_mode": "Light Mode",
-                "system_theme": "System Theme",
-                "log_out": "Log out"
-            }
-        },
-        "language": {
-            "en": "English",
-            "ru": "Русский",
-            "uz": "O'zbekcha"
+  "translation": {
+    "marketing": {
+      "nav": {
+        "features": "Features",
+        "solutions": "Solutions",
+        "pricing": "Pricing",
+        "testimonials": "Testimonials"
+      },
+      "buttons": {
+        "login": "Login",
+        "dashboard": "Dashboard"
+      },
+      "hero": {
+        "badge": "Real-Time Conversation Intelligence",
+        "title": "Automate Customer Calls with AI",
+        "description": "Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analyze sentiment, and provide reliable 24/7 support.",
+        "start_trial": "Start Free Trial",
+        "watch_demo": "Watch Demo",
+        "features": {
+          "calls": "24/7 Calls",
+          "calls_desc": "Never miss a customer call",
+          "ai": "AI Agents",
+          "ai_desc": "Intelligent voice assistants",
+          "lang": "Multi-language",
+          "lang_desc": "Uzbek, English, Russian"
         }
+      },
+      "features_grid": {
+        "item1": {
+          "title": "Multilingual AI Agents"
+        },
+        "item2": {
+          "title": "Trilingual Communication",
+          "desc": "Seamlessly switch between English, Uzbek, and Russian. Our AI agents understand and respond naturally in all three languages, breaking down communication barriers."
+        },
+        "item3": {
+          "title": "Lead Collection & CRM",
+          "desc": "Automatically capture leads, names, contact details, and customer information. Sync directly with your CRM and never miss a potential opportunity again."
+        },
+        "item4": {
+          "title": "Sentiment & Intent Analysis",
+          "desc": "Real-time emotion detection and intent recognition. Understand if customers are happy, frustrated, or ready to buy, and adapt your approach instantly."
+        },
+        "item5": {
+          "title": "Cross-Platform Deployment",
+          "desc": "Deploy on desktop, mobile, web, and tablet. Your AI agents work everywhere your customers are, providing consistent service across all devices."
+        }
+      },
+      "features_accordion": {
+        "title": "AI-Powered Call Excellence",
+        "desc": "Transform your call center with real-time conversation intelligence. Get instant coaching, detect customer sentiment, and close more deals with AI-guided conversations.",
+        "items": {
+          "coaching": {
+            "title": "Real-Time Call Coaching",
+            "desc": "Get instant suggestions during live calls. Our AI analyzes conversations in real-time and provides contextual prompts to help agents overcome objections and guide conversations toward successful outcomes."
+          },
+          "sentiment": {
+            "title": "Sentiment & Emotion Detection",
+            "desc": "Detect customer emotions instantly with advanced NLP. Know when they're interested, skeptical, or frustrated so agents can adjust their approach and improve customer satisfaction."
+          },
+          "analytics": {
+            "title": "Conversation Analytics",
+            "desc": "Track performance metrics like talk-to-listen ratios, keyword frequency, and conversion patterns. Turn every conversation into actionable data that drives continuous improvement."
+          },
+          "insights": {
+            "title": "Performance Insights",
+            "desc": "Monitor team performance, identify top performers, and replicate winning strategies across your entire team. Get detailed reports on call outcomes and agent effectiveness."
+          }
+        },
+        "ui": {
+          "customer": "Customer",
+          "ai_suggestion": "AI Suggestion",
+          "live_sentiment": "Live Sentiment",
+          "analyzing": "Analyzing voice...",
+          "journey": "Emotional Journey",
+          "active_calls": "Active Calls",
+          "resolution": "Resolution",
+          "avg_handle": "Avg Handle",
+          "agents": "Agents",
+          "team_perf": "Team Performance",
+          "insight": "Insight:",
+          "insight_text": "Sarah's empathy scoring improved by 14% after recent coaching."
+        }
+      },
+      "cta": {
+        "title": "Deploy AI Agents That Speak Your Customers Language",
+        "subtitle": "Start with 100 free minutes across all three languages.",
+        "button": "Start Free Trial"
+      },
+      "faqs": {
+        "title": "Frequently Asked Questions",
+        "subtitle": "Discover quick and comprehensive answers to common questions about our AI call center agents and multilingual capabilities.",
+        "contact_prefix": "Can't find what you're looking for? Contact our",
+        "contact_link": "customer support team",
+        "items": {
+          "item-1": {
+            "q": "Which languages do your AI agents support?",
+            "a": "Our AI agents are fluent in English, Uzbek, and Russian. They understand natural conversation patterns, cultural nuances, and regional dialects in all three languages, providing authentic customer interactions."
+          },
+          "item-2": {
+            "q": "Can the AI agents collect and qualify leads?",
+            "a": "Absolutely. Our AI agents are trained to engage prospects naturally, collect names, contact information, company details, and specific requirements. They qualify leads based on your criteria and sync everything directly to your CRM."
+          },
+          "item-3": {
+            "q": "What platforms do your AI agents work on?",
+            "a": "Our AI agents work across all platforms—desktop computers, mobile phones, tablets, and web browsers. They provide consistent service whether your team is in the office or working remotely, with native mobile apps for iOS and Android."
+          },
+          "item-4": {
+            "q": "How accurate is the sentiment analysis?",
+            "a": "Our sentiment analysis achieves over 95% accuracy across all three languages. It detects happiness, frustration, confusion, and urgency by analyzing tone, word choice, and conversation patterns, allowing you to respond appropriately in real-time."
+          },
+          "item-5": {
+            "q": "Can I customize the AI agent scripts and workflows?",
+            "a": "Yes, you have complete control. Customize conversation flows, brand voice, qualifying questions, and response patterns. Our no-code workflow builder lets you design agent behaviors for different scenarios, products, and customer types."
+          }
+        }
+      },
+      "voice_comparison": {
+        "title": "Standard vs Super Realistic",
+        "subtitle": "Super realistic voices use advanced AI to sound indistinguishable from human agents. Your customers won't know they're talking to AI.",
+        "standard": {
+          "title": "Standard Voice",
+          "subtitle": "Text-to-speech AI",
+          "good_for": "Good for:",
+          "good_for_text": "Basic automation, simple queries"
+        },
+        "realistic": {
+          "badge": "Premium",
+          "title": "Super Realistic",
+          "subtitle": "Human-like AI voice",
+          "best_for": "Best for:",
+          "best_for_text": "Sales, customer support, building trust"
+        },
+        "footer": "Super realistic calls are included in Professional and Business plans.",
+        "pricing_link": "View pricing",
+        "features": {
+          "Natural Intonation": "Natural Intonation",
+          "Emotional Expression": "Emotional Expression",
+          "Breathing Pauses": "Breathing Pauses",
+          "Background Noise": "Background Noise",
+          "Filler Words": "Filler Words",
+          "Response Latency": "Response Latency",
+          "Customer Trust": "Customer Trust"
+        },
+        "values": {
+          "Low": "Low",
+          "High": "High",
+          "Human-like speech patterns": "Human-like speech patterns",
+          "Conveys empathy and tone": "Conveys empathy and tone",
+          "Natural breathing rhythm": "Natural breathing rhythm",
+          "Subtle environmental sounds": "Subtle environmental sounds",
+          "Um, uh, like natural speech": "Um, uh, like natural speech",
+          "Time to first response": "Time to first response",
+          "Perceived authenticity": "Perceived authenticity"
+        }
+      },
+      "testimonials": {
+        "title": "Trusted by Call Centers Worldwide",
+        "subtitle": "See how AI agents are transforming customer engagement across languages and platforms.",
+        "items": {
+          "Dilshod Karimov": {
+            "role": "Call Center Manager at UzbekTel",
+            "quote": "The Uzbek language support is phenomenal. We can now serve our entire customer base without hiring specialized bilingual agents. Our coverage has expanded by 300%."
+          },
+          "Elena Volkov": {
+            "role": "Operations Director at GlobalConnect",
+            "quote": "Russian-speaking customers finally get the same quality service as our English base. The AI captures leads perfectly in all three languages and syncs seamlessly with our CRM."
+          },
+          "Michael Chen": {
+            "role": "Founder of QuickLead Pro",
+            "quote": "Lead collection has never been easier. The AI agents qualify prospects 24/7, collect all the details we need, and only pass hot leads to our sales team. We have doubled our qualified leads."
+          },
+          "Zarina Ahmedova": {
+            "role": "Customer Experience Lead",
+            "quote": "Sentiment analysis across languages is incredible. We can tell instantly when a customer is frustrated, regardless of whether they are speaking English, Uzbek, or Russian. Response time improved by 60%."
+          },
+          "Alex Thompson": {
+            "role": "Sales Manager at MobileFirst Solutions",
+            "quote": "Mobile deployment was a game-changer. Our field agents use the AI agents on their phones to handle initial calls, collect customer info, and schedule appointments. Productivity is through the roof."
+          },
+          "Nadiya Kovalenko": {
+            "role": "Support Center Manager",
+            "quote": "We tested four different solutions before finding this. The trilingual capabilities are authentic—not just basic translation, but true contextual understanding in Uzbek and Russian dialects."
+          },
+          "Ravshan Rustamov": {
+            "role": "CEO of UzCommerce",
+            "quote": "As a Uzbek business expanding internationally, we needed authentic language support. This solution let us serve local Uzbek customers and international clients with the same quality and efficiency."
+          },
+          "Sofia Petrova": {
+            "role": "Digital Transformation Lead",
+            "quote": "Implementation was shockingly fast. We had our first AI agent handling Russian customer inquiries within hours. The desktop and mobile sync works flawlessly across our distributed team."
+          },
+          "James Morrison": {
+            "role": "VP of Business Development",
+            "quote": "The ROI was immediate. We deployed AI agents for after-hours English support, then expanded to Uzbek and Russian markets. Revenue from those regions grew 180% in six months."
+          },
+          "Gulnara Tashpulatova": {
+            "role": "Customer Success Manager",
+            "quote": "Lead quality improved dramatically. The AI does not just collect names—it qualifies prospects, identifies buying intent, and passes complete customer profiles to our team."
+          },
+          "Dmitri Sokolov": {
+            "role": "Technical Operations Manager",
+            "quote": "The sentiment analysis accuracy is scary good. It picks up subtle frustration cues in Russian that human agents sometimes miss. Our customer satisfaction scores reflect the difference."
+          },
+          "Layla Ahmed": {
+            "role": "Startup Founder",
+            "quote": "As a small business, we could not afford a multilingual support team. These AI agents let us punch way above our weight, serving three language markets with enterprise-level quality."
+          }
+        }
+      },
+      "footer": {
+        "groups": {
+          "product": "Product",
+          "solution": "Solution",
+          "company": "Company",
+          "legal": "Legal"
+        },
+        "links": {
+          "features": "Features",
+          "solution": "Solution",
+          "customers": "Customers",
+          "pricing": "Pricing",
+          "help": "Help",
+          "about": "About",
+          "startup": "Startup",
+          "freelancers": "Freelancers",
+          "organizations": "Organizations",
+          "students": "Students",
+          "collaboration": "Collaboration",
+          "design": "Design",
+          "management": "Management",
+          "careers": "Careers",
+          "blog": "Blog",
+          "press": "Press",
+          "contact": "Contact",
+          "licence": "Licence",
+          "privacy": "Privacy",
+          "cookies": "Cookies",
+          "security": "Security"
+        },
+        "copyright": "© {{year}} CallMind AI, All rights reserved"
+      },
+      "pricing": {
+        "title": "Pricing",
+        "subtitle": "Simple pricing. No hidden fees.",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "save": "Save 17%",
+        "popular": "Popular",
+        "mo": "mo",
+        "yr": "yr",
+        "loading": "Loading...",
+        "need_more": "Need more?",
+        "contact_link": "Contact us",
+        "enterprise_suffix": "for enterprise pricing.",
+        "plans": {
+          "free": {
+            "name": "Free",
+            "desc": "Try it out",
+            "cta": "Get Started",
+            "features": ["10 calls/month", "1 AI agent", "Basic analytics"]
+          },
+          "starter": {
+            "name": "Starter",
+            "desc": "For small teams",
+            "cta": "Get Started",
+            "features": [
+              "250 calls/month",
+              "3 AI agents",
+              "All languages",
+              "Call transcripts",
+              "Email support"
+            ]
+          },
+          "pro": {
+            "name": "Professional",
+            "desc": "For growing businesses",
+            "cta": "Get Started",
+            "features": [
+              "1000 calls/month",
+              "40 super realistic calls",
+              "10 AI agents",
+              "Premium voices",
+              "CRM integrations"
+            ]
+          },
+          "business": {
+            "name": "Business",
+            "desc": "For enterprises",
+            "cta": "Get Started",
+            "features": [
+              "3000 calls/month",
+              "90 super realistic calls",
+              "25 AI agents",
+              "Custom integrations",
+              "Dedicated support"
+            ]
+          }
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "desc": "For large organizations",
+          "cta": "Contact Sales",
+          "badge": "Premium",
+          "tailored": "Tailored solutions for your organization's unique needs",
+          "features": [
+            "Unlimited calls",
+            "Unlimited super realistic calls",
+            "Unlimited AI agents",
+            "White-label solution",
+            "Integrations to custom systems",
+            "Priority support",
+            "SLA guarantee",
+            "Custom contract"
+          ],
+          "b2b_title": "B2B Solutions",
+          "b2b_features": [
+            "Unlimited API calls with custom rate limits",
+            "Dedicated infrastructure with 99.9% SLA",
+            "Custom voice models & branding",
+            "CRM integrations (Salesforce, HubSpot, etc.)",
+            "Advanced analytics dashboard",
+            "Team management & role-based access"
+          ],
+          "b2g_title": "B2G Solutions",
+          "b2g_features": [
+            "On-premise deployment option",
+            "Data residency & security compliance",
+            "Government-grade encryption (AES-256)",
+            "Custom procurement & billing",
+            "Priority 24/7 support with dedicated CSM",
+            "Integration with government systems"
+          ]
+        }
+      }
+    },
+    "app": {
+      "nav": {
+        "agents": "Agents",
+        "tasks": "Tasks",
+        "navigation": "Navigation",
+        "usage": "Usage",
+        "workspace_settings": "Workspace Settings",
+        "settings_general": "General",
+        "settings_members": "Members",
+        "settings_billing": "Billing",
+        "settings_notifications": "Notifications",
+        "settings_security": "Security"
+      },
+      "settings": {
+        "title": "Settings",
+        "description": "Manage your workspace settings and preferences"
+      },
+      "user_menu": {
+        "manage_account": "Manage Account",
+        "language": "Language",
+        "theme": "Theme",
+        "dark_mode": "Dark Mode",
+        "light_mode": "Light Mode",
+        "system_theme": "System Theme",
+        "log_out": "Log out"
+      },
+      "billing": {
+        "title": "Plans",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "popular": "Popular",
+        "discount": "20% off",
+        "per_month": "per month, ${{amount}} billed {{period}}",
+        "billed_annually": "annually",
+        "billed_monthly": "monthly",
+        "usage": "Usage",
+        "current_plan": "Current Plan",
+        "upgrade": "Upgrade",
+        "processing": "Processing...",
+        "everything_in": "Everything in {{plan}} +",
+        "billing_history": "Billing History",
+        "no_billing_history": "No billing history yet",
+        "plan_descriptions": {
+          "starter": "For small teams",
+          "professional": "For growing businesses",
+          "business": "For large teams"
+        }
+      },
+      "sidebar": {
+        "credits": "Credits",
+        "resets_on": "Resets on {{date}}",
+        "upgrade": "Upgrade"
+      }
+    },
+    "language": {
+      "en": "English",
+      "ru": "Русский",
+      "uz": "O'zbekcha"
     }
+  }
 }

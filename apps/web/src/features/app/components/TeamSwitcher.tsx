@@ -1,6 +1,12 @@
-import { useOrganization, useOrganizationList, useUser, useClerk } from "@clerk/clerk-react"
-import { ChevronsUpDown, Plus, User, Check } from "lucide-react"
+import {
+  useClerk,
+  useOrganization,
+  useOrganizationList,
+  useUser,
+} from '@clerk/clerk-react'
+import { Check, ChevronsUpDown, Plus, User } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,36 +14,37 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu'
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from '@/components/ui/sidebar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function TeamSwitcher() {
+  const { t } = useTranslation()
   const { isMobile } = useSidebar()
   const { openCreateOrganization } = useClerk()
   const { user } = useUser()
   const { organization } = useOrganization()
   const navigate = useNavigate()
-  
-  // Correctly access the list of memberships
+
   const { isLoaded, userMemberships, setActive } = useOrganizationList({
     userMemberships: {
       infinite: true,
     },
   })
 
-  // We should also look for invitations/suggestions if needed, 
-  // but usually created orgs appear in memberships.
-
   if (!user || !isLoaded) return null
 
   const activeOrg = organization
-  const displayName = activeOrg?.name || user.fullName || user.username || "Personal"
+  const userPlan = (
+    (user.publicMetadata.plan as string) || 'free'
+  ).toLowerCase()
+  const displayName =
+    activeOrg?.name || user.fullName || user.username || 'Personal'
   const displayImage = activeOrg?.imageUrl || user.imageUrl
 
   return (
@@ -47,101 +54,90 @@ export function TeamSwitcher() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="h-11 rounded-2xl border border-sidebar-border/40 bg-sidebar/70 px-2 text-sidebar-foreground transition-colors data-[state=open]:border-sidebar-border data-[state=open]:bg-sidebar-accent/40 data-[state=open]:text-sidebar-accent-foreground supports-[backdrop-filter]:backdrop-blur-xl"
             >
-              <Avatar className="size-8 rounded-lg border border-zinc-200 dark:border-zinc-800">
+              <Avatar className="size-8 rounded-lg">
                 <AvatarImage src={displayImage} alt={displayName} />
-                <AvatarFallback className="rounded-lg bg-zinc-950 text-white dark:bg-white dark:text-zinc-950">
+                <AvatarFallback className="rounded-lg">
                   {displayName.charAt(0)}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight ml-2">
-                <span className="truncate font-semibold text-zinc-900 dark:text-zinc-100">
-                  {displayName}
-                </span>
-                <span className="truncate text-xs text-muted-foreground">
-                  {activeOrg ? "Organization" : "Personal Account"}
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="flex items-center gap-2">
+                  <span className="truncate font-semibold">{displayName}</span>
+                  <span className="rounded-full border border-sidebar-border/60 bg-sidebar-accent/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-sidebar-accent-foreground">
+                    {userPlan}
+                  </span>
+                </div>
+                <span className="truncate text-xs text-sidebar-foreground/60">
+                  {activeOrg ? 'Organization' : 'Personal'}
                 </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4 text-slate-400 shrink-0" />
+              <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg shadow-xl border-zinc-200 dark:border-zinc-800"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             align="start"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             sideOffset={4}
           >
-            <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground px-2 py-1.5 font-bold">
-              Account
+            <DropdownMenuLabel className="text-xs text-sidebar-foreground/60">
+              {t('app.nav.workspaces') || 'Workspaces'}
             </DropdownMenuLabel>
-            
-            {/* Personal Account Option */}
+
+            {/* Personal Account */}
             <DropdownMenuItem
               onClick={async () => {
                 await setActive({ organization: null })
                 navigate({ to: `/${user.id}/agents` })
               }}
-              className="gap-2 p-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-zinc-900"
+              className="gap-2"
             >
-              <div className="flex size-7 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
-                <User className="size-4 shrink-0" />
+              <div className="flex size-6 items-center justify-center rounded-md border border-sidebar-border/70 bg-sidebar/80">
+                <User className="size-4" />
               </div>
-              <div className="flex flex-col flex-1">
-                <span className="text-sm font-medium">{user.fullName || "Personal Workspace"}</span>
-                <span className="text-[10px] text-muted-foreground">Personal</span>
-              </div>
-              {!activeOrg && <Check className="size-4 text-emerald-500" />}
+              <span className="flex-1">{user.fullName || 'Personal'}</span>
+              {!activeOrg && <Check className="size-4 text-sidebar-primary" />}
             </DropdownMenuItem>
 
-            <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-zinc-800" />
-            
-            <div className="flex items-center justify-between px-2 py-1.5">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Organizations</span>
-            </div>
-            
-            <div className="max-h-[200px] overflow-y-auto">
-              {userMemberships.data?.length === 0 ? (
-                <div className="px-2 py-3 text-center">
-                  <p className="text-xs text-muted-foreground">No organizations yet</p>
-                </div>
-              ) : (
-                userMemberships.data?.map((membership) => (
-                  <DropdownMenuItem
-                    key={membership.organization.id}
-                    onClick={async () => {
-                      await setActive({ organization: membership.organization.id })
-                      navigate({ to: `/${membership.organization.id}/agents` })
-                    }}
-                    className="gap-2 p-2 cursor-pointer focus:bg-slate-100 dark:focus:bg-zinc-900"
-                  >
-                    <Avatar className="size-7 rounded-md border border-zinc-200 dark:border-zinc-800">
-                      <AvatarImage src={membership.organization.imageUrl} />
-                      <AvatarFallback className="rounded-md text-[10px]">
-                        {membership.organization.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col flex-1 min-w-0">
-                      <span className="text-sm font-medium truncate">{membership.organization.name}</span>
-                      <span className="text-[10px] text-muted-foreground truncate">{membership.role}</span>
-                    </div>
-                    {activeOrg?.id === membership.organization.id && <Check className="size-4 text-emerald-500" />}
-                  </DropdownMenuItem>
-                ))
-              )}
-            </div>
+            {/* Organizations */}
+            {userMemberships.data.map((membership) => (
+              <DropdownMenuItem
+                key={membership.organization.id}
+                onClick={async () => {
+                  await setActive({ organization: membership.organization.id })
+                  navigate({ to: `/${membership.organization.id}/agents` })
+                }}
+                className="gap-2"
+              >
+                <Avatar className="size-6 rounded-md border border-sidebar-border/60 bg-sidebar/70">
+                  <AvatarImage src={membership.organization.imageUrl} />
+                  <AvatarFallback className="rounded-md text-xs">
+                    {membership.organization.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="flex-1 truncate">
+                  {membership.organization.name}
+                </span>
+                {activeOrg?.id === membership.organization.id && (
+                  <Check className="size-4 text-sidebar-primary" />
+                )}
+              </DropdownMenuItem>
+            ))}
 
-            <DropdownMenuSeparator className="my-1 bg-zinc-100 dark:bg-zinc-800" />
-            
-            {/* Create Organization Trigger */}
-            <DropdownMenuItem 
-                className="gap-2 p-2 cursor-pointer text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100 focus:bg-slate-100 dark:focus:bg-zinc-900"
-                onClick={() => openCreateOrganization()}
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem
+              onClick={() => openCreateOrganization()}
+              className="gap-2"
             >
-              <div className="flex size-7 items-center justify-center rounded-md border border-dashed border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
+              <div className="flex size-6 items-center justify-center rounded-md border border-dashed border-sidebar-border/70">
                 <Plus className="size-4" />
               </div>
-              <span className="text-sm font-medium">Create Organization</span>
+              <span className="text-sidebar-foreground/70">
+                {t('app.nav.create_organization') || 'Create Workspace'}
+              </span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
