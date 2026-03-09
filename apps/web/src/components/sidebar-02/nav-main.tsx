@@ -79,8 +79,9 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                   <SidebarMenuButton
                     data-active={isActive}
                     className={cn(
-                      'group flex w-full items-center rounded-2xl border px-3 py-2 text-sm font-medium transition-all duration-200',
-                      isCollapsed && 'justify-center px-2',
+                      'group flex w-full items-center !rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-200',
+                      isCollapsed &&
+                        'mx-auto size-10 justify-center !rounded-md px-0 py-0',
                       isActive
                         ? 'border-sidebar-border bg-background text-foreground shadow-sm'
                         : 'border-transparent text-sidebar-foreground/70 hover:border-sidebar-border/70 hover:bg-background/70 hover:text-foreground',
@@ -118,7 +119,7 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                               <Link
                                 to={subRoute.link as any}
                                 className={cn(
-                                  'flex items-center rounded-xl px-4 py-1.5 text-sm font-medium transition-colors',
+                                  'flex items-center !rounded-md px-4 py-1.5 text-sm font-medium transition-colors',
                                   isSubActive
                                     ? 'bg-background text-foreground'
                                     : 'text-sidebar-foreground/60 hover:bg-background/70 hover:text-foreground',
@@ -144,8 +145,9 @@ export default function DashboardNavigation({ routes }: { routes: Route[] }) {
                 <Link
                   to={route.link as any}
                   className={cn(
-                    'group flex items-center rounded-2xl border px-3 py-2 text-sm font-medium transition-all duration-200',
-                    isCollapsed && 'justify-center px-2',
+                    'group flex items-center !rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-200',
+                    isCollapsed &&
+                      'mx-auto size-10 justify-center !rounded-md px-0 py-0',
                     isActive
                       ? 'border-sidebar-border bg-background text-foreground shadow-sm'
                       : 'border-transparent text-sidebar-foreground/70 hover:border-sidebar-border/70 hover:bg-background/70 hover:text-foreground',

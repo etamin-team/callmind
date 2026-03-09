@@ -339,6 +339,8 @@
       "nav": {
         "agents": "Agents",
         "tasks": "Tasks",
+        "workspaces": "Workspaces",
+        "create_organization": "Create Workspace",
         "navigation": "Navigation",
         "usage": "Usage",
         "workspace_settings": "Workspace Settings",

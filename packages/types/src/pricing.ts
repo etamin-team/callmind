@@ -1,3 +1,13 @@
+const USD_TO_UZS_RATE = 12130.41;
+
+const PLAN_PRICE_USD = {
+  starter: 59,
+  professional: 172,
+  business: 345,
+} as const;
+
+const toUzs = (usd: number) => Math.round(usd * USD_TO_UZS_RATE);
+
 export const PRICING_CONFIG = {
   free: {
     name: "Free",
@@ -10,8 +20,8 @@ export const PRICING_CONFIG = {
   starter: {
     name: "Starter",
     credits: 200,
-    priceUzs: 108000,
-    priceUsd: 9,
+    priceUzs: toUzs(PLAN_PRICE_USD.starter),
+    priceUsd: PLAN_PRICE_USD.starter,
     features: [
       "200 calls/month",
       "3 AI agents",
@@ -24,8 +34,8 @@ export const PRICING_CONFIG = {
   professional: {
     name: "Professional",
     credits: 1000,
-    priceUzs: 348000,
-    priceUsd: 29,
+    priceUzs: toUzs(PLAN_PRICE_USD.professional),
+    priceUsd: PLAN_PRICE_USD.professional,
     features: [
       "1000 calls/month",
       "40 super realistic calls",
@@ -38,8 +48,8 @@ export const PRICING_CONFIG = {
   business: {
     name: "Business",
     credits: 2000,
-    priceUzs: 948000,
-    priceUsd: 79,
+    priceUzs: toUzs(PLAN_PRICE_USD.business),
+    priceUsd: PLAN_PRICE_USD.business,
     features: [
       "2000 calls/month",
       "90 super realistic calls",
@@ -65,9 +75,9 @@ export const PRICE_PER_PLAN_MONTHLY: Record<string, number> = {
 };
 
 export const PRICE_PER_PLAN_YEARLY: Record<string, number> = {
-  starter: Math.floor(PRICING_CONFIG.starter.priceUzs * 12 * 0.8),
-  professional: Math.floor(PRICING_CONFIG.professional.priceUzs * 12 * 0.8),
-  business: Math.floor(PRICING_CONFIG.business.priceUzs * 12 * 0.8),
+  starter: toUzs(PLAN_PRICE_USD.starter * 10),
+  professional: toUzs(PLAN_PRICE_USD.professional * 10),
+  business: toUzs(PLAN_PRICE_USD.business * 10),
 };
 
 export const CREDIT_COST = {

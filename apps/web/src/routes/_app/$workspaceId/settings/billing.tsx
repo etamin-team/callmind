@@ -12,27 +12,25 @@ import { cn } from '@/lib/utils'
 
 const planOrder: PlanType[] = ['starter', 'professional', 'business']
 
-const planContent: Record<
-  string,
-  { description: string; icon: string; color: string; popular?: boolean }
-> = {
-  starter: {
-    description: 'For small teams',
-    icon: '⭐',
-    color: 'text-blue-500',
-  },
-  professional: {
-    description: 'For growing businesses',
-    icon: '✨',
-    color: 'text-amber-500',
-    popular: true,
-  },
-  business: {
-    description: 'For large teams',
-    icon: '💎',
-    color: 'text-pink-500',
-  },
+const planPriceOverrides: Partial<Record<PlanType, number>> = {
+  starter: 59,
+  professional: 172,
+  business: 345,
 }
+
+const planContent: Record<string, { description: string; popular?: boolean }> =
+  {
+    starter: {
+      description: 'For small teams',
+    },
+    professional: {
+      description: 'For growing businesses',
+      popular: true,
+    },
+    business: {
+      description: 'For large teams',
+    },
+  }
 
 // Animated Number Component
 function AnimatedNumber({ value }: { value: number }) {
@@ -178,8 +176,8 @@ function BillingSettingsPage() {
           const config = PRICING_CONFIG[planId]
           const content = planContent[planId]
           const isCurrent = planId === userPlan
-          const yearlyPrice = Math.floor(config.priceUsd * 12 * 0.83)
-          const monthlyPrice = config.priceUsd
+          const monthlyPrice = planPriceOverrides[planId] ?? config.priceUsd
+          const yearlyPrice = monthlyPrice * 10
 
           return (
             <motion.div
@@ -221,7 +219,7 @@ function BillingSettingsPage() {
                 </motion.div>
               )}
 
-              {/* Plan Icon & Name */}
+              {/* Plan Name */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -233,9 +231,6 @@ function BillingSettingsPage() {
                 }}
                 className="flex items-center gap-2 mb-4"
               >
-                <span className={cn('text-2xl', content.color)}>
-                  {content.icon}
-                </span>
                 <h3 className="text-xl font-semibold">
                   {t(
                     `marketing.pricing.plans.${planId === 'professional' ? 'pro' : planId}.name`,
@@ -245,8 +240,8 @@ function BillingSettingsPage() {
 
               {/* Price */}
               <div className="mb-6">
-                <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-5xl font-bold tracking-tight">
+                <div className="flex flex-wrap items-baseline gap-2 mb-1">
+                  <span className="shrink-0 whitespace-nowrap text-5xl font-bold tracking-tight">
                     $
                     <AnimatePresence mode="wait">
                       <AnimatedNumber
@@ -265,7 +260,7 @@ function BillingSettingsPage() {
                           stiffness: 400,
                           damping: 25,
                         }}
-                        className="inline-block px-2 py-0.5 text-xs font-medium bg-red-500 text-white rounded-md"
+                        className="inline-block shrink-0 px-2 py-0.5 text-xs font-medium bg-red-500 text-white rounded-md"
                       >
                         {t('app.billing.discount')}
                       </motion.span>
@@ -282,7 +277,7 @@ function BillingSettingsPage() {
                     damping: 30,
                     delay: 0.05,
                   }}
-                  className="text-sm text-muted-foreground"
+                  className="text-sm leading-relaxed text-muted-foreground break-words"
                 >
                   {t('app.billing.per_month', {
                     amount: yearly ? yearlyPrice : monthlyPrice * 12,

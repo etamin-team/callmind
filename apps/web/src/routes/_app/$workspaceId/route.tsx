@@ -10,6 +10,7 @@ import { AppHeader } from '@/features/app/components/AppHeader'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { useUser, useOrganization } from '@clerk/clerk-react'
 import { useEffect } from 'react'
+import { getWorkspaceRouteParam } from '@/lib/route-slugs'
 
 export const Route = createFileRoute('/_app/$workspaceId')({
   component: WorkspaceLayout,
@@ -37,8 +38,12 @@ function WorkspaceLayout() {
   const isFullScreen = agentsIndex !== -1 && pathParts.length > agentsIndex + 1
 
   useEffect(() => {
-    // Validate workspaceId matches current organization
-    if (isLoaded && organization && workspaceId !== organization.id) {
+    const activeWorkspace = organization || null
+    if (
+      isLoaded &&
+      activeWorkspace &&
+      workspaceId !== getWorkspaceRouteParam(activeWorkspace)
+    ) {
       console.warn('Workspace ID mismatch')
     }
   }, [workspaceId, organization, isLoaded])

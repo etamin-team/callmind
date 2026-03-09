@@ -1,16 +1,30 @@
 import { useNavigate, useParams } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'motion/react'
-import { ChevronLeft, Bot, Send, User, Sparkles, Rocket, Check, Settings } from 'lucide-react'
+import {
+  ChevronLeft,
+  Bot,
+  Send,
+  User,
+  Sparkles,
+  Rocket,
+  Check,
+  Settings,
+} from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { useStore } from '@tanstack/react-store'
 import { useAuth } from '@clerk/clerk-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { onboardingStore, updateOnboardingData, resetOnboarding } from '../store/onboarding-store'
+import {
+  onboardingStore,
+  updateOnboardingData,
+  resetOnboarding,
+} from '../store/onboarding-store'
 import { BorderBeam } from '@/components/ui/border-beam'
 import { Badge } from '@/components/ui/badge'
 import { generateSystemPrompt } from '@/lib/ai/gemini'
+import { getAgentRouteParam } from '@/lib/route-slugs'
 import { createAgent } from '../api'
 
 interface Message {
@@ -23,13 +37,16 @@ interface Message {
 const INITIAL_MESSAGE: Message = {
   id: '1',
   role: 'assistant',
-  content: "Hi! I'm your AI Agent Architect. Let's build your next intelligent workforce together. What should we name your new agent?",
-  timestamp: new Date()
+  content:
+    "Hi! I'm your AI Agent Architect. Let's build your next intelligent workforce together. What should we name your new agent?",
+  timestamp: new Date(),
 }
 
 export default function AgentCreateChatPage() {
   const navigate = useNavigate()
-  const { workspaceId } = useParams({ from: '/_app/$workspaceId/agents/create' })
+  const { workspaceId } = useParams({
+    from: '/_app/$workspaceId/agents/create',
+  })
   const { getToken } = useAuth()
   const state = useStore(onboardingStore)
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE])
@@ -37,7 +54,19 @@ export default function AgentCreateChatPage() {
   const [isTyping, setIsTyping] = useState(false)
   const [isLaunching, setIsLaunching] = useState(false)
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false)
-  const [step, setStep] = useState<'name' | 'type' | 'languageVoice' | 'businessName' | 'industry' | 'businessDescription' | 'targetCallers' | 'primaryGoal' | 'greeting' | 'systemPrompt' | 'launch'>('name')
+  const [step, setStep] = useState<
+    | 'name'
+    | 'type'
+    | 'languageVoice'
+    | 'businessName'
+    | 'industry'
+    | 'businessDescription'
+    | 'targetCallers'
+    | 'primaryGoal'
+    | 'greeting'
+    | 'systemPrompt'
+    | 'launch'
+  >('name')
 
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -50,17 +79,26 @@ export default function AgentCreateChatPage() {
   // Fallback: if we somehow get to launch without a prompt, try to generate one
   useEffect(() => {
     const generatePrompt = async () => {
-      if (step === 'launch' && !state.data.systemPrompt && !isGeneratingPrompt) {
-        console.log('⚠️ Reached launch without system prompt, generating now...')
+      if (
+        step === 'launch' &&
+        !state.data.systemPrompt &&
+        !isGeneratingPrompt
+      ) {
+        console.log(
+          '⚠️ Reached launch without system prompt, generating now...',
+        )
         setIsGeneratingPrompt(true)
         try {
-          const currentState = onboardingStore.state.data;
+          const currentState = onboardingStore.state.data
           const systemPrompt = await generateSystemPrompt({
             name: currentState.name || 'Agent',
             description: currentState.businessDescription || 'AI assistant',
-            personality: currentState.type || 'Helpful assistant'
+            personality: currentState.type || 'Helpful assistant',
           })
-          console.log('✅ System prompt generated successfully, length:', systemPrompt.length)
+          console.log(
+            '✅ System prompt generated successfully, length:',
+            systemPrompt.length,
+          )
           updateOnboardingData({ systemPrompt })
         } catch (error: any) {
           console.error('❌ Failed to generate system prompt:', error)
@@ -77,9 +115,9 @@ export default function AgentCreateChatPage() {
       id: Date.now().toString(),
       role,
       content,
-      timestamp: new Date()
+      timestamp: new Date(),
     }
-    setMessages(prev => [...prev, newMessage])
+    setMessages((prev) => [...prev, newMessage])
   }
 
   const handleSend = async () => {
@@ -91,7 +129,7 @@ export default function AgentCreateChatPage() {
     setIsTyping(true)
 
     // Simulate AI thinking
-    await new Promise(resolve => setTimeout(resolve, 800))
+    await new Promise((resolve) => setTimeout(resolve, 800))
 
     let aiResponse = ''
 
@@ -104,7 +142,12 @@ export default function AgentCreateChatPage() {
       }
 
       case 'type': {
-        const validTypes = ['inbound support', 'outbound sales', 'receptionist', 'appointment setter']
+        const validTypes = [
+          'inbound support',
+          'outbound sales',
+          'receptionist',
+          'appointment setter',
+        ]
         const typeLower = userEntry.toLowerCase()
 
         if (validTypes.includes(typeLower)) {
@@ -178,17 +221,23 @@ export default function AgentCreateChatPage() {
           const systemPrompt = await generateSystemPrompt({
             name: state.data.name || 'Agent',
             description: state.data.businessDescription || 'AI assistant',
-            personality: state.data.type || 'Helpful assistant'
+            personality: state.data.type || 'Helpful assistant',
           })
 
           console.log('✅ System prompt generated successfully')
           updateOnboardingData({ systemPrompt })
 
-          addMessage(`Perfect! I have everything I need. I've crafted the custom system DNA for "${state.data.name}" (${systemPrompt.length} characters). Click the 'Complete Launch' button when you're ready to activate your agent.`, 'assistant')
+          addMessage(
+            `Perfect! I have everything I need. I've crafted the custom system DNA for "${state.data.name}" (${systemPrompt.length} characters). Click the 'Complete Launch' button when you're ready to activate your agent.`,
+            'assistant',
+          )
           setStep('launch')
         } catch (error: any) {
           console.error('❌ Failed to generate system prompt:', error)
-          addMessage(`I had trouble generating the system prompt (${error?.message || 'unknown error'}). We can still proceed! You can add a system prompt later in Settings.\n\nTip: Make sure your VITE_GEMINI_API_KEY is configured in your .env file.`, 'assistant')
+          addMessage(
+            `I had trouble generating the system prompt (${error?.message || 'unknown error'}). We can still proceed! You can add a system prompt later in Settings.\n\nTip: Make sure your VITE_GEMINI_API_KEY is configured in your .env file.`,
+            'assistant',
+          )
           setStep('launch')
         } finally {
           setIsGeneratingPrompt(false)
@@ -197,14 +246,20 @@ export default function AgentCreateChatPage() {
       }
 
       case 'launch': {
-        aiResponse = "Ready for takeoff! Click the 'Complete Launch' button whenever you're ready."
+        aiResponse =
+          "Ready for takeoff! Click the 'Complete Launch' button whenever you're ready."
         break
       }
     }
 
     // Handle voice collection edge case
     if (step === 'languageVoice') {
-      const validVoices = ['sarah friendly', 'mike professional', 'atlas deep', 'nova energetic']
+      const validVoices = [
+        'sarah friendly',
+        'mike professional',
+        'atlas deep',
+        'nova energetic',
+      ]
       if (validVoices.includes(userEntry.toLowerCase())) {
         updateOnboardingData({ voice: userEntry })
         aiResponse = `Excellent choice. What company or organization will this agent represent?`
@@ -216,7 +271,11 @@ export default function AgentCreateChatPage() {
     }
 
     // Handle phone transfer edge case
-    if (step === 'primaryGoal' && state.data.primaryGoal?.toLowerCase().includes('direct transfer') && !state.data.phoneTransfer) {
+    if (
+      step === 'primaryGoal' &&
+      state.data.primaryGoal?.toLowerCase().includes('direct transfer') &&
+      !state.data.phoneTransfer
+    ) {
       if (userEntry.match(/^[\d\s\-+()]+$/)) {
         updateOnboardingData({ phoneTransfer: userEntry })
         aiResponse = `Got it. What should the agent say when answering the phone?`
@@ -231,34 +290,39 @@ export default function AgentCreateChatPage() {
   const handleLaunch = async () => {
     console.log('🎯 handleLaunch called!')
     setIsLaunching(true)
-    
+
     try {
       const token = await getToken()
       if (!token) throw new Error('Not authenticated')
 
       // Ensure system prompt exists or regenerate
       let systemPrompt = onboardingStore.state.data.systemPrompt // Read direct state
-      
+
       if (!systemPrompt || systemPrompt.trim() === '') {
         console.log('⚠️ System prompt missing. Attempting final generation...')
         // Force a UI update to show we are working
-        updateOnboardingData({ systemPrompt: '' }) 
-        
+        updateOnboardingData({ systemPrompt: '' })
+
         try {
           const currentState = onboardingStore.state.data
           systemPrompt = await generateSystemPrompt({
             name: currentState.name || 'Agent',
             description: currentState.businessDescription || 'AI assistant',
-            personality: currentState.type || 'Helpful assistant'
+            personality: currentState.type || 'Helpful assistant',
           })
-          
-          if (!systemPrompt) throw new Error("Generated empty prompt")
+
+          if (!systemPrompt) throw new Error('Generated empty prompt')
           updateOnboardingData({ systemPrompt })
-          
         } catch (genError) {
-          console.error("❌ Critical: Failed to generate system prompt at launch", genError)
+          console.error(
+            '❌ Critical: Failed to generate system prompt at launch',
+            genError,
+          )
           setIsLaunching(false) // Stop spinner
-          addMessage("I couldn't generate the system prompt. Please check your internet connection or API key and try clicking 'Complete Launch' again.", 'assistant')
+          addMessage(
+            "I couldn't generate the system prompt. Please check your internet connection or API key and try clicking 'Complete Launch' again.",
+            'assistant',
+          )
           return // ABORT LAUNCH
         }
       }
@@ -284,19 +348,23 @@ export default function AgentCreateChatPage() {
       }
 
       const createdAgent = await createAgent(agentData, token)
-      
+
       // Success!
-      addMessage("Agent created successfully! Redirecting...", 'assistant')
-      await new Promise(r => setTimeout(r, 1000)) // Small delay for effect
-      
-      navigate({ to: `/${workspaceId}/agents/${createdAgent.id}` })
+      addMessage('Agent created successfully! Redirecting...', 'assistant')
+      await new Promise((r) => setTimeout(r, 1000)) // Small delay for effect
+
+      navigate({
+        to: `/${workspaceId}/agents/${getAgentRouteParam(createdAgent)}`,
+      })
       // We reset AFTER navigation logic initiates
       setTimeout(resetOnboarding, 500)
-      
     } catch (error) {
       console.error('❌ Failed to create agent:', error)
       setIsLaunching(false)
-      addMessage("I had trouble creating your agent. Please try again.", 'assistant')
+      addMessage(
+        'I had trouble creating your agent. Please try again.',
+        'assistant',
+      )
     }
   }
 
@@ -305,7 +373,12 @@ export default function AgentCreateChatPage() {
       {/* Header */}
       <header className="px-6 py-4 flex items-center justify-between border-b border-slate-200 dark:border-zinc-800/50 bg-white/50 dark:bg-black/50 backdrop-blur-xl sticky top-0 z-50">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate({ to: `/${workspaceId}/agents` })} className="rounded-full hover:bg-slate-100 dark:hover:bg-zinc-900">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate({ to: `/${workspaceId}/agents` })}
+            className="rounded-full hover:bg-slate-100 dark:hover:bg-zinc-900"
+          >
             <ChevronLeft className="h-5 w-5" />
           </Button>
           <div className="flex items-center gap-2">
@@ -313,7 +386,9 @@ export default function AgentCreateChatPage() {
               <Bot className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-sm font-bold tracking-tight">Agent Architect</h1>
+              <h1 className="text-sm font-bold tracking-tight">
+                Agent Architect
+              </h1>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-semibold flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
                 Live Assistant
@@ -323,11 +398,19 @@ export default function AgentCreateChatPage() {
         </div>
 
         <div className="flex items-center gap-4">
-           <Badge variant="outline" className="hidden md:flex gap-1 border-primary/20 bg-primary/5 text-primary">
-             <Sparkles className="h-3 w-3" />
-             AI Assisted Creation
-           </Badge>
-           <Button variant="ghost" size="sm" onClick={() => navigate({ to: `/${workspaceId}/agents` })} className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
+          <Badge
+            variant="outline"
+            className="hidden md:flex gap-1 border-primary/20 bg-primary/5 text-primary"
+          >
+            <Sparkles className="h-3 w-3" />
+            AI Assisted Creation
+          </Badge>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate({ to: `/${workspaceId}/agents` })}
+            className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+          >
             Exit
           </Button>
         </div>
@@ -336,7 +419,10 @@ export default function AgentCreateChatPage() {
       <div className="flex-1 flex overflow-hidden">
         {/* Chat Area */}
         <main className="flex-1 flex flex-col min-w-0 bg-white dark:bg-zinc-950/20 relative">
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth">
+          <div
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth"
+          >
             <div className="max-w-3xl mx-auto w-full space-y-8">
               <AnimatePresence initial={false}>
                 {messages.map((message) => (
@@ -346,19 +432,29 @@ export default function AgentCreateChatPage() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <div className={`flex gap-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1 ${
-                        message.role === 'assistant'
-                          ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                          : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700'
-                      }`}>
-                        {message.role === 'assistant' ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
+                    <div
+                      className={`flex gap-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-1 ${
+                          message.role === 'assistant'
+                            ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                            : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700'
+                        }`}
+                      >
+                        {message.role === 'assistant' ? (
+                          <Bot className="h-4 w-4" />
+                        ) : (
+                          <User className="h-4 w-4" />
+                        )}
                       </div>
-                      <div className={`relative px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-line ${
-                        message.role === 'assistant'
-                          ? 'bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-slate-800 dark:text-slate-200'
-                          : 'bg-primary text-white font-medium'
-                      }`}>
+                      <div
+                        className={`relative px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-line ${
+                          message.role === 'assistant'
+                            ? 'bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-slate-800 dark:text-slate-200'
+                            : 'bg-primary text-white font-medium'
+                        }`}
+                      >
                         {message.content}
                       </div>
                     </div>
@@ -397,7 +493,9 @@ export default function AgentCreateChatPage() {
                     </div>
                     <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-4 py-3 rounded-2xl flex items-center gap-2 h-10">
                       <div className="h-4 w-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                      <span className="text-sm text-muted-foreground">Generating system prompt...</span>
+                      <span className="text-sm text-muted-foreground">
+                        Generating system prompt...
+                      </span>
                     </div>
                   </div>
                 </motion.div>
@@ -411,7 +509,11 @@ export default function AgentCreateChatPage() {
               <BorderBeam className="opacity-0 group-focus-within:opacity-100 transition-opacity" />
               <div className="relative flex items-center gap-2">
                 <Input
-                  placeholder={step === 'launch' ? "Creation complete! Review details on the right..." : "Type your message..."}
+                  placeholder={
+                    step === 'launch'
+                      ? 'Creation complete! Review details on the right...'
+                      : 'Type your message...'
+                  }
                   disabled={step === 'launch' || isLaunching}
                   className="h-14 px-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 focus:ring-primary focus:border-primary transition-all pr-16"
                   value={inputValue}
@@ -441,7 +543,9 @@ export default function AgentCreateChatPage() {
               <Settings className="h-4 w-4 text-primary" />
               Agent Configuration
             </h3>
-            <p className="text-xs text-slate-500 mt-1">Real-time compilation of your agent's core.</p>
+            <p className="text-xs text-slate-500 mt-1">
+              Real-time compilation of your agent's core.
+            </p>
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
@@ -449,26 +553,54 @@ export default function AgentCreateChatPage() {
               {/* Identity Section */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Identity</span>
-                  {state.data.name && state.data.type && <Check className="h-3 w-3 text-green-500" />}
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    Identity
+                  </span>
+                  {state.data.name && state.data.type && (
+                    <Check className="h-3 w-3 text-green-500" />
+                  )}
                 </div>
                 <div className="space-y-2">
                   <div className="p-2.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50">
-                    <label className="text-[9px] text-slate-400 block mb-0.5">Name</label>
-                    <div className="text-xs font-semibold truncate">{state.data.name || <span className="text-zinc-400 font-normal">TBD</span>}</div>
+                    <label className="text-[9px] text-slate-400 block mb-0.5">
+                      Name
+                    </label>
+                    <div className="text-xs font-semibold truncate">
+                      {state.data.name || (
+                        <span className="text-zinc-400 font-normal">TBD</span>
+                      )}
+                    </div>
                   </div>
                   <div className="p-2.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50">
-                    <label className="text-[9px] text-slate-400 block mb-0.5">Type</label>
-                    <div className="text-xs font-semibold truncate">{state.data.type || <span className="text-zinc-400 font-normal">TBD</span>}</div>
+                    <label className="text-[9px] text-slate-400 block mb-0.5">
+                      Type
+                    </label>
+                    <div className="text-xs font-semibold truncate">
+                      {state.data.type || (
+                        <span className="text-zinc-400 font-normal">TBD</span>
+                      )}
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="p-2.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50">
-                      <label className="text-[9px] text-slate-400 block mb-0.5">Language</label>
-                      <div className="text-xs font-medium truncate">{state.data.language || <span className="text-zinc-400">TBD</span>}</div>
+                      <label className="text-[9px] text-slate-400 block mb-0.5">
+                        Language
+                      </label>
+                      <div className="text-xs font-medium truncate">
+                        {state.data.language || (
+                          <span className="text-zinc-400">TBD</span>
+                        )}
+                      </div>
                     </div>
                     <div className="p-2.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50">
-                      <label className="text-[9px] text-slate-400 block mb-0.5">Voice</label>
-                      <div className="text-xs font-medium truncate">{state.data.voice || <span className="text-zinc-400">TBD</span>}</div>
+                      <label className="text-[9px] text-slate-400 block mb-0.5">
+                        Voice
+                      </label>
+                      <div className="text-xs font-medium truncate">
+                        {state.data.voice || (
+                          <span className="text-zinc-400">TBD</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -477,21 +609,44 @@ export default function AgentCreateChatPage() {
               {/* Business Section */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Business</span>
-                  {state.data.businessName && state.data.businessDescription && <Check className="h-3 w-3 text-green-500" />}
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    Business
+                  </span>
+                  {state.data.businessName &&
+                    state.data.businessDescription && (
+                      <Check className="h-3 w-3 text-green-500" />
+                    )}
                 </div>
                 <div className="space-y-2">
                   <div className="p-2.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50">
-                    <label className="text-[9px] text-slate-400 block mb-0.5">Company</label>
-                    <div className="text-xs font-semibold truncate">{state.data.businessName || <span className="text-zinc-400 font-normal">TBD</span>}</div>
+                    <label className="text-[9px] text-slate-400 block mb-0.5">
+                      Company
+                    </label>
+                    <div className="text-xs font-semibold truncate">
+                      {state.data.businessName || (
+                        <span className="text-zinc-400 font-normal">TBD</span>
+                      )}
+                    </div>
                   </div>
                   <div className="p-2.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50">
-                    <label className="text-[9px] text-slate-400 block mb-0.5">Industry</label>
-                    <div className="text-xs font-medium truncate">{state.data.businessIndustry || <span className="text-zinc-400">TBD</span>}</div>
+                    <label className="text-[9px] text-slate-400 block mb-0.5">
+                      Industry
+                    </label>
+                    <div className="text-xs font-medium truncate">
+                      {state.data.businessIndustry || (
+                        <span className="text-zinc-400">TBD</span>
+                      )}
+                    </div>
                   </div>
                   <div className="p-2.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50">
-                    <label className="text-[9px] text-slate-400 block mb-0.5">Description</label>
-                    <div className="text-xs line-clamp-2">{state.data.businessDescription || <span className="text-zinc-400">TBD</span>}</div>
+                    <label className="text-[9px] text-slate-400 block mb-0.5">
+                      Description
+                    </label>
+                    <div className="text-xs line-clamp-2">
+                      {state.data.businessDescription || (
+                        <span className="text-zinc-400">TBD</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -499,21 +654,43 @@ export default function AgentCreateChatPage() {
               {/* Behavior Section */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Behavior</span>
-                  {state.data.primaryGoal && state.data.greeting && <Check className="h-3 w-3 text-green-500" />}
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    Behavior
+                  </span>
+                  {state.data.primaryGoal && state.data.greeting && (
+                    <Check className="h-3 w-3 text-green-500" />
+                  )}
                 </div>
                 <div className="space-y-2">
                   <div className="p-2.5 bg-gradient-to-br from-primary/5 to-indigo-500/5 dark:from-primary/10 dark:to-indigo-500/10 rounded-lg border border-primary/10">
-                    <label className="text-[9px] text-slate-400 block mb-0.5">Target Callers</label>
-                    <div className="text-xs font-bold truncate">{state.data.targetCallers || <span className="text-zinc-400 font-normal">TBD</span>}</div>
+                    <label className="text-[9px] text-slate-400 block mb-0.5">
+                      Target Callers
+                    </label>
+                    <div className="text-xs font-bold truncate">
+                      {state.data.targetCallers || (
+                        <span className="text-zinc-400 font-normal">TBD</span>
+                      )}
+                    </div>
                   </div>
                   <div className="p-2.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50">
-                    <label className="text-[9px] text-slate-400 block mb-0.5">Primary Goal</label>
-                    <div className="text-xs line-clamp-2">{state.data.primaryGoal || <span className="text-zinc-400">TBD</span>}</div>
+                    <label className="text-[9px] text-slate-400 block mb-0.5">
+                      Primary Goal
+                    </label>
+                    <div className="text-xs line-clamp-2">
+                      {state.data.primaryGoal || (
+                        <span className="text-zinc-400">TBD</span>
+                      )}
+                    </div>
                   </div>
                   <div className="p-2.5 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50">
-                    <label className="text-[9px] text-slate-400 block mb-0.5">Greeting</label>
-                    <div className="text-xs line-clamp-2">{state.data.greeting || <span className="text-zinc-400">TBD</span>}</div>
+                    <label className="text-[9px] text-slate-400 block mb-0.5">
+                      Greeting
+                    </label>
+                    <div className="text-xs line-clamp-2">
+                      {state.data.greeting || (
+                        <span className="text-zinc-400">TBD</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -521,7 +698,9 @@ export default function AgentCreateChatPage() {
               {/* System Prompt Section */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">System Prompt</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    System Prompt
+                  </span>
                   {isGeneratingPrompt ? (
                     <div className="h-3 w-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                   ) : state.data.systemPrompt ? (
@@ -532,12 +711,18 @@ export default function AgentCreateChatPage() {
                   {isGeneratingPrompt ? (
                     <div className="flex items-center gap-2">
                       <div className="h-3 w-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                      <span className="text-[10px] text-muted-foreground">Generating...</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        Generating...
+                      </span>
                     </div>
                   ) : state.data.systemPrompt ? (
-                    <p className="text-[10px] text-muted-foreground whitespace-pre-wrap line-clamp-4">{state.data.systemPrompt}</p>
+                    <p className="text-[10px] text-muted-foreground whitespace-pre-wrap line-clamp-4">
+                      {state.data.systemPrompt}
+                    </p>
                   ) : (
-                    <span className="text-xs text-zinc-400">Waiting for generation...</span>
+                    <span className="text-xs text-zinc-400">
+                      Waiting for generation...
+                    </span>
                   )}
                 </div>
               </div>
@@ -555,14 +740,20 @@ export default function AgentCreateChatPage() {
                   >
                     <AnimatePresence mode="wait">
                       {isLaunching ? (
-                        <motion.div key="launching" className="flex items-center gap-2">
-                           <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                           Creating Agent...
+                        <motion.div
+                          key="launching"
+                          className="flex items-center gap-2"
+                        >
+                          <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Creating Agent...
                         </motion.div>
                       ) : (
-                        <motion.div key="deploy" className="flex items-center gap-2">
-                           <Rocket className="h-4 w-4" />
-                           Complete Launch
+                        <motion.div
+                          key="deploy"
+                          className="flex items-center gap-2"
+                        >
+                          <Rocket className="h-4 w-4" />
+                          Complete Launch
                         </motion.div>
                       )}
                     </AnimatePresence>

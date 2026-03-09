@@ -2,19 +2,34 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import { useAgentStore } from '@/features/agents/store'
-import { Sparkles, Save, Loader2, Bot, Briefcase, Phone, Brain } from 'lucide-react'
+import {
+  Sparkles,
+  Save,
+  Loader2,
+  Bot,
+  Briefcase,
+  Phone,
+  Brain,
+} from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { generateSystemPrompt } from '@/lib/ai/gemini'
 
 function AgentSettingsPage() {
   const { agents, currentAgent, updateAgent, fetchAgents } = useAgentStore()
   const { getToken } = useAuth()
   const { agentId } = Route.useParams()
+  const resolvedAgentId = currentAgent?.id
 
   const [formData, setFormData] = useState(currentAgent || {})
   const [hasChanges, setHasChanges] = useState(false)
@@ -27,22 +42,24 @@ function AgentSettingsPage() {
       const token = await getToken()
       if (token) {
         await fetchAgents(token)
-        const agent = agents.find(a => a.id === agentId)
+        const agent = agents.find((a) => a.id === resolvedAgentId)
         if (agent) {
           setFormData(agent)
         }
       }
     }
-    if (!currentAgent || currentAgent.id !== agentId) {
+    if (!resolvedAgentId || currentAgent?.id !== resolvedAgentId) {
       loadAgent()
     } else {
       setFormData(currentAgent)
     }
-  }, [agentId])
+  }, [agentId, resolvedAgentId, currentAgent, getToken, fetchAgents, agents])
 
   useEffect(() => {
     if (currentAgent) {
-      const changes = Object.keys(formData).some(key => formData[key] !== currentAgent[key])
+      const changes = Object.keys(formData).some(
+        (key) => formData[key] !== currentAgent[key],
+      )
       setHasChanges(changes)
     }
   }, [formData, currentAgent])
@@ -53,7 +70,7 @@ function AgentSettingsPage() {
     try {
       const token = await getToken()
       if (token) {
-        await updateAgent(agentId, formData, token)
+        await updateAgent(resolvedAgentId || agentId, formData, token)
         setHasChanges(false)
       }
     } catch (error) {
@@ -70,7 +87,7 @@ function AgentSettingsPage() {
       const newPrompt = await generateSystemPrompt({
         name: formData.name,
         description: formData.businessDescription || '',
-        personality: formData.type
+        personality: formData.type,
       })
       setFormData({ ...formData, systemPrompt: newPrompt })
       setHasChanges(true)
@@ -105,7 +122,11 @@ function AgentSettingsPage() {
           </p>
         </div>
         <Button onClick={handleSave} disabled={!hasChanges || isSaving}>
-          {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
+          {isSaving ? (
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+          ) : (
+            <Save className="h-4 w-4 mr-2" />
+          )}
           {isSaving ? 'Saving...' : 'Save'}
         </Button>
       </div>
@@ -128,20 +149,32 @@ function AgentSettingsPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="type">Type</Label>
-            <Select value={formData.type} onValueChange={(value) => updateField('type', value)}>
-              <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+            <Select
+              value={formData.type}
+              onValueChange={(value) => updateField('type', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="inbound support">Inbound Support</SelectItem>
                 <SelectItem value="outbound sales">Outbound Sales</SelectItem>
                 <SelectItem value="receptionist">Receptionist</SelectItem>
-                <SelectItem value="appointment setter">Appointment Setter</SelectItem>
+                <SelectItem value="appointment setter">
+                  Appointment Setter
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="language">Language</Label>
-            <Select value={formData.language} onValueChange={(value) => updateField('language', value)}>
-              <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+            <Select
+              value={formData.language}
+              onValueChange={(value) => updateField('language', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="English">English</SelectItem>
                 <SelectItem value="Uzbek">Uzbek</SelectItem>
@@ -151,11 +184,18 @@ function AgentSettingsPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="voice">Voice</Label>
-            <Select value={formData.voice} onValueChange={(value) => updateField('voice', value)}>
-              <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+            <Select
+              value={formData.voice}
+              onValueChange={(value) => updateField('voice', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Sarah Friendly">Sarah Friendly</SelectItem>
-                <SelectItem value="Mike Professional">Mike Professional</SelectItem>
+                <SelectItem value="Mike Professional">
+                  Mike Professional
+                </SelectItem>
                 <SelectItem value="Atlas Deep">Atlas Deep</SelectItem>
                 <SelectItem value="Nova Energetic">Nova Energetic</SelectItem>
               </SelectContent>
@@ -192,8 +232,13 @@ function AgentSettingsPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="businessIndustry">Industry</Label>
-            <Select value={formData.businessIndustry} onValueChange={(value) => updateField('businessIndustry', value)}>
-              <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+            <Select
+              value={formData.businessIndustry}
+              onValueChange={(value) => updateField('businessIndustry', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Real Estate">Real Estate</SelectItem>
                 <SelectItem value="Healthcare">Healthcare</SelectItem>
@@ -228,17 +273,29 @@ function AgentSettingsPage() {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="primaryGoal">Goal</Label>
-            <Select value={formData.primaryGoal} onValueChange={(value) => updateField('primaryGoal', value)}>
-              <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+            <Select
+              value={formData.primaryGoal}
+              onValueChange={(value) => updateField('primaryGoal', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Information/Support">Information/Support</SelectItem>
-                <SelectItem value="Lead Qualification">Lead Qualification</SelectItem>
-                <SelectItem value="Appointment Booking">Appointment Booking</SelectItem>
+                <SelectItem value="Information/Support">
+                  Information/Support
+                </SelectItem>
+                <SelectItem value="Lead Qualification">
+                  Lead Qualification
+                </SelectItem>
+                <SelectItem value="Appointment Booking">
+                  Appointment Booking
+                </SelectItem>
                 <SelectItem value="Direct Transfer">Direct Transfer</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          {(formData.primaryGoal === 'Direct Transfer' || formData.phoneTransfer) && (
+          {(formData.primaryGoal === 'Direct Transfer' ||
+            formData.phoneTransfer) && (
             <div className="space-y-2">
               <Label htmlFor="phoneTransfer">Transfer Number</Label>
               <Input
@@ -263,9 +320,18 @@ function AgentSettingsPage() {
             variant="ghost"
             size="sm"
             onClick={handleRegeneratePrompt}
-            disabled={isRegenerating || !formData.name || !formData.businessDescription || !formData.type}
+            disabled={
+              isRegenerating ||
+              !formData.name ||
+              !formData.businessDescription ||
+              !formData.type
+            }
           >
-            {isRegenerating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Sparkles className="h-4 w-4 mr-2" />}
+            {isRegenerating ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <Sparkles className="h-4 w-4 mr-2" />
+            )}
             Generate
           </Button>
         </div>
@@ -298,6 +364,8 @@ function AgentSettingsPage() {
   )
 }
 
-export const Route = createFileRoute('/_app/$workspaceId/agents/$agentId/settings')({
+export const Route = createFileRoute(
+  '/_app/$workspaceId/agents/$agentId/settings',
+)({
   component: AgentSettingsPage,
 })

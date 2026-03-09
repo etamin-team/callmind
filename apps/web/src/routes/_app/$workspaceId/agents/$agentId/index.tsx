@@ -85,6 +85,7 @@ function PlaygroundPage() {
   const { agentId } = Route.useParams()
   const { credits, fetchUserCredits, checkAndDecrementCredits, refundCredits } =
     useUserStore()
+  const resolvedAgentId = currentAgent?.id
 
   const [phoneNumberDisplay, setPhoneNumberDisplay] = useState('+998 ')
   const [callDetails, setCallDetails] = useState({
@@ -110,13 +111,13 @@ function PlaygroundPage() {
   const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
-    if (currentAgent && currentAgent.id === agentId) {
+    if (resolvedAgentId && currentAgent?.id === resolvedAgentId) {
       setTempConfig({
-        voice: currentAgent.voice || 'sarah',
-        greeting: currentAgent.greeting || 'Hi, how can I help you today?',
+        voice: currentAgent?.voice || 'sarah',
+        greeting: currentAgent?.greeting || 'Hi, how can I help you today?',
       })
     }
-  }, [currentAgent, agentId])
+  }, [currentAgent, resolvedAgentId])
 
   useEffect(() => {
     const loadAgent = async () => {
@@ -128,10 +129,10 @@ function PlaygroundPage() {
         }
       }
     }
-    if (!currentAgent || currentAgent.id !== agentId) {
+    if (!resolvedAgentId || currentAgent?.id !== resolvedAgentId) {
       loadAgent()
     }
-  }, [agentId])
+  }, [resolvedAgentId, agentId])
 
   useEffect(() => {
     if (currentAgent) {
@@ -149,7 +150,7 @@ function PlaygroundPage() {
       const token = await getToken()
       if (token) {
         await updateAgent(
-          agentId,
+          resolvedAgentId || agentId,
           {
             voice: tempConfig.voice,
             greeting: tempConfig.greeting,
@@ -282,16 +283,17 @@ function PlaygroundPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="border-b">
-        <div className="max-w-6xl mx-auto px-8 py-5">
+      {/* Header */}
+      <div className="border-b bg-card">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                 <Bot className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h1 className="text-lg font-semibold">{currentAgent.name}</h1>
-                <p className="text-sm text-muted-foreground">
+                <h1 className="text-base font-semibold">{currentAgent.name}</h1>
+                <p className="text-sm text-muted-foreground line-clamp-1 max-w-md">
                   {currentAgent.businessDescription}
                 </p>
               </div>
@@ -309,23 +311,25 @@ function PlaygroundPage() {
         </div>
       </div>
 
-      <main className="max-w-6xl mx-auto px-8 py-8">
-        <div className="grid lg:grid-cols-[1fr_320px] gap-8">
-          <div className="space-y-8">
+      <main className="max-w-7xl mx-auto px-6 py-6">
+        <div className="grid lg:grid-cols-[1fr_340px] gap-6">
+          {/* Left Column */}
+          <div className="space-y-6">
+            {/* Settings Panel */}
             {showSettings && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">
+              <Card className="border-border/60 shadow-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-sm font-semibold">
                     Agent Configuration
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-xs">
                     Customize voice and greeting settings
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-5">
-                  <div className="grid sm:grid-cols-2 gap-5">
-                    <div className="space-y-2.5">
-                      <Label htmlFor="voice" className="text-sm font-medium">
+                <CardContent className="space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="voice" className="text-xs font-medium">
                         Voice
                       </Label>
                       <Select
@@ -334,20 +338,17 @@ function PlaygroundPage() {
                           setTempConfig({ ...tempConfig, voice: value })
                         }
                       >
-                        <SelectTrigger id="voice">
+                        <SelectTrigger id="voice" className="h-9">
                           <SelectValue>
-                            <div className="flex items-center gap-2.5">
+                            <div className="flex items-center gap-2">
                               <div
                                 className={cn(
                                   'w-2 h-2 rounded-full',
                                   selectedVoice.color,
                                 )}
                               />
-                              <span className="font-medium">
+                              <span className="text-sm font-medium">
                                 {selectedVoice.label}
-                              </span>
-                              <span className="text-muted-foreground">
-                                • {selectedVoice.description}
                               </span>
                             </div>
                           </SelectValue>
@@ -355,7 +356,7 @@ function PlaygroundPage() {
                         <SelectContent>
                           {voiceOptions.map((voice) => (
                             <SelectItem key={voice.value} value={voice.value}>
-                              <div className="flex items-center gap-2.5">
+                              <div className="flex items-center gap-2">
                                 <div
                                   className={cn(
                                     'w-2 h-2 rounded-full',
@@ -363,7 +364,7 @@ function PlaygroundPage() {
                                   )}
                                 />
                                 <div>
-                                  <div className="font-medium">
+                                  <div className="font-medium text-sm">
                                     {voice.label}
                                   </div>
                                   <div className="text-xs text-muted-foreground">
@@ -377,8 +378,8 @@ function PlaygroundPage() {
                       </Select>
                     </div>
 
-                    <div className="space-y-2.5">
-                      <Label htmlFor="greeting" className="text-sm font-medium">
+                    <div className="space-y-2">
+                      <Label htmlFor="greeting" className="text-xs font-medium">
                         Greeting Message
                       </Label>
                       <Input
@@ -391,13 +392,14 @@ function PlaygroundPage() {
                           })
                         }
                         placeholder="Hi, how can I help you today?"
+                        className="h-9 text-sm"
                       />
                     </div>
                   </div>
 
                   {(hasUnsavedChanges || isSaving) && (
-                    <div className="flex items-center justify-between pt-5 border-t">
-                      <span className="text-sm text-muted-foreground">
+                    <div className="flex items-center justify-between pt-4 border-t">
+                      <span className="text-xs text-muted-foreground">
                         {hasUnsavedChanges &&
                           !isSaving &&
                           'You have unsaved changes'}
@@ -409,7 +411,7 @@ function PlaygroundPage() {
                       >
                         {isSaving ? (
                           <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" />
                             Saving...
                           </>
                         ) : (
@@ -422,36 +424,60 @@ function PlaygroundPage() {
               </Card>
             )}
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Make a Call</CardTitle>
-                <CardDescription>
-                  Enter a phone number to start an AI-powered call
-                </CardDescription>
+            {/* Main Call Card */}
+            <Card className="border-border/60 shadow-sm">
+              <CardHeader className="pb-4 border-b bg-muted/30">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Phone className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-sm font-semibold">
+                      Make a Call
+                    </CardTitle>
+                    <CardDescription className="text-xs">
+                      Enter a phone number to start an AI-powered call
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="p-6 space-y-6">
+                {/* Phone Input Section */}
                 <div className="space-y-3">
-                  <Label htmlFor="phone" className="text-sm font-medium">
+                  <Label
+                    htmlFor="phone"
+                    className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                  >
                     Phone Number
                   </Label>
                   <div className="flex gap-3">
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+998 90 123 45 67"
-                      value={phoneNumberDisplay}
-                      onChange={handlePhoneChange}
-                      className={cn(
-                        'h-11 flex-1',
-                        !isValidUzbekNumber &&
-                          phoneNumberDisplay.length > 5 &&
-                          'border-amber-500 focus-visible:ring-amber-500/20',
-                      )}
-                    />
+                    <div className="relative flex-1">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium pointer-events-none">
+                        +998
+                      </div>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="90 123 45 67"
+                        value={phoneNumberDisplay.replace('+998', '').trim()}
+                        onChange={(e) =>
+                          handlePhoneChange({
+                            target: { value: '+998 ' + e.target.value },
+                          } as React.ChangeEvent<HTMLInputElement>)
+                        }
+                        className={cn(
+                          'h-12 pl-14 text-lg font-medium tracking-wide',
+                          !isValidUzbekNumber &&
+                            phoneNumberDisplay.length > 5 &&
+                            'border-amber-500 focus-visible:ring-amber-500/20',
+                        )}
+                      />
+                    </div>
                     <Button
                       onClick={handleMakeCall}
                       disabled={!isValidUzbekNumber || isCalling}
-                      className="h-11 px-6"
+                      className="h-12 px-8 gap-2"
+                      size="lg"
                     >
                       {isCalling ? (
                         <>
@@ -461,7 +487,7 @@ function PlaygroundPage() {
                       ) : (
                         <>
                           <Phone className="w-4 h-4" />
-                          Call Now
+                          Call
                         </>
                       )}
                     </Button>
@@ -474,15 +500,16 @@ function PlaygroundPage() {
                   )}
                 </div>
 
+                {/* Error Message */}
                 {callError && (
-                  <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-3.5">
-                    <div className="flex items-start gap-2.5">
+                  <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+                    <div className="flex items-start gap-3">
                       <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
-                      <div className="space-y-0.5">
+                      <div>
                         <p className="text-sm font-medium text-destructive">
                           Call Failed
                         </p>
-                        <p className="text-xs text-destructive/80">
+                        <p className="text-xs text-destructive/80 mt-0.5">
                           {callError}
                         </p>
                       </div>
@@ -490,16 +517,17 @@ function PlaygroundPage() {
                   </div>
                 )}
 
+                {/* Success Message */}
                 {activeCallSid && !isCalling && (
-                  <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-3.5">
+                  <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-4">
                     <div className="flex items-start justify-between gap-4">
-                      <div className="flex items-start gap-2.5">
+                      <div className="flex items-start gap-3">
                         <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
-                        <div className="space-y-0.5">
+                        <div>
                           <p className="text-sm font-medium text-green-700 dark:text-green-400">
                             Call Initiated Successfully
                           </p>
-                          <p className="text-xs text-green-600/80 dark:text-green-500/80 font-mono">
+                          <p className="text-xs text-green-600/80 dark:text-green-500/80 font-mono mt-0.5">
                             ID: {activeCallSid}
                           </p>
                         </div>
@@ -508,88 +536,106 @@ function PlaygroundPage() {
                         size="sm"
                         variant="ghost"
                         onClick={resetCall}
-                        className="shrink-0 h-8"
+                        className="shrink-0 h-8 text-xs"
                       >
-                        <PhoneOff className="w-3.5 h-3.5" />
+                        <PhoneOff className="w-3.5 h-3.5 mr-1" />
                         Reset
                       </Button>
                     </div>
                   </div>
                 )}
 
-                <Separator className="my-6" />
+                <Separator />
 
-                <div className="space-y-5">
-                  <h4 className="text-sm font-medium text-foreground/90">
-                    Call Details (Optional)
-                  </h4>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2.5">
-                      <Label htmlFor="customerName" className="text-sm">
-                        Customer Name
-                      </Label>
-                      <Input
-                        id="customerName"
-                        placeholder="e.g. John Doe"
-                        value={callDetails.customerName}
-                        onChange={(e) =>
-                          setCallDetails({
-                            ...callDetails,
-                            customerName: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-
-                    <div className="space-y-2.5">
-                      <Label htmlFor="purpose" className="text-sm">
-                        Call Purpose
-                      </Label>
-                      <Input
-                        id="purpose"
-                        placeholder="e.g. Sales follow-up"
-                        value={callDetails.purpose}
-                        onChange={(e) =>
-                          setCallDetails({
-                            ...callDetails,
-                            purpose: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
+                {/* Call Details Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-1 rounded-full bg-muted-foreground/30" />
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Call Details (Optional)
+                    </h4>
                   </div>
 
-                  <div className="space-y-2.5">
-                    <Label htmlFor="notes" className="text-sm">
-                      Additional Notes
-                    </Label>
-                    <Textarea
-                      id="notes"
-                      placeholder="Add context or special instructions for this call..."
-                      value={callDetails.notes}
-                      onChange={(e) =>
-                        setCallDetails({
-                          ...callDetails,
-                          notes: e.target.value,
-                        })
-                      }
-                      rows={3}
-                      className="resize-none"
-                    />
+                  <div className="grid gap-4">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="customerName"
+                          className="text-xs font-medium"
+                        >
+                          Customer Name
+                        </Label>
+                        <Input
+                          id="customerName"
+                          placeholder="e.g. John Doe"
+                          value={callDetails.customerName}
+                          onChange={(e) =>
+                            setCallDetails({
+                              ...callDetails,
+                              customerName: e.target.value,
+                            })
+                          }
+                          className="h-10"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label
+                          htmlFor="purpose"
+                          className="text-xs font-medium"
+                        >
+                          Call Purpose
+                        </Label>
+                        <Input
+                          id="purpose"
+                          placeholder="e.g. Sales follow-up"
+                          value={callDetails.purpose}
+                          onChange={(e) =>
+                            setCallDetails({
+                              ...callDetails,
+                              purpose: e.target.value,
+                            })
+                          }
+                          className="h-10"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="notes" className="text-xs font-medium">
+                        Additional Notes
+                      </Label>
+                      <Textarea
+                        id="notes"
+                        placeholder="Add context or special instructions for this call..."
+                        value={callDetails.notes}
+                        onChange={(e) =>
+                          setCallDetails({
+                            ...callDetails,
+                            notes: e.target.value,
+                          })
+                        }
+                        rows={3}
+                        className="resize-none"
+                      />
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Agent Info</CardTitle>
+          {/* Right Column - Sidebar */}
+          <div className="space-y-4">
+            {/* Agent Info */}
+            <Card className="border-border/60 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Agent Info
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3.5">
-                <div className="flex items-center justify-between py-1">
+              <CardContent className="space-y-1">
+                <div className="flex items-center justify-between py-2.5 border-b border-border/40">
                   <span className="text-sm text-muted-foreground">Voice</span>
                   <div className="flex items-center gap-2">
                     <div
@@ -604,9 +650,7 @@ function PlaygroundPage() {
                   </div>
                 </div>
 
-                <Separator />
-
-                <div className="flex items-center justify-between py-1">
+                <div className="flex items-center justify-between py-2.5 border-b border-border/40">
                   <span className="text-sm text-muted-foreground">
                     Language
                   </span>
@@ -617,22 +661,25 @@ function PlaygroundPage() {
                   </span>
                 </div>
 
-                <Separator />
-
-                <div className="flex items-center justify-between py-1">
+                <div className="flex items-center justify-between py-2.5 border-b border-border/40">
                   <span className="text-sm text-muted-foreground">Type</span>
-                  <Badge variant="secondary" className="capitalize text-xs">
+                  <Badge
+                    variant="secondary"
+                    className="capitalize text-xs font-medium"
+                  >
                     {currentAgent.type}
                   </Badge>
                 </div>
 
-                <Separator />
-
-                <div className="flex items-center justify-between py-1">
+                <div className="flex items-center justify-between py-2.5">
                   <span className="text-sm text-muted-foreground">Status</span>
                   <Badge
-                    variant={activeCallSid ? 'default' : 'secondary'}
-                    className="gap-1.5 text-xs"
+                    variant={activeCallSid ? 'default' : 'outline'}
+                    className={cn(
+                      'gap-1.5 text-xs font-medium',
+                      !activeCallSid &&
+                        'border-green-500/30 text-green-700 bg-green-50 dark:bg-green-950/30 dark:text-green-400',
+                    )}
                   >
                     <div
                       className={cn(
@@ -648,47 +695,60 @@ function PlaygroundPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Usage Stats</CardTitle>
-                <CardDescription>Track your calling activity</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-5">
-                <div className="space-y-1.5">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold tabular-nums">0</span>
-                    <span className="text-sm text-muted-foreground">calls</span>
+            {/* Credits Card - Highlighted */}
+            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 shadow-sm">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground mb-1">
+                      Available Credits
+                    </p>
+                    <p className="text-xs text-muted-foreground/70">
+                      Each call uses 1 credit
+                    </p>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Total calls made
-                  </p>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-1.5">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold tabular-nums">0</span>
-                    <span className="text-sm text-muted-foreground">min</span>
+                  <div className="text-right">
+                    <span className="text-4xl font-bold tabular-nums text-primary">
+                      {credits}
+                    </span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Total talk time
-                  </p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Available Credits</span>
-                  <span className="text-2xl font-bold tabular-nums">
-                    {credits}
-                  </span>
+            {/* Usage Stats */}
+            <Card className="border-border/60 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Usage Stats
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-2xl font-bold tabular-nums">0</p>
+                    <p className="text-xs text-muted-foreground">
+                      Total calls made
+                    </p>
+                  </div>
+                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                    <Phone className="w-4 h-4 text-muted-foreground" />
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Each call uses 1 credit
-                </p>
+
+                <Separator />
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-2xl font-bold tabular-nums">0</p>
+                    <p className="text-xs text-muted-foreground">
+                      Minutes used
+                    </p>
+                  </div>
+                  <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                    <div className="w-4 h-4 rounded-full border-2 border-muted-foreground" />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>

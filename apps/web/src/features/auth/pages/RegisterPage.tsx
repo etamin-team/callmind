@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import { RegisterForm } from '../components/RegisterForm'
-import { Sparkles } from 'lucide-react'
 
 export function RegisterPage() {
   useEffect(() => {
@@ -8,40 +7,69 @@ export function RegisterPage() {
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0a0a] text-white p-4 font-sans selection:bg-white selection:text-black">
-      {/* Upper Title */}
-      <div className="text-center space-y-2 mb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-        <h1 className="text-3xl font-semibold tracking-tight">Create your workspace</h1>
-        <p className="text-[#a1a1a1] text-sm">Join the next generation of AI-driven development</p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#0a0a0a] text-white px-4 relative overflow-hidden">
+      {/* Ambient background glow */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-[128px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-white/[0.03] rounded-full blur-[96px] pointer-events-none" />
 
-      {/* Auth Card */}
-      <div className="w-full max-w-[440px] bg-[#111111] border border-[#222222] rounded-2xl p-8 shadow-2xl animate-in zoom-in-95 duration-500">
+      <div className="w-full max-w-[440px] relative z-10">
         {/* Logo */}
-        <div className="flex justify-center mb-8">
-          <div className="size-12 bg-white rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-            <Sparkles className="size-7 text-black" />
+        <div className="flex justify-center mb-10">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-white/10">
+              <svg
+                viewBox="0 0 24 24"
+                className="w-5 h-5 text-black"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              >
+                <rect x="3" y="3" width="7" height="7" rx="2" />
+                <rect x="14" y="3" width="7" height="7" rx="2" />
+                <rect x="14" y="14" width="7" height="7" rx="2" />
+                <rect x="3" y="14" width="7" height="7" rx="2" />
+              </svg>
+            </div>
+            <span className="text-lg font-medium tracking-tight text-white/90">
+              Callmind
+            </span>
           </div>
         </div>
 
-        <div className="text-center mb-8">
-          <h2 className="text-xl font-medium tracking-tight">Welcome to Callmind</h2>
-          <p className="text-[#a1a1a1] text-xs mt-1">Please enter your details to get started</p>
+        {/* Card */}
+        <div className="bg-[#141414]/80 backdrop-blur-xl border border-white/[0.08] rounded-3xl p-8 shadow-2xl shadow-black/50">
+          {/* Header */}
+          <div className="text-center mb-10">
+            <h1 className="text-[28px] font-semibold tracking-tight mb-3 text-white">
+              Create your account
+            </h1>
+            <p className="text-[#666666] text-[15px] leading-relaxed">
+              Get started with Callmind in seconds
+            </p>
+          </div>
+
+          {/* Form */}
+          <RegisterForm />
+
+          {/* Footer */}
+          <div className="mt-8 pt-6 border-t border-white/[0.06] text-center">
+            <p className="text-[#555555] text-sm">
+              Already have an account?{' '}
+              <a
+                href="/login"
+                className="text-white/90 hover:text-white font-medium transition-colors"
+              >
+                Sign in
+              </a>
+            </p>
+          </div>
         </div>
 
-        <RegisterForm />
-
-        <div className="mt-8 text-center pt-6 border-t border-[#222222]">
-          <p className="text-[#a1a1a1] text-sm">
-            Already have an account?{' '}
-            <a href="/login" className="text-white hover:underline transition-all">Sign in</a>
-          </p>
-        </div>
-      </div>
-
-      {/* Bottom Text */}
-      <div className="mt-12 text-center animate-in fade-in duration-1000 delay-500">
-        <p className="text-[#666666] text-sm tracking-widest font-light">Join 10,000+ engineers building with Callmind</p>
+        {/* Subtle footer */}
+        <p className="text-center mt-10 text-[#444444] text-xs tracking-wide">
+          Secure authentication powered by Clerk
+        </p>
       </div>
     </div>
   )

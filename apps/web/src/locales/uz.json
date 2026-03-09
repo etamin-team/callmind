@@ -343,6 +343,8 @@
       "nav": {
         "agents": "Agentlar",
         "tasks": "Vazifalar",
+        "workspaces": "Ish joylari",
+        "create_organization": "Ish stoli yaratish",
         "navigation": "Navigatsiya",
         "usage": "Iste'mol",
         "workspace_settings": "Ish stoli sozlamalari",

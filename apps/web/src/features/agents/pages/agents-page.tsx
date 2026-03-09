@@ -22,6 +22,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Input } from '@/components/ui/input'
+import { getAgentRouteParam } from '@/lib/route-slugs'
 
 import { useAgentStore } from '../store'
 
@@ -77,7 +78,7 @@ function AgentCard({
     >
       <Link
         to="/$workspaceId/agents/$agentId"
-        params={{ workspaceId, agentId: agent.id }}
+        params={{ workspaceId, agentId: getAgentRouteParam(agent) }}
         className="absolute inset-0 z-10"
       />
 
@@ -246,8 +247,8 @@ export default function AgentsPage() {
 
           <h3 className="text-xl font-semibold mb-2">No agents yet</h3>
           <p className="text-muted-foreground max-w-md mb-6">
-            Create your first AI Agent to start automating support and
-            answering customer questions.
+            Create your first AI Agent to start automating support and answering
+            customer questions.
           </p>
 
           <Button asChild size="lg">

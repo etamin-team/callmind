@@ -4,13 +4,16 @@ import { useAgentStore } from '@/features/agents/store'
 import { useEffect } from 'react'
 import { useAuth } from '@clerk/clerk-react'
 import { Loader2 } from 'lucide-react'
+import { resolveAgentFromRouteParam } from '@/lib/route-slugs'
 
 function AgentDashboardLayout() {
-  const { workspaceId, agentId } = useParams({ from: '/_app/$workspaceId/agents/$agentId' })
+  const { agentId } = useParams({
+    from: '/_app/$workspaceId/agents/$agentId',
+  })
   const { agents, fetchAgents, isLoading, setCurrentAgent } = useAgentStore()
   const { getToken, isLoaded } = useAuth()
 
-  const currentAgent = agents.find(a => a.id === agentId)
+  const currentAgent = resolveAgentFromRouteParam(agents, agentId)
 
   useEffect(() => {
     if (isLoaded && !currentAgent && !isLoading) {
@@ -29,20 +32,20 @@ function AgentDashboardLayout() {
     }
   }, [currentAgent, setCurrentAgent])
 
-  if (isLoading && !currentAgent) {
-     return (
-        <div className="flex items-center justify-center h-screen">
-           <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        </div>
-     )
+  if (!currentAgent) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden">
-       <AgentSidebar />
-       <main className="flex-1 overflow-y-auto min-w-0 ml-64">
-          <Outlet />
-       </main>
+      <AgentSidebar />
+      <main className="flex-1 overflow-y-auto min-w-0 ml-64">
+        <Outlet />
+      </main>
     </div>
   )
 }

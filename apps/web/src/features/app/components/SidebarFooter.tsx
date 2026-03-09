@@ -30,7 +30,7 @@ export function SidebarFooterComponent() {
 
   return (
     <div className="group-data-[collapsible=icon]:hidden">
-      <div className="rounded-3xl bg-background p-4 shadow-sm ring-1 ring-border/20">
+      <div className="rounded-lg bg-background p-4 shadow-sm ring-1 ring-border/20">
         <div className="flex items-center justify-between text-sm text-foreground">
           <span className="font-semibold">{t('app.sidebar.credits')}</span>
           <span className="font-semibold tabular-nums text-foreground/80">
@@ -44,7 +44,7 @@ export function SidebarFooterComponent() {
 
         {userPlan === 'free' && (
           <div
-            className="mt-4 rounded-2xl p-px"
+            className="mt-4 rounded-md p-0.5"
             style={{
               background:
                 'linear-gradient(90deg, #f5a35c 0%, #f08db9 55%, #d38cff 100%)',
@@ -54,7 +54,7 @@ export function SidebarFooterComponent() {
               asChild
               size="sm"
               variant="ghost"
-              className="h-11 w-full rounded-[15px] bg-background text-base font-semibold text-foreground hover:bg-background"
+              className="h-10 w-full rounded-[4px] bg-background text-base font-semibold text-foreground hover:bg-background"
             >
               <Link
                 to="/$workspaceId/settings/billing"

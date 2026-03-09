@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useOrganization, useUser } from '@clerk/clerk-react'
+import { getWorkspaceRouteParam } from '@/lib/route-slugs'
 
 interface ClientRedirectProps {
   to: string
@@ -17,9 +18,9 @@ export function ClientRedirect({ to }: ClientRedirectProps) {
 
   useEffect(() => {
     if (!orgLoaded || !userLoaded) return
-    
-    const workspaceId = organization?.id || user?.id
-    
+
+    const workspaceId = getWorkspaceRouteParam(organization || user)
+
     if (workspaceId) {
       navigate({ to: `/${workspaceId}${to}` })
     } else {

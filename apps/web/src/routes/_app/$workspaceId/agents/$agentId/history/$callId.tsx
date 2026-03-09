@@ -21,7 +21,7 @@ import { getCall } from '@/features/call-history/api'
 import { CallHistory } from '@repo/types'
 
 function CallDetailPage() {
-  const { agentId, callId } = Route.useParams()
+  const { workspaceId, agentId, callId } = Route.useParams()
   const { getToken } = useAuth()
   const navigate = useNavigate()
   const [call, setCall] = useState<CallHistory | null>(null)
@@ -119,7 +119,7 @@ function CallDetailPage() {
           onClick={() =>
             navigate({
               to: '/$workspaceId/agents/$agentId/history',
-              params: { workspaceId: 'default', agentId },
+              params: { workspaceId, agentId },
             })
           }
           className="mb-4"
@@ -154,7 +154,7 @@ function CallDetailPage() {
             onClick={() =>
               navigate({
                 to: '/$workspaceId/agents/$agentId/history',
-                params: { workspaceId: 'default', agentId },
+                params: { workspaceId, agentId },
               })
             }
             className="mb-2"

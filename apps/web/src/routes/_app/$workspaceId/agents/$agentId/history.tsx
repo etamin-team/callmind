@@ -1,5 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Phone, Clock, Calendar, User, Play, Search, Filter, Loader2 } from 'lucide-react'
+import {
+  Phone,
+  Clock,
+  Calendar,
+  Play,
+  Search,
+  Filter,
+  Loader2,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -15,13 +23,19 @@ import { useState, useEffect } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { useAuth } from '@clerk/clerk-react'
 import { useNavigate } from '@tanstack/react-router'
-import { getCallHistory, getCallHistoryStats } from '@/features/call-history/api'
+import {
+  getCallHistory,
+  getCallHistoryStats,
+} from '@/features/call-history/api'
 import { CallHistory } from '@repo/types'
+import { useAgentStore } from '@/features/agents/store'
 
 function HistoryPage() {
-  const { agentId } = Route.useParams()
+  const { workspaceId, agentId } = Route.useParams()
   const { getToken } = useAuth()
   const navigate = useNavigate()
+  const { currentAgent } = useAgentStore()
+  const resolvedAgentId = currentAgent?.id || agentId
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [directionFilter, setDirectionFilter] = useState('all')
@@ -43,8 +57,8 @@ function HistoryPage() {
         }
 
         const [historyData, statsData] = await Promise.all([
-          getCallHistory(agentId, token),
-          getCallHistoryStats(agentId, token)
+          getCallHistory(resolvedAgentId, token),
+          getCallHistoryStats(resolvedAgentId, token),
         ])
 
         setCalls(historyData.calls)
@@ -58,14 +72,16 @@ function HistoryPage() {
     }
 
     fetchData()
-  }, [agentId, getToken])
+  }, [resolvedAgentId, getToken])
 
   const filteredCalls = calls.filter((call) => {
     const matchesSearch =
       (call.callerNumber && call.callerNumber.includes(searchQuery)) ||
-      (call.summary && call.summary.toLowerCase().includes(searchQuery.toLowerCase()))
+      (call.summary &&
+        call.summary.toLowerCase().includes(searchQuery.toLowerCase()))
     const matchesStatus = statusFilter === 'all' || call.status === statusFilter
-    const matchesDirection = directionFilter === 'all' || call.direction === directionFilter
+    const matchesDirection =
+      directionFilter === 'all' || call.direction === directionFilter
     return matchesSearch && matchesStatus && matchesDirection
   })
 
@@ -84,17 +100,6 @@ function HistoryPage() {
 
   const getDirectionIcon = (direction: string) => {
     return direction === 'inbound' ? '↓ Inbound' : '↑ Outbound'
-  }
-
-  const getSentimentColor = (sentiment: string) => {
-    switch (sentiment) {
-      case 'positive':
-        return 'text-green-600'
-      case 'negative':
-        return 'text-red-600'
-      default:
-        return 'text-gray-600'
-    }
   }
 
   return (
@@ -195,7 +200,10 @@ function HistoryPage() {
             <CardContent>
               <p className="text-2xl font-bold">
                 {Math.floor((stats.averageDuration || 0) / 60)}:
-                {String(Math.floor((stats.averageDuration || 0) % 60)).padStart(2, '0')}
+                {String(Math.floor((stats.averageDuration || 0) % 60)).padStart(
+                  2,
+                  '0',
+                )}
               </p>
             </CardContent>
           </Card>
@@ -237,7 +245,12 @@ function HistoryPage() {
           <Card
             key={call.id}
             className="hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => navigate({ to: '/$workspaceId/agents/$agentId/history/$callId', params: { workspaceId: 'default', agentId, callId: call.id! } })}
+            onClick={() =>
+              navigate({
+                to: '/$workspaceId/agents/$agentId/history/$callId',
+                params: { workspaceId, agentId, callId: call.id! },
+              })
+            }
           >
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -247,23 +260,36 @@ function HistoryPage() {
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium">{call.callerNumber || call.callerName || 'Unknown'}</p>
-                      <Badge variant="outline" className={getStatusColor(call.status)}>
+                      <p className="font-medium">
+                        {call.callerNumber || call.callerName || 'Unknown'}
+                      </p>
+                      <Badge
+                        variant="outline"
+                        className={getStatusColor(call.status)}
+                      >
                         {call.status}
                       </Badge>
                       <Badge variant="outline" className="text-xs">
                         {getDirectionIcon(call.direction)}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">{call.summary || 'No summary available'}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {call.summary || 'No summary available'}
+                    </p>
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {call.duration ? `${Math.floor(call.duration / 60)}:${String(call.duration % 60).padStart(2, '0')}` : '0:00'}
+                        {call.duration
+                          ? `${Math.floor(call.duration / 60)}:${String(call.duration % 60).padStart(2, '0')}`
+                          : '0:00'}
                       </span>
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        {call.startedAt ? formatDistanceToNow(new Date(call.startedAt), { addSuffix: true }) : 'Unknown time'}
+                        {call.startedAt
+                          ? formatDistanceToNow(new Date(call.startedAt), {
+                              addSuffix: true,
+                            })
+                          : 'Unknown time'}
                       </span>
                     </div>
                   </div>
@@ -293,6 +319,8 @@ function HistoryPage() {
   )
 }
 
-export const Route = createFileRoute('/_app/$workspaceId/agents/$agentId/history')({
+export const Route = createFileRoute(
+  '/_app/$workspaceId/agents/$agentId/history',
+)({
   component: HistoryPage,
 })

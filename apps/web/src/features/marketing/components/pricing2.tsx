@@ -40,7 +40,7 @@ const Pricing2 = ({ className }: Pricing2Props) => {
       id: 'starter',
       name: t('marketing.pricing.plans.starter.name'),
       price: { monthly: 59, yearly: 590 },
-      priceUzs: { monthly: 108000, yearly: 1032000 },
+      priceUzs: { monthly: 715694, yearly: 7156942 },
       description: t('marketing.pricing.plans.starter.desc'),
       features: t('marketing.pricing.plans.starter.features', {
         returnObjects: true,
@@ -53,7 +53,7 @@ const Pricing2 = ({ className }: Pricing2Props) => {
       id: 'pro',
       name: t('marketing.pricing.plans.pro.name'),
       price: { monthly: 172, yearly: 1720 },
-      priceUzs: { monthly: 348000, yearly: 3336000 },
+      priceUzs: { monthly: 2086431, yearly: 20864305 },
       description: t('marketing.pricing.plans.pro.desc'),
       features: t('marketing.pricing.plans.pro.features', {
         returnObjects: true,
@@ -65,7 +65,7 @@ const Pricing2 = ({ className }: Pricing2Props) => {
       id: 'business',
       name: t('marketing.pricing.plans.business.name'),
       price: { monthly: 345, yearly: 3450 },
-      priceUzs: { monthly: 948000, yearly: 9096000 },
+      priceUzs: { monthly: 4184991, yearly: 41849915 },
       description: t('marketing.pricing.plans.business.desc'),
       features: t('marketing.pricing.plans.business.features', {
         returnObjects: true,
@@ -259,7 +259,9 @@ const Pricing2 = ({ className }: Pricing2Props) => {
               <ul
                 className={cn(
                   'grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm transition-all duration-300',
-                  enterpriseExpanded ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100',
+                  enterpriseExpanded
+                    ? 'opacity-0 h-0 overflow-hidden'
+                    : 'opacity-100',
                 )}
               >
                 {enterpriseFeatures.map((feature, idx) => (

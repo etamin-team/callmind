@@ -8,24 +8,12 @@ import {
 } from "@repo/types";
 
 const PRICE_IDS = {
-  starter_monthly:
-    parseInt(process.env.PAYME_STARTER_MONTHLY || "") ||
-    PRICE_PER_PLAN_MONTHLY.starter,
-  starter_yearly:
-    parseInt(process.env.PAYME_STARTER_YEARLY || "") ||
-    PRICE_PER_PLAN_YEARLY.starter,
-  pro_monthly:
-    parseInt(process.env.PAYME_PRO_MONTHLY || "") ||
-    PRICE_PER_PLAN_MONTHLY.professional,
-  pro_yearly:
-    parseInt(process.env.PAYME_PRO_YEARLY || "") ||
-    PRICE_PER_PLAN_YEARLY.professional,
-  business_monthly:
-    parseInt(process.env.PAYME_BUSINESS_MONTHLY || "") ||
-    PRICE_PER_PLAN_MONTHLY.business,
-  business_yearly:
-    parseInt(process.env.PAYME_BUSINESS_YEARLY || "") ||
-    PRICE_PER_PLAN_YEARLY.business,
+  starter_monthly: PRICE_PER_PLAN_MONTHLY.starter,
+  starter_yearly: PRICE_PER_PLAN_YEARLY.starter,
+  pro_monthly: PRICE_PER_PLAN_MONTHLY.professional,
+  pro_yearly: PRICE_PER_PLAN_YEARLY.professional,
+  business_monthly: PRICE_PER_PLAN_MONTHLY.business,
+  business_yearly: PRICE_PER_PLAN_YEARLY.business,
 };
 
 const PLAN_PRODUCT_IDS: Record<string, string | undefined> = {
@@ -95,6 +83,7 @@ const paymeRoutes: FastifyPluginAsync = async (fastify) => {
         `m=${config.PAYME_MERCHANT_ID}`,
         `ac.user_id=${userId || "guest"}`,
         `ac.product_id=${productId}`,
+        `ac.order_id=${orderId}`,
         `a=${amountTiyins}`,
         `c=${returnUrl}`,
         `l=${lang || "ru"}`,

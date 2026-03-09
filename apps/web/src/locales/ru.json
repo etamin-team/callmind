@@ -339,6 +339,8 @@
       "nav": {
         "agents": "Агенты",
         "tasks": "Задачи",
+        "workspaces": "Рабочие пространства",
+        "create_organization": "Создать рабочую область",
         "navigation": "Навигация",
         "usage": "Использование",
         "workspace_settings": "Настройки рабочей области",

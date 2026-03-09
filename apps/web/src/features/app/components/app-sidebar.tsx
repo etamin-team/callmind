@@ -12,7 +12,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-  useSidebar,
 } from '@/components/ui/sidebar'
 import { cn } from '@/lib/utils'
 
@@ -21,8 +20,6 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {}
 export function AppSidebar({ className, ...props }: AppSidebarProps) {
   const { t } = useTranslation()
   const { workspaceId } = useParams({ from: '/_app/$workspaceId' })
-  const { state } = useSidebar()
-  const isCollapsed = state === 'collapsed'
 
   const data = {
     navMain: [
@@ -78,18 +75,13 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
       )}
       {...props}
     >
-      <SidebarHeader className="border-b border-sidebar-border/70 px-4 pb-3 pt-4">
+      <SidebarHeader className="border-b border-sidebar-border/70 px-4 pb-3 pt-4 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:pb-2">
         <TeamSwitcher />
-        {!isCollapsed && (
-          <p className="px-1 pt-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-sidebar-foreground/50">
-            {t('app.nav.navigation')}
-          </p>
-        )}
       </SidebarHeader>
-      <SidebarContent className="px-4 pb-4 pt-3">
+      <SidebarContent className="px-4 pb-4 pt-3 group-data-[collapsible=icon]:px-2">
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter className="px-4 pb-4 pt-0">
+      <SidebarFooter className="px-4 pb-4 pt-0 group-data-[collapsible=icon]:hidden">
         <SidebarFooterComponent />
       </SidebarFooter>
       <SidebarRail />

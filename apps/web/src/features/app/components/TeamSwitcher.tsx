@@ -23,6 +23,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { getWorkspaceRouteParam } from '@/lib/route-slugs'
 
 export function TeamSwitcher() {
   const { t } = useTranslation()
@@ -45,8 +46,6 @@ export function TeamSwitcher() {
     (user.publicMetadata.plan as string) || 'free'
   ).toLowerCase()
   const planLabel = userPlan.charAt(0).toUpperCase() + userPlan.slice(1)
-  const displayName =
-    activeOrg?.name || user.fullName || user.username || 'Personal'
   const label =
     activeOrg?.name || `${user.firstName || user.username || 'Personal'}'s Team`
 
@@ -59,12 +58,14 @@ export function TeamSwitcher() {
               size="lg"
               className={cn(
                 'h-10 rounded-none border-0 bg-transparent px-1 text-sidebar-foreground shadow-none transition-colors hover:bg-transparent data-[state=open]:bg-transparent',
-                'group-data-[collapsible=icon]:size-10 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0',
+                'group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:rounded-xl group-data-[collapsible=icon]:border group-data-[collapsible=icon]:border-sidebar-border/70 group-data-[collapsible=icon]:bg-background group-data-[collapsible=icon]:px-0',
               )}
             >
-              <span className="flex size-8 items-center justify-center rounded-lg bg-foreground text-sm font-semibold text-background">
-                {displayName.charAt(0).toUpperCase()}
-              </span>
+              <img
+                src="/icon_callmind.svg"
+                alt="Callmind"
+                className="size-8 rounded-lg object-contain p-1 group-data-[collapsible=icon]:size-7"
+              />
               <div className="flex min-w-0 flex-1 items-center gap-3 text-left group-data-[collapsible=icon]:hidden">
                 <span className="text-sidebar-foreground/25">/</span>
                 <div className="flex min-w-0 items-center gap-2 overflow-hidden">
@@ -93,7 +94,7 @@ export function TeamSwitcher() {
             <DropdownMenuItem
               onClick={async () => {
                 await setActive({ organization: null })
-                navigate({ to: `/${user.id}/agents` })
+                navigate({ to: `/${getWorkspaceRouteParam(user)}/agents` })
               }}
               className="gap-2"
             >
@@ -110,7 +111,9 @@ export function TeamSwitcher() {
                 key={membership.organization.id}
                 onClick={async () => {
                   await setActive({ organization: membership.organization.id })
-                  navigate({ to: `/${membership.organization.id}/agents` })
+                  navigate({
+                    to: `/${getWorkspaceRouteParam(membership.organization)}/agents`,
+                  })
                 }}
                 className="gap-2"
               >
