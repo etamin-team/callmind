@@ -10,7 +10,6 @@ import {
   Users,
 } from 'lucide-react'
 
-import { SidebarFooterComponent } from '@/features/app/components/SidebarFooter'
 import { cn } from '@/lib/utils'
 import { useAgentStore } from '../store'
 
@@ -53,13 +52,13 @@ export function AgentSidebar() {
   const { currentAgent } = useAgentStore()
 
   return (
-    <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col border-r border-sidebar-border/80 bg-sidebar text-sidebar-foreground supports-[backdrop-filter]:bg-sidebar/92 supports-[backdrop-filter]:backdrop-blur-xl">
-      <div className="border-b border-sidebar-border/70 px-4 pb-3 pt-4">
+    <aside className="fixed left-0 top-0 flex h-screen w-64 flex-col border-r border-sidebar-border/70 bg-sidebar text-sidebar-foreground">
+      <div className="border-b border-sidebar-border/60 px-4 pb-4 pt-4">
         <div className="flex items-center gap-3">
           <Link
             to="/$workspaceId/agents"
             params={{ workspaceId }}
-            className="inline-flex size-8 items-center justify-center rounded-lg bg-foreground text-background transition-opacity hover:opacity-90"
+            className="inline-flex size-8 items-center justify-center rounded-lg border border-sidebar-border/70 text-sidebar-foreground transition-colors hover:bg-background/80"
           >
             <ChevronLeft className="size-4" />
           </Link>
@@ -72,12 +71,12 @@ export function AgentSidebar() {
             </div>
           </div>
         </div>
-        <p className="px-1 pt-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-sidebar-foreground/50">
+        <p className="px-1 pt-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-sidebar-foreground/45">
           Navigation
         </p>
       </div>
 
-      <nav className="flex-1 px-4 pb-4 pt-3">
+      <nav className="flex-1 px-4 py-3">
         <div className="space-y-1">
           {menuItems.map((item) => {
             const targetPath = item.to
@@ -93,7 +92,7 @@ export function AgentSidebar() {
               return (
                 <div
                   key={item.label}
-                  className="flex items-center gap-3 rounded-2xl border border-transparent px-3 py-2 text-sm font-medium text-sidebar-foreground/40"
+                  className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-sidebar-foreground/40"
                 >
                   <item.icon className="size-4 shrink-0" />
                   <span className="flex-1">{item.label}</span>
@@ -110,10 +109,10 @@ export function AgentSidebar() {
                 to={item.to}
                 params={{ workspaceId, agentId }}
                 className={cn(
-                  'group flex items-center gap-3 rounded-2xl border px-3 py-2 text-sm font-medium transition-all duration-200',
+                  'group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors',
                   isActive
-                    ? 'border-sidebar-border bg-background text-foreground shadow-sm'
-                    : 'border-transparent text-sidebar-foreground/70 hover:border-sidebar-border/70 hover:bg-background/70 hover:text-foreground',
+                    ? 'bg-background text-foreground'
+                    : 'text-sidebar-foreground/70 hover:bg-background/60 hover:text-foreground',
                 )}
               >
                 <item.icon className="size-4 shrink-0" />
@@ -126,10 +125,6 @@ export function AgentSidebar() {
           })}
         </div>
       </nav>
-
-      <div className="px-4 pb-4 pt-0">
-        <SidebarFooterComponent />
-      </div>
     </aside>
   )
 }
