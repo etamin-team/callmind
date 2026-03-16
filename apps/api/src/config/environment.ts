@@ -80,6 +80,10 @@ export const config = {
   PAYME_BUSINESS_YEARLY: getOptionalEnv("PAYME_BUSINESS_YEARLY"),
 
   GEMINI_API_KEY: getOptionalEnv("GEMINI_API_KEY"),
+
+  // Telegram Bot configuration for waitlist contact form
+  TELEGRAM_BOT_TOKEN: getOptionalEnv("TELEGRAM_BOT_TOKEN"),
+  TELEGRAM_CHAT_ID: getOptionalEnv("TELEGRAM_CHAT_ID"),
 };
 
 // Debug logging (masked)
@@ -176,7 +180,6 @@ if (config.PAYME_PASSWORD) {
 }
 // Triggering dev server restart to reload .env fixed
 
-
 const hasPaymePrices = !!(
   config.PAYME_STARTER_MONTHLY ||
   config.PAYME_PRO_MONTHLY ||
@@ -187,5 +190,22 @@ if (hasPaymePrices) {
 } else {
   console.warn(
     `[Config] Payme prices are MISSING. Using default placeholder prices.`,
+  );
+}
+
+// Telegram configuration validation
+if (config.TELEGRAM_BOT_TOKEN) {
+  console.log(`[Config] Telegram Bot Token loaded`);
+} else {
+  console.warn(
+    `[Config] Telegram Bot Token is MISSING. Waitlist contact form will not work.`,
+  );
+}
+
+if (config.TELEGRAM_CHAT_ID) {
+  console.log(`[Config] Telegram Chat ID loaded`);
+} else {
+  console.warn(
+    `[Config] Telegram Chat ID is MISSING. Waitlist contact form will not work.`,
   );
 }
