@@ -8,7 +8,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import ClerkProvider from '../integrations/clerk/provider'
 import StoreDevtools from '../lib/demo-store-devtools'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-import appCss from '../styles.css?url'
+import '../styles.css'
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/components/theme-provider'
 import { PaddleProvider } from '@/features/payments/components/paddle-provider'
@@ -53,10 +53,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap',
       },
-      {
-        rel: 'stylesheet',
-        href: appCss,
-      },
+
       {
         rel: 'icon',
         type: 'image/svg+xml',
