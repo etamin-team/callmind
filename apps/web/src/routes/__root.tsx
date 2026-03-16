@@ -111,19 +111,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <PaymeProvider>
               <ClerkProvider>
                 <AuthWrapper>{children}</AuthWrapper>
-              <TanStackDevtools
-                config={{
-                  position: 'bottom-right',
-                }}
-                plugins={[
-                  {
-                    name: 'Tanstack Router',
-                    render: <TanStackRouterDevtoolsPanel />,
-                  },
-                  StoreDevtools,
-                  TanStackQueryDevtools,
-                ]}
-              />
               </ClerkProvider>
             </PaymeProvider>
           </PaddleProvider>

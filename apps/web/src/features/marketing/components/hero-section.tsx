@@ -1,16 +1,12 @@
 import { Link } from '@tanstack/react-router'
-import {
-  ArrowRight,
-  Phone,
-  Bot,
-  MessageSquare,
-} from 'lucide-react'
+import { ArrowRight, Phone, Bot, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 import { TextEffect } from '@/components/ui/text-effect'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { HeroHeader } from './header'
 import { useTranslation } from 'react-i18next'
+import { useEffect, useState } from 'react'
 
 const transitionVariants = {
   item: {
@@ -32,6 +28,13 @@ const transitionVariants = {
 
 export default function HeroSection() {
   const { t, i18n } = useTranslation()
+  const [isReady, setIsReady] = useState(false)
+
+  useEffect(() => {
+    // Defer animations until after initial paint
+    const timer = setTimeout(() => setIsReady(true), 100)
+    return () => clearTimeout(timer)
+  }, [])
 
   const features = [
     {
@@ -57,11 +60,10 @@ export default function HeroSection() {
       <main className="overflow-hidden">
         <div
           aria-hidden
-          className="absolute inset-0 isolate hidden opacity-65 contain-strict lg:block"
+          className="absolute inset-0 isolate hidden opacity-40 lg:block"
         >
-          <div className="w-140 h-320 -translate-y-87.5 absolute left-0 top-0 -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsla(0,0%,85%,.08)_0,hsla(0,0%,55%,.02)_50%,hsla(0,0%,45%,0)_80%)]" />
-          <div className="h-320 absolute left-0 top-0 w-60 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.06)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)] [translate:5%_-50%]" />
-          <div className="h-320 -translate-y-87.5 absolute left-0 top-0 w-60 -rotate-45 bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)]" />
+          <div className="w-140 h-320 -translate-y-87.5 absolute left-0 top-0 -rotate-45 rounded-full bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,hsla(0,0%,85%,.06)_0,hsla(0,0%,55%,.02)_50%,hsla(0,0%,45%,0)_80%)]" />
+          <div className="h-320 absolute left-0 top-0 w-60 -rotate-45 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,hsla(0,0%,85%,.04)_0,hsla(0,0%,45%,.02)_80%,transparent_100%)] [translate:5%_-50%]" />
         </div>
         <section className="min-h-screen flex flex-col">
           <div className="relative pt-24 md:pt-36 flex-1 flex flex-col">
@@ -100,10 +102,10 @@ export default function HeroSection() {
                   preset="fade"
                   speedSegment={0.225}
                   as="h1"
+                  trigger={isReady}
                   className="mx-auto mt-8 max-w-4xl text-balance text-5xl max-md:font-semibold md:text-7xl lg:mt-16 xl:text-[5.25rem]"
                   style={{
                     fontFamily: 'Geist, sans-serif',
-                    willChange: 'opacity, transform',
                   }}
                 >
                   {t('marketing.hero.title')}
@@ -114,11 +116,11 @@ export default function HeroSection() {
                   preset="fade"
                   speedSegment={0.225}
                   delay={0.3}
+                  trigger={isReady}
                   as="p"
                   className="mx-auto mt-8 max-w-2xl text-balance text-lg text-muted-foreground"
                   style={{
                     fontFamily: 'Geist, sans-serif',
-                    willChange: 'opacity, transform',
                   }}
                 >
                   {t('marketing.hero.description')}
@@ -136,7 +138,15 @@ export default function HeroSection() {
                     },
                     item: {
                       hidden: { opacity: 0, y: 10 },
-                      visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
+                      visible: {
+                        opacity: 1,
+                        y: 0,
+                        transition: {
+                          type: 'spring',
+                          stiffness: 300,
+                          damping: 24,
+                        },
+                      },
                     },
                   }}
                   className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row relative z-10"
@@ -146,7 +156,9 @@ export default function HeroSection() {
                     size="lg"
                     className="h-12 rounded-full px-8 text-base"
                   >
-                    <Link to="/register">{t('marketing.hero.start_trial')}</Link>
+                    <Link to="/register">
+                      {t('marketing.hero.start_trial')}
+                    </Link>
                   </Button>
                   <Button
                     asChild
@@ -187,7 +199,6 @@ export default function HeroSection() {
             </div>
           </div>
         </section>
-        
       </main>
     </>
   )
