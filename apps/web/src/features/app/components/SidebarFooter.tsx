@@ -1,20 +1,35 @@
-import { useUser } from '@clerk/clerk-react'
+import { useAuth, useUser } from '@clerk/clerk-react'
 import { ArrowUp } from 'lucide-react'
 import { Link, useParams } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PRICING_CONFIG } from '@repo/types'
 import type { PlanType } from '@repo/types'
 import { Button } from '@/components/ui/button'
+import { useUserStore } from '@/features/users/store'
 
 export function SidebarFooterComponent() {
   const { t, i18n } = useTranslation()
   const { user } = useUser()
+  const { getToken, userId } = useAuth()
   const { workspaceId } = useParams({ from: '/_app/$workspaceId' })
+  const { credits, fetchUserCredits } = useUserStore()
+
+  useEffect(() => {
+    const loadCredits = async () => {
+      const token = await getToken()
+      if (token && userId) {
+        await fetchUserCredits(userId, token)
+      }
+    }
+
+    void loadCredits()
+  }, [fetchUserCredits, getToken, userId])
 
   if (!user) return null
 
   const userPlan = ((user.publicMetadata.plan as string) || 'free') as PlanType
-  const userCredits = (user.publicMetadata.credits as number) || 2
+  const userCredits = credits
   const planConfig = PRICING_CONFIG[userPlan]
 
   // Calculate next reset date (first day of next month)

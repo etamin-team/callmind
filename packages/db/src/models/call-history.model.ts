@@ -12,19 +12,33 @@ const callHistorySchema = new Schema<ICallHistory>(
     // Call Details
     callSid: { type: String, sparse: true, index: true }, // Unique call identifier
     direction: { type: String, required: true, enum: ["inbound", "outbound"] },
+    phone: { type: String },
     callerNumber: { type: String },
     callerName: { type: String },
     duration: { type: Number, default: 0 }, // in seconds
+    turnCount: { type: Number, default: 0 }, // Number of conversation turns
     status: {
       type: String,
       required: true,
       enum: ["completed", "missed", "failed", "in-progress", "ringing"],
       default: "ringing",
     },
+    outcome: {
+      type: String,
+      enum: [
+        "sold",
+        "interested",
+        "refused",
+        "no_answer",
+        "busy",
+        "timeout",
+        "completed",
+      ],
+    },
 
     // Recording
     recordingUrl: { type: String },
-    transcript: { type: String },
+    transcript: { type: String }, // JSON stringified array for v2.0 format
 
     // Analytics
     sentiment: { type: String, enum: ["positive", "negative", "neutral"] },

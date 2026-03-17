@@ -33,6 +33,7 @@ import { useUserStore } from '@/features/users/store'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
+import { env } from '@/env'
 
 const formatPhoneNumber = (value: string): string => {
   const digits = value.replace(/\D/g, '')
@@ -83,8 +84,7 @@ function PlaygroundPage() {
   const { currentAgent, updateAgent, fetchAgents } = useAgentStore()
   const { getToken, userId } = useAuth()
   const { agentId } = Route.useParams()
-  const { credits, fetchUserCredits, checkAndDecrementCredits, refundCredits } =
-    useUserStore()
+  const { credits, fetchUserCredits, setCredits } = useUserStore()
   const resolvedAgentId = currentAgent?.id
 
   const [phoneNumberDisplay, setPhoneNumberDisplay] = useState('+998 ')
@@ -180,17 +180,6 @@ function PlaygroundPage() {
     setActiveCallSid(null)
 
     try {
-      const creditResult = await checkAndDecrementCredits(userId, 1, token)
-
-      if (!creditResult.success) {
-        setCallError(
-          creditResult.error ||
-            'Insufficient credits. Please upgrade your plan.',
-        )
-        setIsCalling(false)
-        return
-      }
-
       const prompt =
         currentAgent.businessDescription || 'You are a helpful AI assistant.'
       const enhancedPrompt = callDetails.notes
@@ -221,30 +210,30 @@ function PlaygroundPage() {
         goodbyeMessage: 'Rahmat vaqtingiz uchun!',
       }
 
-      const response = await fetch('https://callmind.talabam.com/call', {
+      const response = await fetch(`${env.VITE_API_URL}/api/calls`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify({
+          ...requestBody,
+          agentId: resolvedAgentId || agentId,
+        }),
       })
 
       const data = await response.json()
 
-      if (data.success && data.callSid) {
+      if (response.ok && data.success && data.callSid) {
+        if (typeof data.creditsRemaining === 'number') {
+          setCredits(data.creditsRemaining)
+        }
         setActiveCallSid(data.callSid)
       } else {
-        await refundCredits(userId, 1, token, 'Call initiation failed')
-        throw new Error('Failed to initiate call')
+        throw new Error(data.error || data.message || 'Failed to initiate call')
       }
     } catch (error) {
       console.error('Failed to make call:', error)
-
-      try {
-        await refundCredits(userId, 1, token || '', 'Call failed with error')
-      } catch (refundError) {
-        console.error('Failed to refund credits:', refundError)
-      }
 
       setCallError(
         error instanceof Error ? error.message : 'Failed to initiate call',

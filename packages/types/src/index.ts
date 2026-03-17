@@ -3,6 +3,7 @@ export * from "./user.js";
 export * from "./todo.js";
 export * from "./agent.js";
 export * from "./call-history.js";
+export * from "./contact.js";
 export * from "./error.js";
 export * from "./pricing.js";
 export * from "./payme.js";

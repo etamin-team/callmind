@@ -35,6 +35,7 @@ export const config = {
   PORT: parseInt(process.env.PORT || "3001"),
   MONGODB_URI: process.env.MONGODB_URI || "mongodb://localhost:27017/callmind",
   CORS_ORIGINS: process.env.CORS_ORIGINS || "http://localhost:3000",
+  API_URL: getOptionalEnv("API_URL"),
   JWT_SECRET: process.env.JWT_SECRET || "your-secret-key-change-this",
   CLERK_PUBLISHABLE_KEY:
     getClerkEnv("CLERK_PUBLISHABLE_KEY") ||
@@ -76,10 +77,14 @@ export const config = {
   PAYME_STARTER_YEARLY: getOptionalEnv("PAYME_STARTER_YEARLY"),
   PAYME_PRO_MONTHLY: getOptionalEnv("PAYME_PRO_MONTHLY"),
   PAYME_PRO_YEARLY: getOptionalEnv("PAYME_PRO_YEARLY"),
-  PAYME_BUSINESS_MONTHLY: getOptionalEnv("PAYME_BUSINESS_MONTHLY"),
+  PAYME_BUSINESS_MONTHLY: getOptionalEnv("PAYME_B USINESS_MONTHLY"),
   PAYME_BUSINESS_YEARLY: getOptionalEnv("PAYME_BUSINESS_YEARLY"),
 
   GEMINI_API_KEY: getOptionalEnv("GEMINI_API_KEY"),
+
+  // External Call API Configuration (aqllialoqa.uz)
+  CALL_API_BASE_URL:
+    getOptionalEnv("CALL_API_BASE_URL") || "http://89.126.208.106:3000",
 };
 
 // Debug logging (masked)
@@ -175,7 +180,6 @@ if (config.PAYME_PASSWORD) {
   );
 }
 // Triggering dev server restart to reload .env fixed
-
 
 const hasPaymePrices = !!(
   config.PAYME_STARTER_MONTHLY ||

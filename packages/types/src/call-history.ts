@@ -9,10 +9,23 @@ export const CallHistorySchema = z.object({
   // Call Details
   callSid: z.string().optional(), // Unique call identifier from Twilio/Vonage
   direction: z.enum(["inbound", "outbound"]),
+  phone: z.string().optional(), // Phone number (v2.0 API)
   callerNumber: z.string().optional(),
   callerName: z.string().optional(),
   duration: z.number().optional(), // in seconds
+  turnCount: z.number().optional(), // Number of conversation turns (v2.0 API)
   status: z.enum(["completed", "missed", "failed", "in-progress", "ringing"]),
+  outcome: z
+    .enum([
+      "sold",
+      "interested",
+      "refused",
+      "no_answer",
+      "busy",
+      "timeout",
+      "completed",
+    ])
+    .optional(),
 
   // Recording
   recordingUrl: z.string().url().optional(),

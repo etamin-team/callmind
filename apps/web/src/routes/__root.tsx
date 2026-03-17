@@ -40,6 +40,16 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
     links: [
+      // Preload and load CSS early to prevent FOUC
+      {
+        rel: 'preload',
+        href: '/src/styles.css',
+        as: 'style',
+      },
+      {
+        rel: 'stylesheet',
+        href: '/src/styles.css',
+      },
       {
         rel: 'preconnect',
         href: 'https://fonts.googleapis.com',
