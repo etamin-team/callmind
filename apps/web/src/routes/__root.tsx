@@ -3,11 +3,9 @@ import {
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+
 import ClerkProvider from '../integrations/clerk/provider'
-import StoreDevtools from '../lib/demo-store-devtools'
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
+
 import '../styles.css'
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/components/theme-provider'
@@ -40,16 +38,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
     links: [
-      // Preload and load CSS early to prevent FOUC
-      {
-        rel: 'preload',
-        href: '/src/styles.css',
-        as: 'style',
-      },
-      {
-        rel: 'stylesheet',
-        href: '/src/styles.css',
-      },
       {
         rel: 'preconnect',
         href: 'https://fonts.googleapis.com',
