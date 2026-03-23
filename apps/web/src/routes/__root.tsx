@@ -6,7 +6,6 @@ import {
 
 import ClerkProvider from '../integrations/clerk/provider'
 
-import '../styles.css'
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/components/theme-provider'
 import { PaddleProvider } from '@/features/payments/components/paddle-provider'
@@ -38,6 +37,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
     links: [
+      {
+        rel: 'stylesheet',
+        href: '/src/styles.css',
+      },
       {
         rel: 'preconnect',
         href: 'https://fonts.googleapis.com',
