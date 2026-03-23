@@ -9,13 +9,14 @@
       },
       "buttons": {
         "login": "Login",
-        "dashboard": "Dashboard"
+        "dashboard": "Dashboard",
+        "contactUs": "Contact Us"
       },
       "hero": {
         "badge": "Real-Time Conversation Intelligence",
         "title": "Automate Customer Calls with AI",
         "description": "Deploy AI voice agents that handle customer calls in Uzbek, capture leads, analyze sentiment, and provide reliable 24/7 support.",
-        "start_trial": "Start Free Trial",
+        "joinWaitlist": "Join Waitlist",
         "watch_demo": "Watch Demo",
         "features": {
           "calls": "24/7 Calls",
@@ -395,6 +396,30 @@
       "en": "English",
       "ru": "Русский",
       "uz": "O'zbekcha"
+    },
+    "contact": {
+      "title": "Contact Us",
+      "subtitle": "Have a question? We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
+      "nameLabel": "Name",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "your@email.com",
+      "phoneLabel": "Phone",
+      "phonePlaceholder": "+998 90 123 45 67",
+      "messageLabel": "Message",
+      "messagePlaceholder": "How can we help you?",
+      "sendButton": "Send Message",
+      "sending": "Sending...",
+      "successTitle": "Message Sent!",
+      "successMessage": "Thank you for reaching out. We'll get back to you soon.",
+      "sendAnother": "Send another message",
+      "errors": {
+        "nameRequired": "Name is required",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email",
+        "messageRequired": "Message is required",
+        "sendFailed": "Failed to send. Please try again."
+      }
     }
   }
 }

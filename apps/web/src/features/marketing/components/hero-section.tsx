@@ -1,4 +1,3 @@
-import { Link } from '@tanstack/react-router'
 import { ArrowRight, Phone, Bot, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -152,13 +151,10 @@ export default function HeroSection() {
                   className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row relative z-10"
                 >
                   <Button
-                    asChild
                     size="lg"
                     className="h-12 rounded-full px-8 text-base"
                   >
-                    <Link to="/register">
-                      {t('marketing.hero.start_trial')}
-                    </Link>
+                    {t('marketing.hero.joinWaitlist')}
                   </Button>
                   <Button
                     asChild

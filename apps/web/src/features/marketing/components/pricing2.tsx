@@ -1,15 +1,12 @@
 'use client'
 
-import { Check, Loader2, ChevronDown, Building2, Landmark } from 'lucide-react'
+import { Check, ChevronDown, Building2, Landmark } from 'lucide-react'
 import { useState } from 'react'
-import { useUser } from '@clerk/clerk-react'
 import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { useCreatePaymeCheckout } from '@/features/payments/api'
-import { usePayme } from '@/features/payments/components/payme-provider'
 
 interface Pricing2Props {
   className?: string
@@ -19,9 +16,6 @@ const Pricing2 = ({ className }: Pricing2Props) => {
   const { t } = useTranslation()
   const [yearly, setYearly] = useState<boolean>(false)
   const [enterpriseExpanded, setEnterpriseExpanded] = useState(false)
-  const { user, isSignedIn } = useUser()
-  const createPaymeCheckout = useCreatePaymeCheckout()
-  const { redirectToCheckout } = usePayme()
 
   const plans = [
     {
@@ -85,48 +79,12 @@ const Pricing2 = ({ className }: Pricing2Props) => {
     returnObjects: true,
   }) as string[]
 
-  const handlePlanClick = (plan: (typeof plans)[0]) => {
-    if (plan.id === 'free' || !plan.paymePlan) {
-      if (plan.href) {
-        window.location.href = plan.href
-      }
-      return
+  const handlePlanClick = () => {
+    // For waitlist - could open modal or scroll to form
+    const ctaSection = document.querySelector('#solutions')
+    if (ctaSection) {
+      ctaSection.scrollIntoView({ behavior: 'smooth' })
     }
-
-    if (!isSignedIn) {
-      window.location.href = `/sign-up?redirect=pricing`
-      return
-    }
-
-    createPaymeCheckout.mutate(
-      {
-        plan: plan.paymePlan,
-        data: {
-          yearly: !!yearly,
-          userId: user?.id,
-          recurring: false,
-        },
-      },
-      {
-        onSuccess: (data) => {
-          console.log('=== PRICING2 onSuccess ===', data)
-          if (data.paymeLink) {
-            window.location.href = data.paymeLink
-          } else if (data.checkoutUrl) {
-            redirectToCheckout(data.checkoutUrl)
-          }
-        },
-      },
-    )
-  }
-
-  const isLoading = (planId: string) => {
-    const plan = plans.find((p) => p.id === planId)
-    return !!(
-      createPaymeCheckout.isPending &&
-      plan?.paymePlan &&
-      createPaymeCheckout.variables?.plan === plan.paymePlan
-    )
   }
 
   return (
@@ -191,17 +149,9 @@ const Pricing2 = ({ className }: Pricing2Props) => {
               <Button
                 className="w-full"
                 variant={plan.popular ? 'default' : 'outline'}
-                onClick={() => handlePlanClick(plan)}
-                disabled={isLoading(plan.id)}
+                onClick={handlePlanClick}
               >
-                {isLoading(plan.id) ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('marketing.pricing.loading')}
-                  </>
-                ) : (
-                  plan.cta
-                )}
+                {plan.cta}
               </Button>
             </div>
           ))}

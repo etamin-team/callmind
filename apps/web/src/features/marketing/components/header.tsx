@@ -1,6 +1,5 @@
 import { Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { useUser } from '@clerk/clerk-react'
 
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -12,7 +11,6 @@ import { LanguageSwitcher } from '@/components/language-switcher'
 
 export const HeroHeader = () => {
   const { t } = useTranslation()
-  const { isSignedIn, isLoaded } = useUser()
   const [menuState, setMenuState] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -27,7 +25,7 @@ export const HeroHeader = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20)
     }
-    
+
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
@@ -48,10 +46,10 @@ export const HeroHeader = () => {
       <nav
         data-state={menuState && 'active'}
         className={cn(
-          "pointer-events-auto transition-all duration-300 ease-out",
+          'pointer-events-auto transition-all duration-300 ease-out',
           scrolled
-            ? "w-[95%] sm:w-[85%] max-w-5xl rounded-full border border-border/40 bg-background/80 backdrop-blur-md shadow-lg py-2 px-6 mt-4"
-            : "w-full max-w-7xl bg-transparent py-4 px-6 border-b border-transparent"
+            ? 'w-[95%] sm:w-[85%] max-w-5xl rounded-full border border-border/40 bg-background/80 backdrop-blur-md shadow-lg py-2 px-6 mt-4'
+            : 'w-full max-w-7xl bg-transparent py-4 px-6 border-b border-transparent',
         )}
       >
         <div className="mx-auto w-full transition-all duration-300 ease-in-out">
@@ -62,8 +60,16 @@ export const HeroHeader = () => {
                 aria-label="home"
                 className="flex items-center space-x-2"
               >
-                <img src="/logo_light.svg" alt="CallMind Logo" className="h-8 w-auto dark:hidden" />
-                <img src="/logo_dark.svg" alt="CallMind Logo" className="h-8 w-auto hidden dark:block" />
+                <img
+                  src="/logo_light.svg"
+                  alt="CallMind Logo"
+                  className="h-8 w-auto dark:hidden"
+                />
+                <img
+                  src="/logo_dark.svg"
+                  alt="CallMind Logo"
+                  className="h-8 w-auto hidden dark:block"
+                />
               </Link>
 
               <button
@@ -129,30 +135,15 @@ export const HeroHeader = () => {
               <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:items-center sm:space-y-0 md:w-fit">
                 <LanguageSwitcher />
                 <AnimatedThemeToggler />
-                {!isLoaded ? (
-                  <div className="h-9 w-[88px] animate-pulse rounded-md bg-muted/50" />
-                ) : isSignedIn ? (
-                  <Button
-                    asChild
-                    size="sm"
-                    className="bg-blue-600 hover:bg-blue-700 text-white border-0"
-                  >
-                    <Link to="/agents">
-                      <span>{t('marketing.buttons.dashboard')}</span>
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button
-                    asChild
-                    variant="ghost"
-                    size="sm"
-                    className="font-medium"
-                  >
-                    <Link to="/login">
-                      <span>{t('marketing.buttons.login')}</span>
-                    </Link>
-                  </Button>
-                )}
+                <Button
+                  asChild
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                >
+                  <Link to="/contact">
+                    <span>{t('marketing.buttons.contactUs')}</span>
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>

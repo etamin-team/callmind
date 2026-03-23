@@ -9,13 +9,14 @@
       },
       "buttons": {
         "login": "Kirish",
-        "dashboard": "Boshqaruv paneli"
+        "dashboard": "Boshqaruv paneli",
+        "contactUs": "Biz bilan bog'laning"
       },
       "hero": {
         "badge": "Haqiqiy Vaqtda Suhbati tahlili",
         "title": "Ai bilan qo'ng'iroqlarga javob bering",
         "description": "Mijozlar bilan o'zbek tilida gaplashadigan, yangi mijozlarni jalb qiladigan, kayfiyatni tahlil qiladigan va 24/7 ishonchli yordam ko'rsatadigan AI ovozli agentlarini ishlating.",
-        "start_trial": "Bepul sinab ko'rish",
+        "joinWaitlist": "Ro'yxatdan o'ting",
         "watch_demo": "Demoni ko'rish",
         "features": {
           "calls": "24/7 qo'ng'iroqlar",
@@ -399,6 +400,30 @@
       "en": "English",
       "ru": "Русский",
       "uz": "O'zbekcha"
+    },
+    "contact": {
+      "title": "Biz bilan bog'laning",
+      "subtitle": "Savolingiz bormi? Sizdan xabar kutib qolamiz. Tez orada javob beramiz.",
+      "nameLabel": "Ism",
+      "namePlaceholder": "Ismingiz",
+      "emailLabel": "Email",
+      "emailPlaceholder": "siz@email.com",
+      "phoneLabel": "Telefon",
+      "phonePlaceholder": "+998 90 123 45 67",
+      "messageLabel": "Xabar",
+      "messagePlaceholder": "Qanday yordam berishimiz mumkin?",
+      "sendButton": "Xabar yuborish",
+      "sending": "Yuborilmoqda...",
+      "successTitle": "Xabar yuborildi!",
+      "successMessage": "Murojaatingiz uchun rahmat. Tez orada javob beramiz.",
+      "sendAnother": "Boshqa xabar yuborish",
+      "errors": {
+        "nameRequired": "Ism kiritilishi shart",
+        "emailRequired": "Email kiritilishi shart",
+        "emailInvalid": "To'g'ri email kiriting",
+        "messageRequired": "Xabar kiritilishi shart",
+        "sendFailed": "Yuborib bo'lmadi. Qaytadan urinib ko'ring."
+      }
     }
   }
 }

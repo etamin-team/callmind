@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as RefundRouteImport } from './routes/refund'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as UsageRouteRouteImport } from './routes/usage/route'
 import { Route as SsoCallbackRouteRouteImport } from './routes/sso-callback/route'
 import { Route as RegisterRouteRouteImport } from './routes/register/route'
@@ -56,6 +57,11 @@ const RefundRoute = RefundRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UsageRouteRoute = UsageRouteRouteImport.update({
@@ -232,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRouteRoute
   '/sso-callback': typeof SsoCallbackRouteRoute
   '/usage': typeof UsageRouteRoute
+  '/contact': typeof ContactRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
@@ -266,6 +273,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRouteRoute
   '/sso-callback': typeof SsoCallbackRouteRoute
   '/usage': typeof UsageRouteRoute
+  '/contact': typeof ContactRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
@@ -300,6 +308,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRouteRoute
   '/sso-callback': typeof SsoCallbackRouteRoute
   '/usage': typeof UsageRouteRoute
+  '/contact': typeof ContactRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
@@ -336,6 +345,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/sso-callback'
     | '/usage'
+    | '/contact'
     | '/privacy'
     | '/refund'
     | '/terms'
@@ -370,6 +380,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/sso-callback'
     | '/usage'
+    | '/contact'
     | '/privacy'
     | '/refund'
     | '/terms'
@@ -403,6 +414,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/sso-callback'
     | '/usage'
+    | '/contact'
     | '/privacy'
     | '/refund'
     | '/terms'
@@ -439,6 +451,7 @@ export interface RootRouteChildren {
   RegisterRouteRoute: typeof RegisterRouteRoute
   SsoCallbackRouteRoute: typeof SsoCallbackRouteRoute
   UsageRouteRoute: typeof UsageRouteRoute
+  ContactRoute: typeof ContactRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
   TermsRoute: typeof TermsRoute
@@ -467,6 +480,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/usage': {
@@ -793,6 +813,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRouteRoute: RegisterRouteRoute,
   SsoCallbackRouteRoute: SsoCallbackRouteRoute,
   UsageRouteRoute: UsageRouteRoute,
+  ContactRoute: ContactRoute,
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
   TermsRoute: TermsRoute,
